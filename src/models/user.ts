@@ -15,7 +15,7 @@ const userSchema = new Schema(
       unique: true,
       required: [true, "Mobile is required."],
     },
-    email: String,
+    email: { type: String, required: true },
     // isEmailVarified: { type: Number, default: 0 },
     userImage: String,
     // coverImage: String,

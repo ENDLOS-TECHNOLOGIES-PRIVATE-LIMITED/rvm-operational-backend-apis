@@ -2,6 +2,7 @@ import config from "./config";
 import express from "express";
 import routes from "./routes";
 import { connectToMongo } from "./database/db";
+import bodyParser from "body-parser";
 
 async function startServer() {
   const app = express();
@@ -15,14 +16,17 @@ async function startServer() {
 
   // await require("./loaders").default({ expressApp: app });
 
-//temp connection code  which will be removed later we will user instance Or we will use Loader Folder
+  //temp connection code  which will be removed later we will user instance Or we will use Loader Folder
 
+  connectToMongo();
 
-connectToMongo()
+  // Parse URL-encoded bodies
+  app.use(bodyParser.urlencoded({ extended: false }));
 
+  // Parse JSON bodies
+  app.use(bodyParser.json());
 
-app.use(config.api.prefix, routes());
-
+  app.use(config.api.prefix, routes());
 
   app.listen(config.port, () => {
     console.log("App is working on Port", config.port);
