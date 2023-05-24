@@ -8,6 +8,11 @@ const userSchema = yup.object().shape({
   age: yup.number().positive().integer().min(1).max(120),
   password: yup.string().required().min(8),
   role: yup.string().oneOf(["admin", "superadmin"]).required(),
+  mobile: yup
+    .string()
+    // .matches(/^[+]\d{1,3}[-.\s]?\d{1,14}$/, "Invalid phone number")
+    .min(10,"Mobile number must be at least 10 digit")
+    .required("Mobile number is required"),
 });
 
 

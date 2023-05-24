@@ -15,7 +15,7 @@ const Response = {
 };
 
   
-    // //sending Registerd User response
+    //sending Registerd User response
     res.json({
       message: " Successfully Registerd",
       data: Response,
