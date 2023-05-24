@@ -17,8 +17,8 @@ const userSchema = yup.object().shape({
 
 
 const loginSchema = yup.object().shape({
-  email: yup.string().email().required(),
-  password: yup.string().required(),
+  email: yup.string().email().required("Email and password required"),
+  password: yup.string().required("Email and password required"),
 });
 
 

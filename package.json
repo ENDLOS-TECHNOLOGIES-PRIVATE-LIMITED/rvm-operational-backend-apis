@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsc",
     "start": "nodemon",
-    "inspect": "nodemon --inspect src/app.ts"
+    "inspect": "nodemon --inspect src/app.ts",
+    "vercel-build":"echo hello"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",

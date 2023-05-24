@@ -1,7 +1,9 @@
 import { Router, Request, Response } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
+
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+
 const route = Router();
 
 export default (app: Router) => {
@@ -11,33 +13,15 @@ export default (app: Router) => {
    *   name: User
    *   description: User management and login
    */
-  app.use("/user", route);
+  app.use("/inventry", route);
 
   /**
    * @swagger
-   * /superadmin/register:
+   * /add :
    *   Post:
-   *     tags: [User]
-   *     summary: Register user
-   *     description: Registering superadmin user.
+   *     tags: [Inventry]
+   *     summary: adding new inventry
+   *     description: For Adding new inventry.
    */
-  route.post("/superadmin/register", Validator.userValidataion.validateRegisterUser, Controller.User.SuperAdminRegister);
-  /**
-   * @swagger
-   * /register:
-   *   Post:
-   *     tags: [User]
-   *     summary: Register user
-   *     description: Registering user.
-   */
-  route.post("/register", Validator.userValidataion.validateRegisterUser, verifySuperAdmin, Controller.User.Register);
-  /**
-   * @swagger
-   * /login:
-   *   Post:
-   *     tags: [User]
-   *     summary: login user
-   *     description: For Login user.
-   */
-  route.post("/login", Validator.userValidataion.validateLoginUser, Controller.User.Login);
+  route.post("/add", Validator.inventry.validateInventry,verifySuperAdmin, Controller.inventry.Add);
 };
