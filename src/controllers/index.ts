@@ -1,12 +1,14 @@
 // import UserController from './user';
 
-import * as UserController from './user'
-import * as AuthController from './auth'
-import * as InventryController from './inventry'
+import * as User from "./user";
+import * as Auth from "./auth";
+import * as inventry from "./inventry";
+import * as customer from './customer'
 export default {
-  User: UserController,
-  Auth: AuthController,
-  inventry: InventryController,
+  User,
+  Auth,
+  inventry,
+  customer,
 };
 
 
