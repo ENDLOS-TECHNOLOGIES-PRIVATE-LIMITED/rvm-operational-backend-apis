@@ -1,34 +1,30 @@
 
-// export default [
+// import { readdirSync } from "fs";
+// import { basename, join } from "path";
+// import mongoose from "mongoose";
+
+// const models: Record<string, mongoose.Model<any>> = {};
+
+// // Import all model files dynamically
+// const modelFiles = readdirSync(__dirname)
+//   .filter((file) => file !== "index.ts")
+//   .forEach((file) => {
+//     const modelName = basename(file, ".ts");
+//     const model = require(join(__dirname, file)).default;
+//     models[modelName] = model;
+//   });
+
+// export default models;
 
 
- 
-//  {
-//     name: 'userModel',
-//     model: require('./user').default,
-//   },
-//   {
-//     name: 'inventryModel',
-//     model: require('./inventry').default,
-//   },
- 
-// ];
 
 
-// import * as UserModel from  './user'
-// import * as Inventry from  './inventry'
 
-// export default {
-//     // UserModel,  
-//     Inventry
-// }
+import Inventory from "./inventry";
+import User from "./user";
 
-// index.ts
-const Inventry = require("./inventry");
-
-module.exports = {
-  Inventry,
+export default {
+  Inventory,
+  User,
 };
-
-
 

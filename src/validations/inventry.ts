@@ -5,7 +5,7 @@ const inventrySchema = yup.object().shape({
   name: yup.string().required(),
   brandName: yup.string().required(),
   serialNumber: yup.string().required(),        
-  purchaseDate: yup.date().required(),
+  // purchaseDate: yup.date().required(),
 });
 
 

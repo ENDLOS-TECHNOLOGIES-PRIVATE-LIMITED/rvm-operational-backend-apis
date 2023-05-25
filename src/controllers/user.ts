@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/user';
+// import User from '../models/user';
+import models from '../models'
 import helpers from "../helpers";
 
 interface AuthenticatedRequest extends Request {
@@ -15,7 +16,7 @@ export const SuperAdminRegister = async (req: Request, res: Response) => {
     // Destructuring data from request
     const { email, password } = req.body;
 
-    let isUserRegisterd = await User.findOne({ email });
+    let isUserRegisterd = await models.User.findOne({ email });
     if (isUserRegisterd) {
       return res.status(400).json({ error: "Email already exists" });
     }
@@ -23,7 +24,7 @@ export const SuperAdminRegister = async (req: Request, res: Response) => {
     const encriptedPass = await helpers.bcryptHelper.generateHash(password);
 
     //Registering Employee in the Db
-    const RegisterdUser = await User.create({
+    const RegisterdUser = await models.User.create({
       ...req.body,
       password: encriptedPass,
     });
@@ -64,7 +65,7 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
     // Destructuring data from request
     const { email, password } = req.body;
 
-    let isUserRegisterd = await User.findOne({ email });
+    let isUserRegisterd = await models.User.findOne({ email });
     if (isUserRegisterd) {
       return res.status(400).json({ error: "Email already exists" });
     }
@@ -72,7 +73,7 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
     const encriptedPass = await helpers.bcryptHelper.generateHash(password);
 
     //Registering User in the Db
-    const RegisterdUser = await User.create({
+    const RegisterdUser = await models.User.create({
       ...req.body,
       password: encriptedPass,
       createdBy: {
@@ -116,7 +117,7 @@ export const Login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     
-const loggedinUser: any = await User.find({ email });
+const loggedinUser: any = await models.User.find({ email });
 
     if (!loggedinUser) {
       return res.status(400).json({
@@ -179,7 +180,7 @@ const loggedinUser: any = await User.find({ email });
 
 //     const { user } = req;
 
-//     let userDetails = await User.findById(user.id);
+//     let userDetails = await models.User.findById(user.id);
 
 //         const passwordCompare = await helpers.bcryptHelper.comparePassword(oldpassword, userDetails.password);
 

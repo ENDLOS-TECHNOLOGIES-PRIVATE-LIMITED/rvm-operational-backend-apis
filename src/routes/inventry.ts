@@ -23,5 +23,15 @@ export default (app: Router) => {
    *     summary: adding new inventry
    *     description: For Adding new inventry.
    */
-  route.post("/add", Validator.inventry.validateInventry,verifySuperAdmin, Controller.inventry.Add);
+  route.post("/add", Validator.inventry.validateInventry, verifySuperAdmin, Controller.inventry.Add);
+
+  /**
+   * @swagger
+   * /get :
+   *   Post:
+   *     tags: [Inventry]
+   *     summary: getting inventry
+   *     description: For getting all and custom inventry as per query .
+   */
+  route.get("/get", verifySuperAdmin, Controller.inventry.get);
 };

@@ -5,8 +5,8 @@ const inventrySchema = new Schema(
   {
     name: { type: String, required: true },
     brandName: { type: String, required: true },
-    serialNumber: { type: String, required: true ,unique:true},
-    purchaseDate: { type: Date, required: true },
+    serialNumber: { type: String, required: true, unique: true },
+    purchaseDate: { type: Date, default: Date.now() },
     isDeleted: { type: Boolean, default: false },
     assignedTo: {
       _machine: { type: mongoose.Schema.Types.ObjectId, refPath: "machineRef" },
