@@ -15,11 +15,21 @@ export const GetByCustomer = async (req: AuthenticatedRequest, res: Response) =>
   try {
     const { id } = req.query;
 
+       if (!id) {
+         res.status(400).json({
+           message: "Bad Request",
+           success: false,
+         });
+       }
+
+       else{
+
+
     const Branches = await models.Branch.find({
       "customer._customerId": id,
     });
     const Customer = await models.Customer.findOne({
-     _id: id,
+      _id: id,
     });
 
     const Response = {
@@ -33,6 +43,9 @@ export const GetByCustomer = async (req: AuthenticatedRequest, res: Response) =>
       data: Response,
       success: true,
     });
+
+       }
+
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
