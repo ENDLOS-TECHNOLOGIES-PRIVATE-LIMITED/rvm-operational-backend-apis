@@ -23,7 +23,9 @@ class jwtHelper {
 // Function to verify the access token
  verifyAccessToken=(accessToken)=> {
   try {
-    const decoded = jwt.verify(accessToken, config.jwtSecret);
+
+    const decoded = jwt.verify(accessToken.split(" ")[1], config.jwtSecret);
+    // const decoded = jwt.verify(accessToken, config.jwtSecret);
     return decoded.user;
   } catch (err) {
     // Token is invalid or has expired

@@ -7,7 +7,8 @@ import helpers from "../../helpers";
 
 export const verifySuperAdmin = (req: any, res: Response, next: NextFunction) => {
   // Get the user from the jwt token and add id to req object
-  const token = req.header("accessToken");
+const token = req.headers.authorization;
+
   if (!token) {
     res.status(401).send({ error: "Please Login" });
   }
