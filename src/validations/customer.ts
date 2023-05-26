@@ -2,13 +2,13 @@ const yup = require("yup");
 
 // Validation schema using Yup
 const customerSchema = yup.object().shape({
-  name: yup.string().required("Customer Name is Required"),
-  email: yup.string().email().required(),
-  password: yup.string().required().min(8),
-  mobile: yup
-    .string()
-    // .matches(/^[+]\d{1,3}[-.\s]?\d{1,14}$/, "Invalid phone number")
-    .min(10, "Mobile number must be at least 10 digit"),
+  name: yup.string().required("Name is Required"),
+  // email: yup.string().email().required(),
+  // password: yup.string().required().min(8),
+  // mobile: yup
+  //   .string()
+  //   // .matches(/^[+]\d{1,3}[-.\s]?\d{1,14}$/, "Invalid phone number")
+  //   .min(10, "Mobile number must be at least 10 digit"),
  });
 
 // Validation middleware

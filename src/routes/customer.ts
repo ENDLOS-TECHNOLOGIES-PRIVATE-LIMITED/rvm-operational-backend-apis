@@ -34,4 +34,13 @@ export default (app: Router) => {
    *     description: For getting all Customers .
    */
   route.get("/getAll", verifySuperAdmin, Controller.customer.GetAll);
+  /**
+   * @swagger
+   * /put :
+   *   Post:
+   *     tags: [Customer]
+   *     summary: updating  Customers
+   *     description: For updating Customers .
+   */
+  route.put("/update", verifySuperAdmin, Controller.customer.update);
 };

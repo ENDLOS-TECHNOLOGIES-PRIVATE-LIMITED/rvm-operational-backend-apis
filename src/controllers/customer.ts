@@ -15,19 +15,19 @@ interface AuthenticatedRequest extends Request {
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Destructuring data from request
-    const { email, password } = req.body;
+    // const { email, password } = req.body;
 
-    let isUserRegisterd = await models.Customer.findOne({ email });
-    if (isUserRegisterd) {
-      return res.status(400).json({ error: "Email already exists" });
-    }
+    // let isUserRegisterd = await models.Customer.findOne({ email });
+    // if (isUserRegisterd) {
+    //   return res.status(400).json({ error: "Email already exists" });
+    // }
 
-    const encriptedPass = await helpers.bcryptHelper.generateHash(password);
+    // const encriptedPass = await helpers.bcryptHelper.generateHash(password);
 
     //Registering customoer in the Db
     const Customer = await models.Customer.create({
       ...req.body,
-      password: encriptedPass,
+      // password: encriptedPass,
       createdBy: {
         _user: req?.user.id,
       },
@@ -63,7 +63,7 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 
     //sending Registerd User response
     res.json({
-      message: "Customer Successfully Added",
+      message: "Customer Added Successfully ",
       data: Response,
       success: true,
     });
@@ -88,6 +88,50 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {``
     };
 
     //sending Registerd User response
+    res.json({
+      message: "Customer Successfully Added",
+      data: Response,
+      success: true,
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+export const update = async (req: AuthenticatedRequest, res: Response) => {``
+  try {
+   
+    let id = req.params.id;
+
+
+    // if (!id) {
+    //   let invalidParameter = {
+    //     req: req,
+    //     result: -1,
+    //     message: "INVALID_PARAMETERS",
+    //     payload: {},
+    //     logPayload: false,
+    //   };
+    //   // return res.status(enums.HTTP_CODES.BAD_REQUEST).json(utils.createResponseObject(invalidParameter));
+
+    //   return res.status(400).json(invalidParameter);
+    // }
+
+    //Upading customoer in the Db
+    const updatedCustomer = await models.Customer.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+         name:req.body.name
+        },
+      },
+      { new: true }
+    );
+
+    const Response = {
+      updatedCustomer,
+    };
+
+    //sending updated customer response
     res.json({
       message: "Customer Successfully Added",
       data: Response,
