@@ -100,31 +100,32 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {``
 export const update = async (req: AuthenticatedRequest, res: Response) => {``
   try {
    
-    let id = req.params.id;
+    let id = req.query.id;
 
 
-    // if (!id) {
-    //   let invalidParameter = {
-    //     req: req,
-    //     result: -1,
-    //     message: "INVALID_PARAMETERS",
-    //     payload: {},
-    //     logPayload: false,
-    //   };
-    //   // return res.status(enums.HTTP_CODES.BAD_REQUEST).json(utils.createResponseObject(invalidParameter));
 
-    //   return res.status(400).json(invalidParameter);
-    // }
+    if (!id) {
+    res.status(400).json({
+      message: "Bad Request",
+      success: false,
+    });
+    }
 
     //Upading customoer in the Db
-    const updatedCustomer = await models.Customer.findByIdAndUpdate(
-      id,
+    const updatedCustomer = await models.Customer.findOneAndUpdate(
+      {
+        _id:id
+      },
       {
         $set: {
-         name:req.body.name
+     ...req.body
         },
       },
-      { new: true }
+
+      {
+        new:true
+      }
+     
     );
 
     const Response = {
