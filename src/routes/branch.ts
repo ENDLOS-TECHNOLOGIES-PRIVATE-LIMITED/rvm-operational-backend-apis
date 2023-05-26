@@ -42,5 +42,15 @@ export default (app: Router) => {
    *     summary: updating  Branch
    *     description: For updating Branch .
    */
-  route.put("/update", verifySuperAdmin, Controller.branch.update);
+  route.put("/update", verifySuperAdmin, Controller.branch.Update);
+
+  // /**
+  //  * @swagger
+  //  * /delete :
+  //  *   Post:
+  //  *     tags: [Branch]
+  //  *     summary: updating  Branch
+  //  *     description: For updating Branch .
+  //  */
+  // route.delete("/delete", verifySuperAdmin, Controller.branch.Delete);
 };

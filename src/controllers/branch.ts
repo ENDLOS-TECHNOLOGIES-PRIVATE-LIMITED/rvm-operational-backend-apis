@@ -11,6 +11,28 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+export const GetByCustomer = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.query;
+
+    const Branches = await models.Branch.find({
+      "customer._customerId": id,
+    });
+
+    const Response = {
+      Branches,
+    };
+
+    //sending Registerd User response
+    res.json({
+      message: "All Branches of a Customer",
+      data: Response,
+      success: true,
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
@@ -49,29 +71,7 @@ const Branch = await models.Branch.create({
     res.status(500).json({ message: error.message, success: false });
   }
 };
-export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
-
-  try {
-    //Registering customoer in the Db
-    const Customer = await models.Customer.find({});
-
-
-
-    const Response = {
-      Customer,
-    };
-
-    //sending Registerd User response
-    res.json({
-      message: "Customer Successfully Added",
-      data: Response,
-      success: true,
-    });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
-  }
-};
-export const update = async (req: AuthenticatedRequest, res: Response) => {
+export const Update = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let id = req.query.id;
 
@@ -114,26 +114,43 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
-
-export const GetByCustomer = async (req: AuthenticatedRequest, res: Response) => {
+export const Delete = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const { id } = req.query;
+    let id = req.query.id;
 
-    const Branches = await models.Branch.find({
-      "customer._customerId": id,
-    });
+    if (!id) {
+      res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
+    } else{
+      //Upading customoer in the Db
+      const deltedBranch = await models.Branch.findByIdAndDelete(
+        {
+          _id: id,
+        },
+      );
 
-    const Response = {
-      Branches,
-    };
+      const Response = {
+        deltedBranch,
+      };
 
-    //sending Registerd User response
-    res.json({
-      message: "All Branches of a Customer",
-      data: Response,
-      success: true,
-    });
+      //sending updated customer response
+      res.json({
+        message: "Branch Deleted Successfully",
+        data: Response,
+        success: true,
+      });
+    }
+
+    
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
+
+
+
+
+
