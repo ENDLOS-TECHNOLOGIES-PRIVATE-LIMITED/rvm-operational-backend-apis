@@ -18,8 +18,12 @@ export const GetByCustomer = async (req: AuthenticatedRequest, res: Response) =>
     const Branches = await models.Branch.find({
       "customer._customerId": id,
     });
+    const Customer = await models.Customer.findOne({
+     _id: id,
+    });
 
     const Response = {
+      Customer,
       Branches,
     };
 

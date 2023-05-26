@@ -50,7 +50,7 @@ const Customer = await models.Customer.find({})
 
     //sending Registerd User response
     res.json({
-      message: "Customer Successfully Added",
+      message: "Customer fetched Successfully ",
       data: Response,
       success: true,
     });
