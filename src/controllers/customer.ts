@@ -58,6 +58,44 @@ const Customer = await models.Customer.find({})
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
+export const Get = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+   
+    let id = req.query.id;
+
+
+
+    if (!id) {
+    res.status(400).json({
+      message: "Bad Request",
+      success: false,
+    });
+    } else{
+      //Upading customoer in the Db
+      const Customer = await models.Customer.findOne(
+        {
+          _id: id,
+        },
+        
+      );
+
+      const Response = {
+        Customer,
+      };
+
+      //sending updated customer response
+      res.json({
+        message: "Customer Updated Successfully",
+        data: Response,
+        success: true,
+      });
+    }
+
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
 export const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
    

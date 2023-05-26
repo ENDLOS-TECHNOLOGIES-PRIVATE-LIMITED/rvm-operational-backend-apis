@@ -30,6 +30,16 @@ export default (app: Router) => {
    * /get :
    *   Post:
    *     tags: [Customer]
+   *     summary: getting a customer by id
+   *     description: For getting a Customers by id .
+   */
+  route.get("/get", verifySuperAdmin, Controller.customer.Get);
+
+  /**
+   * @swagger
+   * /getAll :
+   *   Post:
+   *     tags: [Customer]
    *     summary: getting All Customers
    *     description: For getting all Customers .
    */
