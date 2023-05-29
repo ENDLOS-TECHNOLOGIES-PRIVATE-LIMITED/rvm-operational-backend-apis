@@ -46,24 +46,18 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
 
     const AllCustomer = await models.Customer.aggregate([
       { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+      { $sort: { createdAt: -1 } },
       {
         $lookup: {
           from: "branches",
           localField: "_id",
-          // foreignField: "customerId",
           foreignField: "customer._customerId",
           as: "branches",
         },
       },
-    ])
-      .exec()
-      // .then((results) => {
-      //   console.log({ results });
-      // })
-      // .catch((error) => {
-      //   console.error(error);
-      // });
-
+    ]).exec();
+     
+   
     const Response = {
       // Customer,
       Customer: AllCustomer,
