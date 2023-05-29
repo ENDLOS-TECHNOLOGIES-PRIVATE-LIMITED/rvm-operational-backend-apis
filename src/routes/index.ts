@@ -5,16 +5,18 @@ import user from './user';
 import inventry from './inventry';
 import customer from './customer'
 import branch from "./branch";
+import invetryType from "./inventryType";
 
 
 const route = Router();
 
 export default () => {
  
-  auth(route);
+auth(route);
  user(route);
  inventry(route);
  customer(route);
  branch(route);
-  return route
+ invetryType(route);
+ return route
 };

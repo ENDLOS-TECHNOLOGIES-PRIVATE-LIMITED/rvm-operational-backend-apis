@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 // import User from '../models/user';
 import models from "../models";
 import helpers from "../helpers";
-import { date } from "yup";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -11,58 +10,54 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
-
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-    //Registering customoer in the Db
-    const Customer = await models.Customer.create({
-      ...req.body,
-      createdBy: {
-        _user: req?.user.id,
-      },
-    });
+const InvetryTypeIsExist = await models.InvetryType.find({name:req.body.name})
 
+console.log({InvetryTypeIsExist});
 
-    const Response = {
-      Customer,
-   };
+console.log(InvetryTypeIsExist.length);
 
-    //sending Registerd User response
-    res.json({
-      message: "Customer Added Successfully ",
-      data: Response,
-      success: true,
-    });
+if(InvetryTypeIsExist.length>0){
+   return res.status(400).json({ error: "Inventry Type already exist" });
+}
+
+else{
+  //Adding inventry type in the Db
+  const Customer = await models.InvetryType.create({
+    ...req.body,
+  });
+
+  const Response = {
+    Customer,
+  };
+
+  //sending Registerd User response
+  res.json({
+    message: "InventryType Added Successfully ",
+    data: Response,
+    success: true,
+  });
+}
+
+    
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
+  
+    const InventryTypes = await models.InvetryType.find({ isDeleted: false });
 
-    const AllCustomer = await models.Customer.aggregate([
-      { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
-      { $sort: { createdAt: -1 } },
-      {
-        $lookup: {
-          from: "branches",
-          localField: "_id",
-          foreignField: "customer._customerId",
-          as: "branches",
-        },
-      },
-    ]).exec();
-     
-   
     const Response = {
-      // Customer,
-      Customer: AllCustomer,
+      InventryTypes,
     };
 
     //sending Registerd User response
     res.json({
-      message: "Customer fetched Successfully ",
+      message: "InventryTypes fetched Successfully ",
       data: Response,
       success: true,
     });
@@ -73,56 +68,44 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
 
 export const Get = async (req: AuthenticatedRequest, res: Response) => {
   try {
-   
     let id = req.query.id;
 
-
-
     if (!id) {
-    res.status(400).json({
-      message: "Bad Request",
-      success: false,
-    });
-    } else{
-      //Upading customoer in the Db
-      const Customer = await models.Customer.findOne(
-        {
-          _id: id,
-        },
-        
-      );
+      res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
+    } else {
+     
+      const invetryType = await models.InvetryType.findOne({
+        _id: id,
+      });
 
       const Response = {
-        Customer,
+        invetryType,
       };
-
-      //sending updated customer response
-      res.json({
-        message: "Customer Updated Successfully",
-        data: Response,
-        success: true,
-      });
+    res.json({
+      message: "invetryType fetched Successfully",
+      data: Response,
+      success: true,
+    });
     }
-
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
 export const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
-   
     let id = req.query.id;
 
-
-
     if (!id) {
-    res.status(400).json({
-      message: "Bad Request",
-      success: false,
-    });
-    } else{
+      res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
+    } else {
       //Upading customoer in the Db
-      const updatedCustomer = await models.Customer.findOneAndUpdate(
+      const updatedInventryType = await models.InvetryType.findOneAndUpdate(
         {
           _id: id,
         },
@@ -138,22 +121,20 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
       );
 
       const Response = {
-        updatedCustomer,
+        updatedInventryType,
       };
 
       //sending updated customer response
       res.json({
-        message: "Customer Updated Successfully",
+        message: "InventryType Updated Successfully",
         data: Response,
         success: true,
       });
     }
-
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
-
 
 export const Delete = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -165,13 +146,9 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         success: false,
       });
     } else {
-      //Upading customoer in the Db
-      // const deltedBranch = await models.Branch.findByIdAndDelete(
-      //   {
-      //     _id: id,
-      //   },
-      // );
-      const deletedCustomer = await models.Customer.findOneAndUpdate(
+  
+
+      const deletedInventryType = await models.InvetryType.findOneAndUpdate(
         {
           _id: id,
         },
@@ -179,7 +156,7 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         {
           $set: {
             isDeleted: true,
-       },
+          },
         },
 
         {
@@ -188,12 +165,11 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
       );
 
       const Response = {
-        deletedCustomer,
+        deletedInventryType,
       };
 
-      //sending updated customer response
       res.json({
-        message: "Customer Deleted Successfully",
+        message: "InventryType Deleted Successfully",
         data: Response,
         success: true,
       });
@@ -202,4 +178,3 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
-
