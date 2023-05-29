@@ -143,4 +143,51 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 
+export const Delete = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    let id = req.query.id;
+
+    if (!id) {
+      res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
+    } else {
+      //Upading customoer in the Db
+      // const deltedBranch = await models.Branch.findByIdAndDelete(
+      //   {
+      //     _id: id,
+      //   },
+      // );
+      const deletedCustomer = await models.Customer.findOneAndUpdate(
+        {
+          _id: id,
+        },
+
+        {
+          $set: {
+            isDeleted: true,
+       },
+        },
+
+        {
+          new: true,
+        }
+      );
+
+      const Response = {
+        deletedCustomer,
+      };
+
+      //sending updated customer response
+      res.json({
+        message: "Customer Deleted Successfully",
+        data: Response,
+        success: true,
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
 
