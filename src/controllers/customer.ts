@@ -40,14 +40,33 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
-  
-    
-const Customer = await models.Customer.find({
-  
-})
+    const Customer = await models.Customer.find({});
+
+ 
+
+    const AllCustomer = await models.Customer.aggregate([
+      { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+      {
+        $lookup: {
+          from: "branches",
+          localField: "_id",
+          // foreignField: "customerId",
+          foreignField: "customer._customerId",
+          as: "branches",
+        },
+      },
+    ])
+      .exec()
+      // .then((results) => {
+      //   console.log({ results });
+      // })
+      // .catch((error) => {
+      //   console.error(error);
+      // });
 
     const Response = {
-      Customer,
+      // Customer,
+      Customer: AllCustomer,
     };
 
     //sending Registerd User response
