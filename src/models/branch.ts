@@ -8,6 +8,10 @@ const branchSchema = new Schema(
       _customerId: { type: mongoose.Schema.Types.ObjectId, refPath: "customerRef", required: true },
       date: { type: Date, default: Date.now() },
     },
+    isDeleted:{
+      type:Boolean,
+      default:false
+    },
     editedBy: [
       {
         _user: { type: mongoose.Schema.Types.ObjectId, refPath: "userRef" },

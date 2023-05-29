@@ -142,10 +142,26 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
       });
     } else{
       //Upading customoer in the Db
-      const deltedBranch = await models.Branch.findByIdAndDelete(
+      // const deltedBranch = await models.Branch.findByIdAndDelete(
+      //   {
+      //     _id: id,
+      //   },
+      // );
+      const deltedBranch = await models.Branch.findOneAndUpdate(
         {
           _id: id,
         },
+
+        {
+          $set: {
+            isDeleted: true,
+          },
+        },
+
+        {
+          new:true
+        }
+
       );
 
       const Response = {
