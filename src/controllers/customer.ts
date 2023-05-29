@@ -42,7 +42,9 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
   
     
-const Customer = await models.Customer.find({})
+const Customer = await models.Customer.find({
+  
+})
 
     const Response = {
       Customer,
