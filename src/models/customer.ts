@@ -4,6 +4,10 @@ import { Schema, model } from "mongoose";
 const customerSchema = new Schema(
   {
     name: { type: String, required: true },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     createdBy: {
       _user: { type: mongoose.Schema.Types.ObjectId, refPath: "userRef" },
     },

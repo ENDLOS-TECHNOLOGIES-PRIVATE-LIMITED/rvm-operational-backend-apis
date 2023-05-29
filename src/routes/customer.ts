@@ -53,4 +53,13 @@ export default (app: Router) => {
    *     description: For updating Customers .
    */
   route.put("/update", verifySuperAdmin, Controller.customer.update);
+  /**
+   * @swagger
+   * /delete :
+   *   Post:
+   *     tags: [Customer]
+   *     summary: deleting  Customers
+   *     description: For deleting Customers only soft delete .
+   */
+  route.delete("/delete", verifySuperAdmin, Controller.customer.Delete);
 };
