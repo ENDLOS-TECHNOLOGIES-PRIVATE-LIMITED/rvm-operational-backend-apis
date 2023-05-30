@@ -6,6 +6,7 @@ import inventry from './inventry';
 import customer from './customer'
 import branch from "./branch";
 import invetryType from "./inventryType";
+import machine from "./machine";
 
 
 const route = Router();
@@ -18,5 +19,6 @@ auth(route);
  customer(route);
  branch(route);
  invetryType(route);
+ machine(route);
  return route
 };

@@ -3,6 +3,7 @@ import User from "./user";
 import Customer from "./customer";
 import Branch from "./branch";
 import InvetryType  from "./inventryType";
+import Machine from "./machine";
 
 export default {
   Inventory,
@@ -10,5 +11,6 @@ export default {
   Customer,
   Branch,
   InvetryType,
+  Machine,
 };
 

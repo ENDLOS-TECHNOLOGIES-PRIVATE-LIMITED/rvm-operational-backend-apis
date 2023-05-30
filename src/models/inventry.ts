@@ -9,10 +9,10 @@ const inventrySchema = new Schema(
     // purchaseDate: { type: Date, default: Date.now() },
     purchaseDate: { type: Date },
     isDeleted: { type: Boolean, default: false },
-    assignedTo: {
-      _machine: { type: mongoose.Schema.Types.ObjectId, refPath: "machineRef" },
-      date: { type: Date },
-    },
+    // assignedTo: {
+    //   _machine: { type: mongoose.Schema.Types.ObjectId, refPath: "machineRef" },
+    //   date: { type: Date },
+    // },
   }
 ,
   {

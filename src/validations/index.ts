@@ -3,6 +3,7 @@ import * as inventry from "./inventry";
 import * as customer from "./customer";
 import * as branch from "./branch";
 import * as invetryType from "./inventryType";
+import * as machine from "./machine";
 
 export default {
   userValidataion,
@@ -10,4 +11,5 @@ export default {
   customer,
   branch,
   invetryType,
+  machine,
 };

@@ -43,104 +43,148 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
-export const assign = async (req: AuthenticatedRequest, res: Response) => {
-  try {
+// export const assign = async (req: AuthenticatedRequest, res: Response) => {
+//   try {
 
-    let { inventryId,machineId } = req.body;
-
-
+//     let { inventryId,machineId } = req.body;
 
 
-    const assignedInventories = await models.Inventory.aggregate([
-      {
-        $match: {
-          _id: new mongoose.Types.ObjectId(inventryId.toString()),
-          assignedTo: { $exists: true },
-        },
-      },
-    ]);
-
-    console.log(assignedInventories);
 
 
-    if(assignedInventories.length>0){
+//     const assignedInventories = await models.Inventory.aggregate([
+//       {
+//         $match: {
+//           _id: new mongoose.Types.ObjectId(inventryId.toString()),
+//           assignedTo: { $exists: true },
+//         },
+//       },
+//     ]);
 
-       return res.status(400).json({ error: "Inventry already Assigned to a Machine" });
+//     console.log(assignedInventories);
 
-    }
+
+//     if(assignedInventories.length>0){
+
+//        return res.status(400).json({ error: "Inventry already Assigned to a Machine" });
+
+//     }
 
 
 
 
 
     
-    const assignedInvertry = await models.Inventory.findByIdAndUpdate(
-      inventryId,
-      {
-        assignedTo: {
-          _machine: machineId,
-          date: Date.now(),
-        },
-       },
+//     const assignedInvertry = await models.Inventory.findByIdAndUpdate(
+//       inventryId,
+//       {
+//         assignedTo: {
+//           _machine: machineId,
+//           date: Date.now(),
+//         },
+//        },
 
-      { new: true }
-    );
+//       { new: true }
+//     );
 
     
 
 
-   const Response = {
-     assignedInvertry,
-   };
+//    const Response = {
+//      assignedInvertry,
+//    };
 
-    // sending Registerd User response
-    res.json({
-      message: "Successfully Assigned Inventry",
-      data: Response,
-      success: true,
-    });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
-  }
-};
+//     // sending Registerd User response
+//     res.json({
+//       message: "Successfully Assigned Inventry",
+//       data: Response,
+//       success: true,
+//     });
+//   } catch (error: any) {
+//     res.status(500).json({ message: error.message, success: false });
+//   }
+// };
 export const get = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let { type, inventryTypeId } = req.query;
     if(type=='unassigned'){
-
-      const allInventry = await models.Inventory.aggregate([
+      //chekding inventry which provided by user are assigned to another machine or not
+      const unAssignedInventry = await models.Inventory.aggregate([
         {
           $match: {
             isDeleted: false,
-            assignedTo: { $exists: false },
           },
         },
         {
           $lookup: {
-            from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
-            localField: "inventryType",
-            foreignField: "_id",
-            as: "inventoryType",
+            from: "machines",
+            localField: "_id",
+            foreignField: "inventry._inventry",
+            as: "machines",
+          },
+        },
+ 
+        {
+          $lookup: {
+            from: "machines",
+            localField: "_id",
+            foreignField: "inventry._inventry",
+            as: "assignedMachines",
           },
         },
         {
-          $unwind: "$inventoryType",
-        },
-        {
-          $addFields: {
-            inventryType: "$inventoryType.name",
+          $match: {
+            assignedMachines: { $size: 0 },
           },
         },
+        
         {
           $project: {
-            inventoryType: 0,
+            _id: 1,
+            inventryType: 1,
+            brandName: 1,
+            serialNumber: 1,
+            isDeleted: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            __v: 1,
           },
         },
       ]);
 
+
+      // const allInventry = await models.Inventory.aggregate([
+      //   {
+      //     $match: {
+      //       isDeleted: false,
+      //       assignedTo: { $exists: false },
+      //     },
+      //   },
+      //   {
+      //     $lookup: {
+      //       from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
+      //       localField: "inventryType",
+      //       foreignField: "_id",
+      //       as: "inventoryType",
+      //     },
+      //   },
+      //   {
+      //     $unwind: "$inventoryType",
+      //   },
+      //   {
+      //     $addFields: {
+      //       inventryType: "$inventoryType.name",
+      //     },
+      //   },
+      //   {
+      //     $project: {
+      //       inventoryType: 0,
+      //     },
+      //   },
+      // ]);
+
       const Response = {
-        allInventry,
-        //  newAllInventry,
+        // allInventry,
+        unAssignedInventry,
       };
 
       // sending All Inventry
@@ -149,14 +193,10 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
         data: Response,
         success: true,
       });
-
     }
 
     else if (type == "all") {
-      //  const allInventry = await models.Inventory.find({
-      //    isDeleted: false,
-      //  });
-
+    
       const allInventry = await models.Inventory.aggregate([
         {
           $match: {
@@ -188,7 +228,7 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
 
       const Response = {
         allInventry,
-        //  newAllInventry,
+     
       };
 
       // sending All Inventry
