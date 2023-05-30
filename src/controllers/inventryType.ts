@@ -15,9 +15,6 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 
 const InvetryTypeIsExist = await models.InvetryType.find({name:req.body.name})
 
-console.log({InvetryTypeIsExist});
-
-console.log(InvetryTypeIsExist.length);
 
 if(InvetryTypeIsExist.length>0){
    return res.status(400).json({ error: "Inventry Type already exist" });
