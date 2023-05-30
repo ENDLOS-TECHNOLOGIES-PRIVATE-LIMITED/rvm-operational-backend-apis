@@ -105,111 +105,142 @@ export const assign = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const get = async (req: AuthenticatedRequest, res: Response) => {
   try {
+    let { type, inventryTypeId } = req.query;
+    if(type=='unassigned'){
 
-  let { type, inventryTypeId } = req.query;
-// if(type='notAssigned'){
+      const allInventry = await models.Inventory.aggregate([
+        {
+          $match: {
+            isDeleted: false,
+            assignedTo: { $exists: false },
+          },
+        },
+        {
+          $lookup: {
+            from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
+            localField: "inventryType",
+            foreignField: "_id",
+            as: "inventoryType",
+          },
+        },
+        {
+          $unwind: "$inventoryType",
+        },
+        {
+          $addFields: {
+            inventryType: "$inventoryType.name",
+          },
+        },
+        {
+          $project: {
+            inventoryType: 0,
+          },
+        },
+      ]);
 
+      const Response = {
+        allInventry,
+        //  newAllInventry,
+      };
 
+      // sending All Inventry
+      res.json({
+        message: "Successfully get All Inventry",
+        data: Response,
+        success: true,
+      });
 
-// }
-    
- if (type == "all") {
-  //  const allInventry = await models.Inventory.find({
-  //    isDeleted: false,
-  //  });
+    }
 
+    else if (type == "all") {
+      //  const allInventry = await models.Inventory.find({
+      //    isDeleted: false,
+      //  });
 
-   const allInventry = await models.Inventory.aggregate([
-     {
-       $lookup: {
-         from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
-         localField: "inventryType",
-         foreignField: "_id",
-         as: "inventoryType",
-       },
-     },
-     {
-       $unwind: "$inventoryType",
-     },
-     {
-       $addFields: {
-         inventryType: "$inventoryType.name",
-       },
-     },
-     {
-       $project: {
-         inventoryType: 0,
-       },
-     },
-   ]);
+      const allInventry = await models.Inventory.aggregate([
+        {
+          $match: {
+           isDeleted:false
+          },
+        },
+        {
+          $lookup: {
+            from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
+            localField: "inventryType",
+            foreignField: "_id",
+            as: "inventoryType",
+          },
+        },
+        {
+          $unwind: "$inventoryType",
+        },
+        {
+          $addFields: {
+            inventryType: "$inventoryType.name",
+          },
+        },
+        {
+          $project: {
+            inventoryType: 0,
+          },
+        },
+      ]);
 
+      const Response = {
+        allInventry,
+        //  newAllInventry,
+      };
 
-   
+      // sending All Inventry
+      res.json({
+        message: "Successfully get All Inventry",
+        data: Response,
+        success: true,
+      });
+    } else if (inventryTypeId) {
+      const filterdInventory = await models.Inventory.aggregate([
+        { $match: { inventryType: new mongoose.Types.ObjectId(inventryTypeId.toString()), isDeleted: false } },
 
+        {
+          $lookup: {
+            from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
+            localField: "inventryType",
+            foreignField: "_id",
+            as: "inventoryType",
+          },
+        },
+        {
+          $unwind: "$inventoryType",
+        },
+        {
+          $addFields: {
+            inventryType: "$inventoryType.name",
+          },
+        },
+        {
+          $project: {
+            inventoryType: 0,
+          },
+        },
+      ]);
 
-   const Response = {
-     allInventry,
-    //  newAllInventry,
-   };
+      const Response = {
+        filterdInventory,
+      };
 
-   // sending All Inventry
-   res.json({
-     message: "Successfully get All Inventry",
-     data: Response,
-     success: true,
-   });
- } else if (inventryTypeId) {
-const filterdInventory = await models.Inventory.aggregate([
-  { $match: { inventryType: new mongoose.Types.ObjectId(inventryTypeId.toString()) } },
-
-   {
-     $lookup: {
-       from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
-       localField: "inventryType",
-       foreignField: "_id",
-       as: "inventoryType",
-     },
-   },
-   {
-     $unwind: "$inventoryType",
-   },
-   {
-     $addFields: {
-       inventryType: "$inventoryType.name",
-     },
-   },
-   {
-     $project: {
-       inventoryType: 0,
-     },
-   },
-]);
-
-
- const Response = {
-   filterdInventory,
-   };
-
- // sending All Inventry
- res.json({
-   message: "Successfully get All Inventry",
-   data: Response,
-   success: true,
- });
-
-   
-
- } else {
-
-  
-   res.json({
-     message: "Pls provide correct query",
-     success: true,
-   });
- }
-
-
-} catch (error: any) {
+      // sending All Inventry
+      res.json({
+        message: "Successfully get All Inventry",
+        data: Response,
+        success: true,
+      });
+    } else {
+      res.json({
+        message: "Pls provide correct query",
+        success: true,
+      });
+    }
+  } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
