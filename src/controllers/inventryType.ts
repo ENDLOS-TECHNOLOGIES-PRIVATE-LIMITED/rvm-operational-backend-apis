@@ -129,6 +129,7 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
    },
  ]).exec();
 
+ if(InventryTypes.length>0){
  const Response = {
    InventryTypes,
  };
@@ -140,6 +141,13 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
    success: true,
  });
       
+ }
+
+ else{
+   res.status(404).json({ error: "No Result found" });
+ }
+
+
       
     }
     
