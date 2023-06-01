@@ -106,14 +106,44 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
 
 export const Get = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    let id = req.query.id;
+    let {id,type} = req.query;
 
     if (!id) {
       res.status(400).json({
         message: "Bad Request",
         success: false,
       });
-    } else {
+    }
+    else if(type=='allInventries'){
+ const InventryTypes = await models.InvetryType.aggregate([
+   { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+   { $sort: { createdAt: -1 } },
+   {
+     $lookup: {
+       from: "invetries",
+       localField: "_id",
+       foreignField: "inventryType",
+       as: "invetries",
+     },
+   },
+ ]).exec();
+
+ const Response = {
+   InventryTypes,
+ };
+
+ //sending Registerd User response
+ res.json({
+   message: "InventryTypes fetched Successfully ",
+   data: Response,
+   success: true,
+ });
+      
+      
+    }
+    
+    else {
+
      
       const invetryType = await models.InvetryType.findOne({
         _id: id,
