@@ -46,18 +46,59 @@ else{
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
   
-    const InventryTypes = await models.InvetryType.find({ isDeleted: false });
 
-    const Response = {
-      InventryTypes,
-    };
+    const {type} = req.query;
 
-    //sending Registerd User response
-    res.json({
-      message: "InventryTypes fetched Successfully ",
-      data: Response,
-      success: true,
-    });
+
+    if(type=='allInventries'){
+
+        const InventryTypes = await models.InvetryType.aggregate([
+        { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+        { $sort: { createdAt: -1 } },
+        {
+          $lookup: {
+            from: "invetries",
+            localField: "_id",
+            foreignField: "inventryType",
+            as: "invetries",
+          },
+        },
+      ]).exec();
+
+
+       const Response = {
+         InventryTypes,
+       };
+
+       //sending Registerd User response
+       res.json({
+         message: "InventryTypes fetched Successfully ",
+         data: Response,
+         success: true,
+       });
+      
+
+    }
+
+    else {
+
+         const InventryTypes = await models.InvetryType.find({ isDeleted: false });
+
+         const Response = {
+           InventryTypes,
+         };
+
+         //sending Registerd User response
+         res.json({
+           message: "InventryTypes fetched Successfully ",
+           data: Response,
+           success: true,
+         });
+
+
+    }
+
+ 
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
