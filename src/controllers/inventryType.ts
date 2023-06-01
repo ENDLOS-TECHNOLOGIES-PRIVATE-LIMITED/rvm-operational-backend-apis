@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 // import User from '../models/user';
 import models from "../models";
 import helpers from "../helpers";
+import mongoose from "mongoose";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -116,7 +117,7 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
     }
     else if(type=='allInventries'){
  const InventryTypes = await models.InvetryType.aggregate([
-   { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+   { $match: { isDeleted: false, _id: new mongoose.Types.ObjectId(id.toString()) } }, // Filter customers with isDelete set to false
    { $sort: { createdAt: -1 } },
    {
      $lookup: {
