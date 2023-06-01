@@ -14,7 +14,7 @@ interface AuthenticatedRequest extends Request {
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-const InvetryTypeIsExist = await models.InvetryType.find({name:req.body.name})
+const InvetryTypeIsExist = await models.InvetryType.find({name:req.body.name,isDeleted:false})
 
 
 if(InvetryTypeIsExist.length>0){
@@ -241,8 +241,13 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
+      const AllInventries = await models.Inventory.updateMany({ inventryType :id},{isDeleted:true},{new:true});
+
+      console.log({AllInventries});
+
       const Response = {
         deletedInventryType,
+        AllInventries,
       };
 
       res.json({

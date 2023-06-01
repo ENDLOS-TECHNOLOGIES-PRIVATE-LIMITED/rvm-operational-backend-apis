@@ -9,8 +9,8 @@ class jwtHelper {
   
 
   try {
-    const accessToken = jwt.sign({ user }, config.jwtSecret, { expiresIn: "30m" });
-    const refreshToken = jwt.sign({ user }, config.jwtSecret, { expiresIn: "7d" });
+    const accessToken = jwt.sign({ user }, config.jwtSecret, { expiresIn: "1d" });
+    const refreshToken = jwt.sign({ user }, config.jwtSecret, { expiresIn: "30d" });
     return { accessToken, refreshToken };
     
   } catch (err) {
