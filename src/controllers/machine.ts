@@ -182,3 +182,70 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
+
+export const update = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    let id = req.query.id;
+
+    if (!id) {
+      res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
+    } else {
+      // checking the serila number exist or not
+        const isSerialExist = await models.Machine.findOne({ machineId: req.body.machineId });
+
+        // res.send(isSerialExist)
+
+        console.log({isSerialExist});
+
+        console.log(isSerialExist._id);
+        console.log(id);
+
+        if(isSerialExist._id.toString()!=id){
+
+
+        
+
+          res.send('not same')
+        }
+
+      //  if (isSerialExist ) {
+      //       return res.status(400).json({ error: "SerialNumber already exist" });
+      //     }
+
+
+
+      //Upading Machine in the Db
+      // const updatedMachine = await models.Machine.findOneAndUpdate(
+      //   {
+      //     _id: id,
+      //   },
+      //   {
+      //     $set: {
+      //       ...req.body,
+      //     },
+      //   },
+
+      //   {
+      //     new: true,
+      //   }
+      // );
+
+      // const Response = {
+      //   updatedMachine,
+      // };
+
+      //sending updated Inventory response
+      res.json({
+        message: "Machine Updated Successfully",
+        data: "Response",
+        success: true,
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};

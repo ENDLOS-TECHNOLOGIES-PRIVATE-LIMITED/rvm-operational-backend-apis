@@ -42,10 +42,17 @@ export default (app: Router) => {
    *   delete:
    *     tags: [Machine API]
    *     summary: Delete a machine
-   *     description: Endpoint to delete a machine by ID.
    */
   route.delete("/delete", verifySuperAdmin, Controller.machine.Delete);
 
+  /**
+   * @swagger
+   * /machines:
+   *   put:
+   *     tags: [Machine API]
+   *     summary: update a machine
+   *     description: Endpoint to update a machine by ID.
+   */
 
-  
+   route.put("/update", verifySuperAdmin, Controller.machine.update);
 };
