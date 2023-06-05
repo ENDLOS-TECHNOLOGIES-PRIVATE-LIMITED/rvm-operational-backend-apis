@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-// import User from '../models/user';
 import models from "../models";
 import helpers from "../helpers";
 import mongoose from "mongoose";

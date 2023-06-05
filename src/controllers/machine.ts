@@ -195,21 +195,52 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
       });
     } else {
       // checking the serila number exist or not
-        const isSerialExist = await models.Machine.findOne({ machineId: req.body.machineId });
+        const isMachineIdExist = await models.Machine.findOne({ machineId: req.body.machineId });
 
-        // res.send(isSerialExist)
+        // // res.send(isSerialExist)
 
-        console.log({isSerialExist});
+        console.log({ isMachineIdExist });
 
-        console.log(isSerialExist._id);
-        console.log(id);
+        console.log(isMachineIdExist?._id);
+        // console.log(id);
 
-        if(isSerialExist._id.toString()!=id){
+        if (isMachineIdExist&& isMachineIdExist?._id.toString() !== id) {
+          res.status(409).send({
+            message: "Machine ID is already reserved for another machine",
+          });
+        } else {
+          console.log({ id });
+          // Upading Machine in the Db
+          const updatedMachine = await models.Machine.findOneAndUpdate(
+            {
+              // _id: new mongoose.Types.ObjectId(id.toString()),
+              _id: id,
+            },
+            {
+              $set: {
+                ...req.body,
+                branch: {
+                  _branchId: { type: mongoose.Schema.Types.ObjectId },
+                  date: Date.now(),
+                },
+              },
+            },
 
+            {
+              new: true,
+            }
+          );
 
-        
+          const Response = {
+            updatedMachine,
+          };
 
-          res.send('not same')
+          //sending updated Inventory response
+          res.json({
+            message: "Machine Updated Successfully",
+            data: Response,
+            success: true,
+          });
         }
 
       //  if (isSerialExist ) {
@@ -238,12 +269,12 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
       //   updatedMachine,
       // };
 
-      //sending updated Inventory response
-      res.json({
-        message: "Machine Updated Successfully",
-        data: "Response",
-        success: true,
-      });
+      // //sending updated Inventory response
+      // res.json({
+      //   message: "Machine Updated Successfully",
+      //   data: "Response",
+      //   success: true,
+      // });
     }
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
