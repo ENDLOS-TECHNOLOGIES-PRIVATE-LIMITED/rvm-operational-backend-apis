@@ -1,0 +1,33 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/node:latest
+
+    steps:
+      - checkout
+
+      # Install GCP CLI
+      - run:
+          name: Install Google Cloud SDK
+          command: |
+            curl https://sdk.cloud.google.com | bash
+            exec -l $SHELL
+            gcloud version
+
+      # Authenticate with GCP using service account key
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo $GCP_SERVICE_ACCOUNT_KEY > ${HOME}/gcp-key.json
+            gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
+            gcloud config set project $GCP_PROJECT_ID
+            gcloud config set compute/zone $GCP_COMPUTE_ZONE
+
+      # Deploy to GCP
+      - run:
+          name: Deploy to Google Cloud
+          command: |
+            cd /var/www/rvm-operational-api
+            git pull origin main
+            pm2 start /build/app.js --name="rvm-2"
