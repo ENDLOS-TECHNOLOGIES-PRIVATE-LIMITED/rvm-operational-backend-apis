@@ -15,11 +15,13 @@ jobs:
             exec -l $SHELL
             gcloud version
 
-      # Authenticate with GCP using service account key
+      # Authenticate with GCP using service account 
+      
+
       - run:
           name: Authenticate with Google Cloud
           command: |
-            echo $GCP_SERVICE_ACCOUNT_KEY > ${HOME}/gcp-key.json
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcp-key.json
             gcloud auth activate-service-account --key-file=${HOME}/gcp-key.json
             gcloud config set project $GCP_PROJECT_ID
             gcloud config set compute/zone $GCP_COMPUTE_ZONE
