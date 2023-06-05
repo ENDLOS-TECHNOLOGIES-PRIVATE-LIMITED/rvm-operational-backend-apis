@@ -14,7 +14,12 @@ interface AuthenticatedRequest extends Request {
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-const InvetryTypeIsExist = await models.InvetryType.find({name:req.body.name,isDeleted:false})
+// const InvetryTypeIsExist = await models.InvetryType.find({name:req.body.name,isDeleted:false})
+
+const InvetryTypeIsExist = await models.InvetryType.find({
+  name: { $regex: new RegExp("^" + req.body.name, "i") },
+  isDeleted: false,
+});
 
 console.log({ InvetryTypeIsExist });
 
@@ -55,18 +60,29 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
 
     if(type=='allInventries'){
 
+   
         const InventryTypes = await models.InvetryType.aggregate([
-        { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
-        { $sort: { createdAt: -1 } },
-        {
-          $lookup: {
-            from: "invetries",
-            localField: "_id",
-            foreignField: "inventryType",
-            as: "invetries",
+          { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+          { $sort: { createdAt: -1 } },
+          {
+            $lookup: {
+              from: "invetries",
+              localField: "_id",
+              foreignField: "inventryType",
+              as: "invetries",
+            },
           },
-        },
-      ]).exec();
+          {
+            $addFields: {
+              Count: { $size: "$invetries" },
+            },
+          },
+        ]).exec();
+
+
+        
+
+        console.log({InventryTypes});
 
 
        const Response = {
