@@ -30,6 +30,7 @@ jobs:
       - run:
           name: Deploy to Google Cloud
           command: |
-            cd /var/www/rvm-operational-api
-            git pull origin main
-            pm2 start /build/app.js --name="rvm-2"
+            echo hello
+            # cd /var/www/rvm-operational-api
+            # git pull origin main
+            # pm2 start /build/app.js --name="rvm-2"
