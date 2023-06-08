@@ -18,40 +18,51 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
     const { inventry } = req.body;
 
 
-    if(inventry){
+    if(inventry){        
+const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inventry.toString()));
 
-         const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inventry.toString()));
 
+         const inventryAvailability = await models.Machine.find({
+           "inventry._inventry": { $in: inventryIds },
+         }).exec();
+
+
+        //  console.log({ inventryAvailability2 });
+
+        //  console.log({inventryIds});
          //chekding inventry which provided by user are assigned to another machine or not
-         const inventryAvailability = await models.Inventory.aggregate([
-           {
-             $match: {
-               _id: { $in: inventryIds },
-             },
-           },
-           {
-             $lookup: {
-               from: "machines",
-               localField: "_id",
-               foreignField: "inventry._inventry",
-               as: "machines",
-             },
-           },
-           {
-             $unwind: "$machines",
-           },
-           {
-             $unwind: "$machines.inventry",
-           },
-           {
-             $project: {
-               _inventry: "$machines.inventry._inventry",
-               isAvailable: {
-                 $eq: ["$machines.inventry._inventry", null],
-               },
-             },
-           },
-         ]);
+        //  const inventryAvailability = await models.Inventory.aggregate([
+        //    {
+        //      $match: {
+        //        //  _id: { $in: inventryIds },
+        //        _id: { $in: inventry },
+        //      },
+        //    },
+        //     {
+        //       $lookup: {
+        //         from: "machines",
+        //         localField: "_id",
+        //         foreignField: "inventry._inventry",
+        //         as: "machines",
+        //       },
+        //     },
+        //     {
+        //       $unwind: "$machines",
+        //     },
+        //     {
+        //       $unwind: "$machines.inventry",
+        //     },
+        //     {
+        //       $project: {
+        //         _inventry: "$machines.inventry._inventry",
+        //         isAvailable: {
+        //           $eq: ["$machines.inventry._inventry", null],
+        //         },
+        //       },
+        //     },
+        //  ]).exec();
+
+         console.log({ inventryAvailability });
 
          if (inventryAvailability.length > 0) {
            return res.status(400).json({
@@ -73,7 +84,7 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
         
       });
     } else {
-      //Adding Machine in the Db
+      // Adding Machine in the Db
       const Machine = await models.Machine.create({
         ...req.body,
         "branch._branchId":req.body.branchId   

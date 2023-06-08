@@ -217,6 +217,7 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
         {
           $addFields: {
             inventryType: "$inventoryType.name",
+            inventryId: "$inventoryType._id",
           },
         },
         {
