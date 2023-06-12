@@ -195,6 +195,62 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 
+export const Assign = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    let {machineId,branchId} = req.body;
+
+    if ((!machineId || !branchId)) {
+      res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
+    } else {
+      
+      const MachineAlreadyAssigned = await models.Machine.findOne({_id: machineId });
+
+      if(MachineAlreadyAssigned?.branchId){
+         res.status(400).json({
+           message: "Machine Already Assigned",
+           success: false,
+         });
+
+      }else{
+        // Assigning Machine 
+        const assignedMachine = await models.Machine.findOneAndUpdate(
+          {
+            _id: new mongoose.Types.ObjectId(machineId.toString()),
+            // _id: machineId,
+          },
+          {
+            $set: {
+              branchId: req.body.branchId,
+            },
+          },
+
+          {
+            new: true,
+          }
+        );
+
+        const Response = {
+          assignedMachine,
+        };
+
+        //sending updated Inventory response
+        res.json({
+          message: "Machine Assigned Successfully",
+          data: Response,
+          success: true,
+        });
+      }
+
+ 
+    
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
 export const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let id = req.query.id;

@@ -55,4 +55,14 @@ export default (app: Router) => {
    */
 
    route.put("/update", verifySuperAdmin, Controller.machine.update);
+  /**
+   * @swagger
+   * /machines:
+   *   put:
+   *     tags: [Machine API]
+   *     summary: assiging a machine
+   *     description: Endpoint to assign a machine by ID.
+   */
+
+   route.post("/assign", verifySuperAdmin, Controller.machine.Assign);
 };

@@ -4,7 +4,7 @@ import { Schema, model } from "mongoose";
 const machineSchema = new Schema(
   {
     machineId: { type: String, required: true, unique: true },
-    customerName: { type: String },
+    // customerName: { type: String },
     // serialNumber: { type: String, required: true, unique: true },
     warrentyStartDate: { type: Date },
     isDeleted: { type: Boolean, default: false },
@@ -12,6 +12,7 @@ const machineSchema = new Schema(
     //   _branchId: { type: mongoose.Schema.Types.ObjectId},
     //   date: { type: Date },
     // },
+
     branchId: {type: mongoose.Schema.Types.ObjectId},
     inventry: [
       {

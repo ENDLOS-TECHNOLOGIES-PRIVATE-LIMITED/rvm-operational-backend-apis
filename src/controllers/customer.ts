@@ -40,8 +40,7 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
-
-    const AllCustomer = await models.Customer.aggregate([
+const AllCustomer = await models.Customer.aggregate([
       { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
       { $sort: { createdAt: -1 } },
       {
@@ -68,13 +67,15 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
     });
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
-  }
+  } 
 };
 
 export const Get = async (req: AuthenticatedRequest, res: Response) => {
   try {
    
     let id = req.query.id;
+
+   
 
 
 

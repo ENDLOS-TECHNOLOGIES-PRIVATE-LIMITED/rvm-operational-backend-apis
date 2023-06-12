@@ -2,8 +2,8 @@ const yup = require("yup");
 
 // Step 2: Define the validation schema using Yup
 const machineSchema = yup.object().shape({
-  machineId: yup.string().required(),
-  customerName: yup.string(),
+  machineId: yup.string().required().max(16),
+  // customerName: yup.string(),
 //   serialNumber: yup.string().required(),
   warrentyStartDate: yup.date(),
   inventry: yup.array().of(
