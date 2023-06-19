@@ -4,6 +4,7 @@ import * as customer from "./customer";
 import * as branch from "./branch";
 import * as invetryType from "./inventryType";
 import * as machine from "./machine";
+import * as userRole from "./userRole";
 
 export default {
   userValidataion,
@@ -12,4 +13,5 @@ export default {
   branch,
   invetryType,
   machine,
+  userRole
 };

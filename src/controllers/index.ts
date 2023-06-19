@@ -7,6 +7,7 @@ import * as customer from './customer'
 import * as branch from './branch'
 import * as inventryType from './inventryType'
 import * as machine from './machine'
+import * as userRole from './userRole'
 export default {
   User,
   Auth,
@@ -15,7 +16,7 @@ export default {
   branch,
   inventryType,
   machine,
-  
+  userRole
 };
 
 
