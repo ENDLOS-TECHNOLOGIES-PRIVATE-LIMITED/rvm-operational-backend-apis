@@ -165,24 +165,36 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
         $group: {
           _id: '$_id',
           machineId: { $first: '$machineId' },
-          branchName: {
-            $first: { $arrayElemAt: ["$branch.name", 0] }  // Extract the desired element from the array
+          branch: {
+            $first: { $arrayElemAt: ["$branch", 0] }
           },
           customer: {
-            $first: { $arrayElemAt: ["$customer.name", 0] }  // Extract the desired element from the array
+            $first: { $arrayElemAt: ["$customer", 0] }  
           },
-          
-          isDeleted: { $first: '$invetrytype' },
           warrentyStartDate: { $first: '$warrentyStartDate' },
           
-inventoryDetails: {
+            inventoryDetails: {
             $push: "$inventoryDetails"
           }
 
         },
         
       },
-
+      {
+        $project: {
+          machineId:"$machineId",
+          warrentyStartDate:"$warrentyStartDate",
+          branch: {
+            name: "$branch.name",
+            _id: "$branch._id"
+          },
+          customer: {
+            name: "$customer.name",
+            _id: "$customer._id"
+          },
+          inventoryDetails:"$inventoryDetails"
+        }
+      }
      
     ]);
 
