@@ -285,7 +285,7 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let {branchId} = req.body;
 
-    let {machineId,reassign}=req.query;
+    let {machineId}=req.query;
 
     if ((!machineId || !branchId)) {
       res.status(400).json({
@@ -294,10 +294,8 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    else if (reassign&&machineId&&branchId){
-
-
-    // Assigning Machine 
+    else{
+          // Assigning Machine 
         const assignedMachine = await models.Machine.findOneAndUpdate(
           {
             _id: new mongoose.Types.ObjectId(machineId.toString()),
@@ -330,49 +328,49 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
 
     }
     
-    else {
+    // else {
       
-      const MachineAlreadyAssigned = await models.Machine.findOne({_id: machineId });
+    //   const MachineAlreadyAssigned = await models.Machine.findOne({_id: machineId });
 
-      if(MachineAlreadyAssigned?.branchId){
-         res.status(400).json({
-           message: "Machine Already Assigned",
-           success: false,
-         });
+    //   if(MachineAlreadyAssigned?.branchId){
+    //      res.status(400).json({
+    //        message: "Machine Already Assigned",
+    //        success: false,
+    //      });
 
-      }else{
-        // Assigning Machine 
-        const assignedMachine = await models.Machine.findOneAndUpdate(
-          {
-            _id: new mongoose.Types.ObjectId(machineId.toString()),
+    //   }else{
+    //     // Assigning Machine 
+    //     const assignedMachine = await models.Machine.findOneAndUpdate(
+    //       {
+    //         _id: new mongoose.Types.ObjectId(machineId.toString()),
             
-          },
-          {
-            $set: {
-              branchId: req.body.branchId,
-            },
-          },
+    //       },
+    //       {
+    //         $set: {
+    //           branchId: req.body.branchId,
+    //         },
+    //       },
 
-          {
-            new: true,
-          }
-        );
+    //       {
+    //         new: true,
+    //       }
+    //     );
 
-        const Response = {
-          assignedMachine,
-        };
+    //     const Response = {
+    //       assignedMachine,
+    //     };
 
-        //sending updated Inventory response
-        res.json({
-          message: "Machine Assigned Successfully",
-          data: Response,
-          success: true,
-        });
-      }
+    //     //sending updated Inventory response
+    //     res.json({
+    //       message: "Machine Assigned Successfully",
+    //       data: Response,
+    //       success: true,
+    //     });
+    //   }
 
  
     
-    }
+    // }
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }

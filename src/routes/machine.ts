@@ -64,5 +64,5 @@ export default (app: Router) => {
    *     description: Endpoint to assign a machine by ID.
    */
 
-   route.post("/assign", verifySuperAdmin, Controller.machine.Assign);
+   route.put("/assign", verifySuperAdmin, Controller.machine.Assign);
 };
