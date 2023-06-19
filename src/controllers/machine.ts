@@ -30,6 +30,15 @@ const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inv
         //  console.log({ inventryAvailability2 });
 
         //  console.log({inventryIds});
+
+
+
+
+
+
+
+
+
          //chekding inventry which provided by user are assigned to another machine or not
         //  const inventryAvailability = await models.Inventory.aggregate([
         //    {
@@ -61,6 +70,9 @@ const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inv
         //       },
         //     },
         //  ]).exec();
+
+
+
 
          console.log({ inventryAvailability });
 
@@ -114,9 +126,60 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
    
     if(type=="all"){
-    const Machines = await models.Machine.find({isDeleted:false});
+    
+    const AllMachines = await models.Machine.aggregate([
+      
+      { $match: { isDeleted: false } }, // Filter machines with isDeleted set to false
+      // { $unwind: '$inventry' }, // Unwind the inventory array
+      {
+        $lookup: {
+          from: 'invetries',
+          localField: 'inventry._inventry',
+          foreignField: '_id',
+          as: 'inventoryDetails'
+        }
+      },
+      {
+        $lookup: {
+          from: 'branches',
+          localField: 'branchId',
+          foreignField: '_id',
+          as: 'branch'
+        }
+      },
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'branch.customer._customerId',
+          foreignField: '_id',
+          as: 'customer'
+        }
+      },
+    
+
+      {
+        $group: {
+          _id: '$_id',
+          machineId: { $first: '$machineId' },
+          branchName: {
+            $first: { $arrayElemAt: ["$branch.name", 0] }  // Extract the desired element from the array
+          },
+          customer: {
+            $first: { $arrayElemAt: ["$customer.name", 0] }  // Extract the desired element from the array
+          },
+          
+          isDeleted: { $first: '$invetrytype' },
+          warrentyStartDate: { $first: '$warrentyStartDate' },
+          inventoryDetails: { $push: { $arrayElemAt: ['$inventoryDetails', 0] } }
+        }
+      }
+    ]);
+    
+
+    
   const Response = {
-    Machines,
+    // Machines,
+    AllMachines
   };    
 
   //sending Registerd User response
@@ -132,6 +195,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
       const Machines = await models.Machine.find({ isDeleted: false, "branch._branchId": branchId });
       const Response = {
         Machines,
+       
       };
 
       //sending Registerd User response

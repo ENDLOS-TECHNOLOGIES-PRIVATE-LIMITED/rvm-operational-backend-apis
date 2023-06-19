@@ -20,5 +20,9 @@ auth(route);
  branch(route);
  invetryType(route);
  machine(route);
+
+ 
+
+
  return route
 };
