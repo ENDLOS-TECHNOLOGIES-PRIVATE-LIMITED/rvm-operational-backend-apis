@@ -155,6 +155,10 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           as: 'customer'
         }
       },
+
+      {
+        $unwind: "$inventoryDetails"
+      },
     
 
       {
@@ -170,19 +174,17 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           
           isDeleted: { $first: '$invetrytype' },
           warrentyStartDate: { $first: '$warrentyStartDate' },
-         inventoryDetails: {
-            $push: {
-              $map: {
-                input: '$inventoryDetails',
-                as: 'item',
-                in: '$$item'
-              }
-            }
+          
+inventoryDetails: {
+            $push: "$inventoryDetails"
           }
-        }
-      }
+
+        },
+        
+      },
+
+     
     ]);
-    
 
     
   const Response = {
