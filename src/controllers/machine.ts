@@ -283,14 +283,54 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
 
 export const Assign = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    let {machineId,branchId} = req.body;
+    let {branchId} = req.body;
+
+    let {machineId,reassign}=req.query;
 
     if ((!machineId || !branchId)) {
       res.status(400).json({
         message: "Bad Request",
         success: false,
       });
-    } else {
+    }
+
+    else if (reassign&&machineId&&branchId){
+
+
+    // Assigning Machine 
+        const assignedMachine = await models.Machine.findOneAndUpdate(
+          {
+            _id: new mongoose.Types.ObjectId(machineId.toString()),
+            
+          },
+          {
+            $set: {
+              branchId: req.body.branchId,
+            },
+          },
+
+          {
+            new: true,
+          }
+        );
+
+
+        const Response = {
+          assignedMachine,
+        };
+
+        //sending updated Inventory response
+        res.json({
+          message: "Machine Assigned Successfully",
+          data: Response,
+          success: true,
+        });
+      
+
+
+    }
+    
+    else {
       
       const MachineAlreadyAssigned = await models.Machine.findOne({_id: machineId });
 
@@ -305,7 +345,7 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
         const assignedMachine = await models.Machine.findOneAndUpdate(
           {
             _id: new mongoose.Types.ObjectId(machineId.toString()),
-            // _id: machineId,
+            
           },
           {
             $set: {
