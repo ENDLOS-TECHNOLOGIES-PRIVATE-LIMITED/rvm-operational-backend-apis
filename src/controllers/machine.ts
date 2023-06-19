@@ -170,7 +170,15 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           
           isDeleted: { $first: '$invetrytype' },
           warrentyStartDate: { $first: '$warrentyStartDate' },
-          inventoryDetails: { $push: { $arrayElemAt: ['$inventoryDetails', 0] } }
+         inventoryDetails: {
+            $push: {
+              $map: {
+                input: '$inventoryDetails',
+                as: 'item',
+                in: '$$item'
+              }
+            }
+          }
         }
       }
     ]);
