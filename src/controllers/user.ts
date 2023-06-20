@@ -208,8 +208,38 @@ const allUsers: any = await models.User.find({});
     res.status(500).json({ message: error.message, success: false });
   }
 };
+export const deleteUser = async (req: Request, res: Response) => {
 
-// export const update = async (req: Request, res: Response) => {
+
+  try {
+    const userId = req.params.id;
+    // Find the user by ID and update the isActive field to false
+    const user = await models.User.findByIdAndUpdate(userId, { isActive: false });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // res.json({ message: 'User disabled successfully' });
+
+
+    const Response = {
+       user
+    };
+
+    res.json({
+      message: "User disabled successfully",
+      data: Response,
+      success: true,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+
+
+
+
 //   try {
  
 // const allUsers: any = await models.User.find({});
@@ -231,48 +261,50 @@ const allUsers: any = await models.User.find({});
 //   } catch (error: any) {
 //     res.status(500).json({ message: error.message, success: false });
 //   }
-// };
+};
 
-
-
-
-
-
-
-// export const UpdatePassword = async (req: AuthenticatedRequest, res: Response) => {
-//   try {
-//     //Destructuring data from request
-//     const { oldpassword, newpassword } = req.body;
-
-//     const { user } = req;
-
-//     let userDetails = await models.User.findById(user.id);
-
-//         const passwordCompare = await helpers.bcryptHelper.comparePassword(oldpassword, userDetails.password);
-
-//           if (!passwordCompare) {
-//             return res.status(400).json({
-//               success: false,
-//               error: "Please correct old password credentials",
-//             });
-//           }
-
-
-
-//           //generating new password
-
-//             const encriptedPass = await helpers.bcryptHelper.generateHash(newpassword);
-
-//             const  UpdateUser
-
-
-
-
-
+export const update = async (req: Request, res: Response) => {
+  try {
  
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message, success: false });
-//   }
-// };
+
+const userId = req.params.id;
+const updates = req.body;
+
+
+
+  // Check if the updated email already exists for another user
+  if (updates.email) {
+    const existingUser = await models.User.findOne({ email: updates.email });
+    if (existingUser && existingUser._id.toString() !== userId) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+  }
+
+// Find the user by ID and update the specified fields
+const user = await models.User.findByIdAndUpdate(userId, updates, { new: true });
+
+if (!user) {
+  return res.status(404).json({ message: 'User not found' });
+}
+
+const Response = {
+ user
+};
+
+      res.json({
+        message: " User Updated Successfully",
+        data: Response,
+        success: true,
+      });
+    
+
+  
+   
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+
 
 

@@ -13,15 +13,15 @@ export default (app: Router) => {
    */
   app.use("/user", route);
 
-  /**
-   * @swagger
-   * /superadmin/register:
-   *   Post:
-   *     tags: [User]
-   *     summary: Register user
-   *     description: Registering superadmin user.
-   */
-  route.post("/superadmin/register", Validator.userValidataion.validateRegisterUser, Controller.User.SuperAdminRegister);
+  // /**
+  //  * @swagger
+  //  * /superadmin/register:
+  //  *   Post:
+  //  *     tags: [User]
+  //  *     summary: Register user
+  //  *     description: Registering superadmin user.
+  //  */
+  // route.post("/superadmin/register", Validator.userValidataion.validateRegisterUser, Controller.User.SuperAdminRegister);
   /**
    * @swagger
    * /register:
@@ -42,11 +42,29 @@ export default (app: Router) => {
   route.post("/login", Validator.userValidataion.validateLoginUser, Controller.User.Login);
   /**
    * @swagger
-   * /login:
-   *   Post:
+   * /getAll:
+   *   get:
    *     tags: [User]
-   *     summary: login user
-   *     description: For Login user.
+   *     summary: get all user
+   *     description: For getting All user.
    */
   route.get("/getAll", verifySuperAdmin, Controller.User.getAll);
+  /**
+   * @swagger
+   * /:id:
+   *   delete:
+   *     tags: [User]
+   *     summary: deleting a  user
+   *     description: For softdelete a  user.
+   */
+  route.delete("/:id", verifySuperAdmin, Controller.User.deleteUser);
+  /**
+   * @swagger
+   * /:id:
+   *   put:
+   *     tags: [User]
+   *     summary: updating a  user
+   *     description: For updating a  user.
+   */
+  route.put("/:id", verifySuperAdmin, Controller.User.update);
 };
