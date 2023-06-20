@@ -217,7 +217,16 @@ const allUsers = await models.User.aggregate([
  
   {
     $addFields: {
-      role: "$role.roleName",
+      Role: {
+        _id:"$role._id",
+        role:"$role.roleName",
+      },
+
+    },
+  },
+  {
+    $project: {
+      role: 0,
     },
   },
 ]);
