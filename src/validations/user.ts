@@ -2,12 +2,11 @@ const yup = require("yup");
 
 // Validation schema using Yup
 const userSchema = yup.object().shape({
-  firstname: yup.string().required().min(2).max(50),
-  lastname: yup.string().required().min(2).max(50),
+  fullName: yup.string().required().min(2).max(50),
   email: yup.string().email().required(),
-  age: yup.number().positive().integer().min(1).max(120),
+  // age: yup.number().positive().integer().min(1).max(120),
   password: yup.string().required().min(8),
-  role: yup.string().oneOf(["admin", "superadmin"]).required(),
+  role: yup.string().required(),
   mobile: yup
     .string()
     // .matches(/^[+]\d{1,3}[-.\s]?\d{1,14}$/, "Invalid phone number")

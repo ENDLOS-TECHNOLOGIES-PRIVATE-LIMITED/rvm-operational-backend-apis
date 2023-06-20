@@ -3,12 +3,11 @@ import mongoose from 'mongoose';
 import { Schema, model } from "mongoose";
 const userSchema = new Schema(
   {
-    role: { type: String, enum: ["admin", "superadmin"], default: "user" },
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
+    // role: { type: String, enum: ["admin", "superadmin"], default: "user" },
+    role: { type: mongoose.Schema.Types.ObjectId, refPath: "userRoleRef" },
+    fullName: { type: String, required: true },
     password: { type: String, required: true },
     dob: Date,
-    gender: String,
     mobile: {
       type: String,
       unique: true,
@@ -16,8 +15,7 @@ const userSchema = new Schema(
     },
     email: { type: String, required: true, unique: true },
     userImage: String,
-
-    isDeleted: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
     createdBy: {
       _user: { type: mongoose.Schema.Types.ObjectId, refPath: "userRef" },
       date: { type: Date, default: Date.now() },

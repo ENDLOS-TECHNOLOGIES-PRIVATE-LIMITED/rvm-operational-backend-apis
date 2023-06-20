@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 // import User from '../models/user';
 import models from '../models'
 import helpers from "../helpers";
+import mongoose from 'mongoose';
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -9,6 +10,7 @@ interface AuthenticatedRequest extends Request {
     role:String
   }
 }
+
 
 
 export const SuperAdminRegister = async (req: Request, res: Response) => {
@@ -40,15 +42,14 @@ export const SuperAdminRegister = async (req: Request, res: Response) => {
     const Response = {
       token,
       user: {
-        firstname: RegisterdUser.firstname,
-        lastname: RegisterdUser.lastname,
+        fullName: RegisterdUser.fullName,
         email:RegisterdUser.email,
         role:RegisterdUser.role
       },
     };
 
   
-    // //sending Registerd User response
+    //sending Registerd User response
     res.json({
       message: " Successfully Registerd",
       data: Response,
@@ -74,27 +75,31 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
 
     //Registering User in the Db
     const RegisterdUser = await models.User.create({
-      ...req.body,
+     ...req.body,
       password: encriptedPass,
       createdBy: {
         _user: req?.user.id,
       },
     });
 
+
+
+    const Role = await models.UserRole.findById({_id:RegisterdUser.role})
+
     //sign token
 
     const token = await helpers.jwtHelper.generateTokens({
       id: RegisterdUser._id,
-      role: RegisterdUser.role,
+      role: Role?.roleName
+    
     });
 
     const Response = {
       token,
       user: {
-        firstname: RegisterdUser.firstname,
-        lastname: RegisterdUser.lastname,
-        email: RegisterdUser.email,
-        role: RegisterdUser.role,
+        fullName: RegisterdUser.fullName,
+        email:RegisterdUser.email,
+        role: Role?.roleName,
       },
     };
 
@@ -117,19 +122,27 @@ export const Login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     
-const loggedinUser: any = await models.User.find({ email });
+const loggedinUser: any = await models.User.findOne({ email });
 
     if (!loggedinUser) {
       return res.status(400).json({
         error: "Please try to login with correct credentials",
         success: false,
       });
-    }else{
+    }
+    
+    else if(!loggedinUser.isActive){
+      
+      return res.status(400).json({
+        error: "Your account has been disabled. Please contact the administrator for further assistance.",
+        success: false,
+      });
+      
+    }
+    
+    else{
 
-      // console.log("in the else block ");
-      // console.log("in the else block ",password,loggedinUser);
-      // const passwordCompare = await bcrypt.compare(password, loggedinUser[0].password);
-      const passwordCompare = await helpers.bcryptHelper.comparePassword(password, loggedinUser[0].password);
+    const passwordCompare = await helpers.bcryptHelper.comparePassword(password, loggedinUser.password);
 
       if (!passwordCompare) {
         return res.status(400).json({
@@ -138,9 +151,13 @@ const loggedinUser: any = await models.User.find({ email });
         });
       }
 
+
+
+const Role = await models.UserRole.findOne({_id:new mongoose.Types.ObjectId(loggedinUser.role.toString())})
+    
       const user = {
-        id: loggedinUser[0]?._id,
-        role: loggedinUser[0]?.role,
+        id: loggedinUser?._id,
+        role: Role?.roleName,
       };
 
       const token = helpers.jwtHelper.generateTokens(user);
@@ -148,10 +165,9 @@ const loggedinUser: any = await models.User.find({ email });
       const Response = {
         token,
         user: {
-          firstname: loggedinUser[0].firstname,
-          lastname: loggedinUser[0].lastname,
-          email: loggedinUser[0].email,
-          role: loggedinUser[0].role,
+          fullName: loggedinUser.fullName,
+          email: loggedinUser.email,
+          role:  Role?.roleName,
         },
       };
 
@@ -168,6 +184,56 @@ const loggedinUser: any = await models.User.find({ email });
     res.status(500).json({ message: error.message, success: false });
   }
 };
+
+export const getAll = async (req: Request, res: Response) => {
+  try {
+ 
+const allUsers: any = await models.User.find({});
+
+ const Response = {
+       
+        allUsers
+      };
+
+      res.json({
+        message: "All User fetched Successfully",
+        data: Response,
+        success: true,
+      });
+    
+
+  
+   
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+// export const update = async (req: Request, res: Response) => {
+//   try {
+ 
+// const allUsers: any = await models.User.find({});
+
+//  const Response = {
+       
+//         allUsers
+//       };
+
+//       res.json({
+//         message: "All User fetched Successfully",
+//         data: Response,
+//         success: true,
+//       });
+    
+
+  
+   
+//   } catch (error: any) {
+//     res.status(500).json({ message: error.message, success: false });
+//   }
+// };
+
+
 
 
 

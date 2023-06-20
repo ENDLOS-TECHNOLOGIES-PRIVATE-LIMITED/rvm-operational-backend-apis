@@ -40,4 +40,13 @@ export default (app: Router) => {
    *     description: For Login user.
    */
   route.post("/login", Validator.userValidataion.validateLoginUser, Controller.User.Login);
+  /**
+   * @swagger
+   * /login:
+   *   Post:
+   *     tags: [User]
+   *     summary: login user
+   *     description: For Login user.
+   */
+  route.get("/getAll", verifySuperAdmin, Controller.User.getAll);
 };
