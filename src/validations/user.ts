@@ -2,7 +2,7 @@ const yup = require("yup");
 
 // Validation schema using Yup
 const userSchema = yup.object().shape({
-  fullName: yup.string().required().min(2).max(50),
+  name: yup.string().required().min(2).max(50),
   email: yup.string().email().required(),
   // age: yup.number().positive().integer().min(1).max(120),
   password: yup.string().required().min(8),

@@ -42,7 +42,9 @@ export const SuperAdminRegister = async (req: Request, res: Response) => {
     const Response = {
       token,
       user: {
-        fullName: RegisterdUser.fullName,
+
+
+        name: RegisterdUser.name,
         email:RegisterdUser.email,
         role:RegisterdUser.role
       },
@@ -97,7 +99,7 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
     const Response = {
       token,
       user: {
-        fullName: RegisterdUser.fullName,
+        name: RegisterdUser.name,
         email:RegisterdUser.email,
         role: Role?.roleName,
       },
@@ -121,8 +123,12 @@ export const Login = async (req: Request, res: Response) => {
     //Destructuring data from request
     const { email, password } = req.body;
 
+    console.log(req.body);
+
     
 const loggedinUser: any = await models.User.findOne({ email });
+
+console.log({loggedinUser});
 
     if (!loggedinUser) {
       return res.status(400).json({
@@ -131,6 +137,8 @@ const loggedinUser: any = await models.User.findOne({ email });
       });
     }
     
+
+
     else if(!loggedinUser.isActive){
       
       return res.status(400).json({
@@ -165,7 +173,7 @@ const Role = await models.UserRole.findOne({_id:new mongoose.Types.ObjectId(logg
       const Response = {
         token,
         user: {
-          fullName: loggedinUser.fullName,
+          name: loggedinUser.name,
           email: loggedinUser.email,
           role:  Role?.roleName,
         },

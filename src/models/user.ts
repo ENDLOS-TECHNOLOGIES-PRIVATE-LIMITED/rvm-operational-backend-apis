@@ -5,7 +5,7 @@ const userSchema = new Schema(
   {
     // role: { type: String, enum: ["admin", "superadmin"], default: "user" },
     role: { type: mongoose.Schema.Types.ObjectId, refPath: "userRoleRef" },
-    fullName: { type: String, required: true },
+    name: { type: String, required: true },
     password: { type: String, required: true },
     dob: Date,
     mobile: {
