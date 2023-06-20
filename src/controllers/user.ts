@@ -195,12 +195,39 @@ const Role = await models.UserRole.findOne({_id:new mongoose.Types.ObjectId(logg
 
 export const getAll = async (req: Request, res: Response) => {
   try {
+
+const allUsers = await models.User.aggregate([
+  {
+    $match: {
+      
+    },
+  },
+  {
+    $lookup: {
+      from: "userroles",
+      localField: "role",
+      foreignField: "_id",
+      as: "role",
+    },
+  },
+
+  {
+    $unwind: "$role",
+  },
  
-const allUsers: any = await models.User.find({});
+  {
+    $addFields: {
+      role: "$role.roleName",
+    },
+  },
+]);
+
+
 
  const Response = {
        
-        allUsers
+        allUsers,
+        
       };
 
       res.json({
@@ -247,28 +274,6 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 
 
-
-//   try {
- 
-// const allUsers: any = await models.User.find({});
-
-//  const Response = {
-       
-//         allUsers
-//       };
-
-//       res.json({
-//         message: "All User fetched Successfully",
-//         data: Response,
-//         success: true,
-//       });
-    
-
-  
-   
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message, success: false });
-//   }
 };
 
 export const update = async (req: Request, res: Response) => {
