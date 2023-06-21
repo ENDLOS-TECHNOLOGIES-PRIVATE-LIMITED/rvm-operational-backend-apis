@@ -6,6 +6,7 @@ import * as invetryType from "./inventryType";
 import * as machine from "./machine";
 import * as userRole from "./userRole";
 import * as problem from "./problem";
+import * as solution from "./solution";
 
 export default {
   userValidataion,
@@ -15,5 +16,6 @@ export default {
   invetryType,
   machine,
   userRole,
-  problem
+  problem,
+  solution
 };
