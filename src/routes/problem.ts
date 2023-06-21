@@ -23,8 +23,15 @@ export default (app: Router) => {
    *     summary: Add a new machine
    *     description: Endpoint to add a new machine.
    */
+
+
+
+  
   route.post("/", Validator.problem.validateProblem, verifySuperAdmin, Controller.problem.Add);
 
+
+
+  
   /**
    * @swagger
    * /get:
@@ -36,33 +43,25 @@ export default (app: Router) => {
 
   route.get("/getAll", verifySuperAdmin, Controller.problem.getAll);
 
-//   /**
-//    * @swagger
-//    * /machines:
-//    *   delete:
-//    *     tags: [Machine API]
-//    *     summary: Delete a machine
-//    */
-//   route.delete("/delete", verifySuperAdmin, Controller.machine.Delete);
+  /**
+   * @swagger
+   * /machines:
+   *   delete:
+   *     tags: [Machine API]
+   *     summary: Delete a machine
+   */
+  route.delete("/:id", verifySuperAdmin, Controller.problem.Delete);
 
-//   /**
-//    * @swagger
-//    * /machines:
-//    *   put:
-//    *     tags: [Machine API]
-//    *     summary: update a machine
-//    *     description: Endpoint to update a machine by ID.
-//    */
+  /**
+   * @swagger
+   * /machines:
+   *   put:
+   *     tags: [Machine API]
+   *     summary: update a machine
+   *     description: Endpoint to update a machine by ID.
+   */
 
-//    route.put("/update", verifySuperAdmin, Controller.machine.update);
-//   /**
-//    * @swagger
-//    * /machines:
-//    *   put:
-//    *     tags: [Machine API]
-//    *     summary: assiging a machine
-//    *     description: Endpoint to assign a machine by ID.
-//    */
+   route.put("/:id", verifySuperAdmin, Controller.problem.update);
 
-//    route.put("/assign", verifySuperAdmin, Controller.machine.Assign);
+
 };

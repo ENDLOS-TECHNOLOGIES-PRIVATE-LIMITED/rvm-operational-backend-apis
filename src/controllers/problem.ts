@@ -108,9 +108,9 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const Delete = async (req: AuthenticatedRequest, res: Response) => {
+export const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    let id = req.query.id;
+    let{ id }= req.params;
 
     if (!id) {
       res.status(400).json({
@@ -118,28 +118,74 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         success: false,
       });
     } else {
-      const deletedInventry = await models.Machine.findOneAndUpdate(
+      const updatedProblem = await models.problem.findOneAndUpdate(
         {
           _id: id,
         },
 
         {
           $set: {
-            isDeleted: true,
-          },
-        },
-
-        {
-          new: true,
+            ...req.body,
+       
         }
+      }
+      
+
       );
 
+
+      if (!updatedProblem) {
+        res.status(404).json({
+          message: "Record not found",
+          success: false,
+        });
+      } 
+
       const Response = {
-        deletedInventry,
+        updatedProblem,
       };
 
       res.json({
-        message: "Machine Deleted Successfully",
+        message: " Problem Updated Successfully",
+        data: Response,
+        success: true,
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+export const Delete = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    let{ id }= req.params;
+
+    if (!id) {
+      res.status(400).json({
+        message: "Bad Request",
+        success: false,
+      });
+    } else {
+      const deletedProblem = await models.problem.findOneAndDelete(
+        {
+          _id: id,
+        }
+
+      );
+
+
+      if (!deletedProblem) {
+        res.status(404).json({
+          message: "Record not found",
+          success: false,
+        });
+      } 
+
+      const Response = {
+        deletedProblem,
+      };
+
+      res.json({
+        message: " Deleted Successfully",
         data: Response,
         success: true,
       });
@@ -149,123 +195,3 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-
-export const Assign = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    let {branchId} = req.body;
-
-    let {machineId}=req.query;
-
-    if ((!machineId || !branchId)) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
-    }
-
-    else{
-          // Assigning Machine 
-        const assignedMachine = await models.Machine.findOneAndUpdate(
-          {
-            _id: new mongoose.Types.ObjectId(machineId.toString()),
-            
-          },
-          {
-            $set: {
-              branchId: req.body.branchId,
-            },
-          },
-
-          {
-            new: true,
-          }
-        );
-
-
-        const Response = {
-          assignedMachine,
-        };
-
-        //sending updated Inventory response
-        res.json({
-          message: "Machine Assigned Successfully",
-          data: Response,
-          success: true,
-        });
-      
-
-
-    }
-    
-  
-    
-    // }
-  } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
-  }
-};
-export const update = async (req: AuthenticatedRequest, res: Response) => {
-  try {
-    let id = req.query.id;
-
-    if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
-    } else {
-      // checking the serila number exist or not
-        const isMachineIdExist = await models.Machine.findOne({ machineId: req.body.machineId });
-
-        // // res.send(isSerialExist)
-
-        console.log({ isMachineIdExist });
-
-        console.log(isMachineIdExist?._id);
-        // console.log(id);
-
-        if (isMachineIdExist&& isMachineIdExist?._id.toString() !== id) {
-          res.status(409).send({
-            message: "Machine ID is already reserved for another machine",
-          });
-        } else {
-          console.log({ id });
-          // Upading Machine in the Db
-          const updatedMachine = await models.Machine.findOneAndUpdate(
-            {
-              // _id: new mongoose.Types.ObjectId(id.toString()),
-              _id: id,
-            },
-            {
-              $set: {
-                ...req.body,
-                branch: {
-                  _branchId: { type: mongoose.Schema.Types.ObjectId },
-                  date: Date.now(),
-                },
-              },
-            },
-
-            {
-              new: true,
-            }
-          );
-
-          const Response = {
-            updatedMachine,
-          };
-
-          //sending updated Inventory response
-          res.json({
-            message: "Machine Updated Successfully",
-            data: Response,
-            success: true,
-          });
-        }
-
-     
-    }
-  } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
-  }
-};
