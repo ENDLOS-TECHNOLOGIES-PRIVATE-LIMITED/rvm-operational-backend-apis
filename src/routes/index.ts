@@ -8,6 +8,7 @@ import branch from "./branch";
 import invetryType from "./inventryType";
 import machine from "./machine";
 import userRole from './userRole';
+import problem  from './problem';
 
 
 const route = Router();
@@ -22,6 +23,7 @@ auth(route);
  invetryType(route);
  machine(route);
  userRole(route);
+ problem(route)
 
  
 
