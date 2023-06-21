@@ -45,87 +45,53 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-    const { type, branchId } = req.query;
-
    
-  
-      const problems = await models.problem.find({})
+
+
     
-    // const AllMachines = await models.Machine.aggregate([
+    const problems = await models.problem.aggregate([
       
-    //   { $match: { isDeleted: false } }, // Filter machines with isDeleted set to false
-    //   // { $unwind: '$inventry' }, // Unwind the inventory array
-    //   {
-    //     $lookup: {
-    //       from: 'invetries',
-    //       localField: 'inventry._inventry',
-    //       foreignField: '_id',
-    //       as: 'inventoryDetails'
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: 'branches',
-    //       localField: 'branchId',
-    //       foreignField: '_id',
-    //       as: 'branch'
-    //     }
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: 'customers',
-    //       localField: 'branch.customer._customerId',
-    //       foreignField: '_id',
-    //       as: 'customer'
-    //     }
-    //   },
-
-    //   {
-    //     $unwind: "$inventoryDetails"
-    //   },
-    
-
-    //   {
-    //     $group: {
-    //       _id: '$_id',
-    //       machineId: { $first: '$machineId' },
-    //       branch: {
-    //         $first: { $arrayElemAt: ["$branch", 0] }
-    //       },
-    //       customer: {
-    //         $first: { $arrayElemAt: ["$customer", 0] }  
-    //       },
-    //       warrentyStartDate: { $first: '$warrentyStartDate' },
-          
-    //         inventoryDetails: {
-    //         $push: "$inventoryDetails"
-    //       }
-
-    //     },
+   
+      {
+        $lookup: {
+          from: 'invetrytypes',
+          localField: 'problemType',
+          foreignField: '_id',
+          as: 'problemType'
+        }
+      },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          description: { $first: '$description' },
+          problemType: {
+            $first: { $arrayElemAt: ["$problemType", 0] }  
+          },
+       
+         
+        },
         
-    //   },
-    //   {
-    //     $project: {
-    //       machineId:"$machineId",
-    //       warrentyStartDate:"$warrentyStartDate",
-    //       branch: {
-    //         name: "$branch.name",
-    //         _id: "$branch._id"
-    //       },
-    //       customer: {
-    //         name: "$customer.name",
-    //         _id: "$customer._id"
-    //       },
-    //       inventoryDetails:"$inventoryDetails"
-    //     }
-    //   }
+      },
      
-    // ]);
+      {
+        $project: {
+         _id: '$_id',
+         name: '$name',
+         description: '$description',
+          problemType: {
+            name: "$problemType.name",
+            _id: "$problemType._id"
+          },
+          
+        }
+      }
+     
+    ]);
 
     
   const Response = {
-    // Machines,
-    problems
+      problems
   };    
 
   //sending Registerd User response
