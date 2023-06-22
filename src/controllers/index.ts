@@ -9,6 +9,7 @@ import * as inventryType from './inventryType'
 import * as machine from './machine'
 import * as userRole from './userRole'
 import * as problem from './problem'
+import * as solution from './solution'
 export default {
   User,
   Auth,
@@ -18,7 +19,8 @@ export default {
   inventryType,
   machine,
   userRole,
-  problem
+  problem,
+  solution
 };
 
 

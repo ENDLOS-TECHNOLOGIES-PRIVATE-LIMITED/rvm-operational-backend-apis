@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "endlos-studio-website",
+  "private_key_id": "eb53c43eb350cdd8cdc16ac73ef6875113608df7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDfq4HcRWsLfoPV\noEAmR9sk1Q2B7BkWDp9mBKpKIOhgna/1W9+kE8wnYc+dpbPo5InIVLOJxSmGhILT\n56nmxSLslMP5LUzubrJSCgI2tIc87bHrmTWheAER65hqUQB7WIp8mDmEEXaMcoOn\norizjPUu4sQrs3Ri5VsHZqWV5kgSYwGRAPvdWmotrjaFoe0g/ZYEDKFS3oeDatU0\n3JYWmhS/78I0+6frWOM4+hwgLJyUHIeJhFQ/pZJTokgi1JrlxOqYwhvdD7erVYWl\nFOwYC3PH0v3b3qhbFEh4Y+5uU+8LdMZlKA10xlL+ZGjnLTo/uSScz+KMdq380wvh\nZWsYq3zHAgMBAAECggEAAhUFJ9uf8WZpbm4IDmYiLLOGupbjnJjz4SHoNRhyzvXO\nwC+YF3BnJdH2iFy2YFO97q6WbdzaqV1QpSCkbp7Zi8kQz+J7xlVSpzBDCJG0doHF\n3tJmSr3DiYbfVA1xIaHZ9mYR/3C79CZNV5fHvpqpUAFiU+NyI/0YEg8yQx1VhYgO\nZDeLWzAGLesJMH7tidPnqyid7CWfz/fQR72jBBs0EcfPW0lTlSZLKaoej5R8qaqr\nZG1goJOoAyBgK0Qk7ERKDBBbXVGbxrE4rsP6p1ACGN9vErsfMOAuf/qZFTGBgPJP\nrKhqIslQg/UNiNQzqAXLd9jynEbSf9UMsE1SUbfNQQKBgQD+I82DVKgTxN9BkJqJ\nX16D4NJAEVQQC75KdEkmwnFjfum9SFCTdiBZFaJO35jI6FX23uCrcgMTHW7V+AdP\nwkkVaoOs19Y3qxe1LEc3PtOwn/XD9mW4U+m4eBNKgqyXS+sDHd1H/gj/Zouv5b0u\nFYqbBQg2N1/KDIXglcF+XxoaJQKBgQDhTpx2RMKsUOyMpwX6AWt3fQAcnW0URBvW\n5/4yyyVi0prddIaA5LSdzNRJvd5i7jNYuRygleCKSm2+GRPVuIv1HDOboueaW4SS\nryt6pb8Q3d2fMGTcEt48YfPQ5FnPEpuHyG+VH4CichNHYm8o+lOdmuZ4iBYJTjy5\npe6q290pewKBgQDEdRzbl0fO8HO9lXFBHI5N2C/wAvU+6jUSDU63Pby1s1gxUIOp\nWrmq5ARygHr1ZFV/389B+YLS9f/GPFQ6nfAtNAfSR497vTE4hqAO3ux6L02nTQRZ\nN9UHGxuej+Gnm7Jy2FVE3+ZIuRbmxOw3gcOCDqPIdYoBASlE8b+AVzgwWQKBgAyw\na7lxd/FSgXAOfBSvfcj1/kqeRyVsDJFW8YcUz98380bjqCucNdvpTE925Q53Ueb+\nTfFxX3sKZBHfwbE4upEsbG+ohhi4bMgCG5XFvfQKOtAbXqLSYTfPYHb0VWaHKsFD\n9ZzVcF41xIYxsgcByjHHJpHFQFB32o2uHbn7tgH/AoGADccMQj6JdBvY5cKVk05z\n/KjiTBNk+2Yn+1K+YDwogPmhdp1enWrcZUCPnqb1d+FIaQGqEpnHZQNrqvwpjsw3\nXb+G9tpfZBhsMKWUcxtJq3LvknM/EStCjSoGLBEE50uqVQu//Spyzc30+YwGPtZa\nMTXKiol3oscwSmLCgJDJ204=\n-----END PRIVATE KEY-----\n",
+  "client_email": "circle-ci@endlos-studio-website.iam.gserviceaccount.com",
+  "client_id": "117591324023383032923",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/circle-ci%40endlos-studio-website.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

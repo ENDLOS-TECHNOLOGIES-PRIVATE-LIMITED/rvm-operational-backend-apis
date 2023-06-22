@@ -6,6 +6,7 @@ import InvetryType  from "./inventryType";
 import Machine from "./machine";
 import UserRole from "./userRole";
 import problem from "./problem";
+import solution from "./solution";
 
 export default {
   Inventory,
@@ -15,6 +16,7 @@ export default {
   InvetryType,
   Machine,
   UserRole,
-  problem
+  problem,
+  solution
 };
 
