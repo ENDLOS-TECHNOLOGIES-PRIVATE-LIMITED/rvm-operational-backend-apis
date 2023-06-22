@@ -39,4 +39,14 @@ export default (app: Router) => {
    */
   
   route.post("/",verifySuperAdmin,upload.array('files'),uploadGcsMiddleware, Controller.solution.Add );
+  /**
+   * @swagger
+   * /:
+   *   get:
+   *     tags: [Solution]
+   *     summary: Getting All Solutions
+   *     description:  Getting All Solutions byid , byProblemId or All Solution.
+   */
+  
+  route.get("/",verifySuperAdmin, Controller.solution.getAll );
 }
