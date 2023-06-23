@@ -49,4 +49,24 @@ export default (app: Router) => {
    */
   
   route.get("/",verifySuperAdmin, Controller.solution.getAll );
+  /**
+   * @swagger
+   * /:
+   *   get:
+   *     tags: [Solution]
+   *     summary: Getting All Solutions
+   *     description:  Getting All Solutions byid , byProblemId or All Solution.
+   */
+  
+  route.delete("/:id",verifySuperAdmin, Controller.solution.Delete );
+  /**
+   * @swagger
+   * /:
+   *   get:
+   *     tags: [Solution]
+   *     summary: Getting All Solutions
+   *     description:  Getting All Solutions byid , byProblemId or All Solution.
+   */
+  
+  route.put("/:id",verifySuperAdmin,upload.array('files'),uploadGcsMiddleware, Controller.solution.Update );
 }

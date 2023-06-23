@@ -26,6 +26,12 @@ export default {
    */
   jwtSecret: process.env.JWT_SECRET,
   jwtAlgorithm: process.env.JWT_ALGO,
+
+  /**
+   * Google secret sauce
+   */
+  googleProjectId: process.env.GOOGLE_PROJECTID,
+  gcsBucketName: process.env.GOOGLE_ClOUD_STORAGE_BUCKETNAME,
   
 
   /**

@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import models from "../models";
 import helpers from "../helpers";
 import mongoose, { model } from "mongoose";
+import deleteGcsFile from "../helpers/deleteGcsFile";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -138,6 +139,93 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
 
  
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+
+
+export const Delete = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    let id = req.params.id;
+
+    const deletedSolution = await models.solution.findByIdAndDelete(
+        {
+          _id: new mongoose.Types.ObjectId(id.toString()),
+
+        });
+
+
+        if(!deletedSolution){
+
+
+          res.status(404).json({
+            message: "Record Not Found",
+            data: {},
+            success: false,
+          });
+        
+        }
+
+
+      const  gcsDeletedfiles = await deleteGcsFile(deletedSolution.images)
+
+
+
+      const Response = {
+        deletedSolution,
+        gcsDeletedfiles
+      };
+
+      res.json({
+        message: "Machine Deleted Successfully",
+        data: Response,
+        success: true,
+      });
+    
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
+export const Update = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    let id = req.params.id;
+
+      const Solution = await models.solution.findById(new mongoose.Types.ObjectId(id.toString()));
+
+
+
+if(!Solution){
+
+  res.status(404).json({
+    message: "Record not found",
+    success: false,
+  });
+}
+
+    const  gcsDeletedfiles =await deleteGcsFile(Solution.images)
+
+
+      const updatedSolution = await models.solution.findByIdAndUpdate({
+
+       _id: new mongoose.Types.ObjectId(id.toString())
+
+      },{
+
+        ...req.body                 
+      },{new:true})
+
+
+        const Response = {
+        updatedSolution,
+        };
+
+      res.json({
+        message: "Solution Updated Successfully",
+        data: Response,
+        success: true,
+      });
+    
   } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }

@@ -1,31 +1,25 @@
-// const multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
+import config from "../../config";
 
-
-// Create a Multer storage engine
-// const storage = multer.memoryStorage();
-
-
-
-
-  const gstorage = new Storage({
+const gstorage = new Storage({
     // keyFilename: "path/to/keyfile.json", // Path to your JSON key file
     keyFilename: "mykey.json", // Path to your JSON key file
-    projectId: "endlos-studio-website", // Your Google Cloud project ID
+    projectId: config.googleProjectId, // Your Google Cloud project ID
   });
 
 
-  const bucketName = "rvmoperationadditionalbucket"; // Name of your GCS bucket
+  // const bucketName = "rvmoperationadditionalbucket"; // Name of your GCS bucket
+  const bucketName = config.gcsBucketName; // Name of your GCS bucket
 
 
 
-// export default uploadGcsMiddleware;
 const uploadGcsMiddleware =async (req, res, next) => {
 
-    // console.log(req.files);
+if (!req.files || req.files.length === 0) {
+       console.log("no files ");
+        
+        next()
 
-    if (!req.files || req.files.length === 0) {
-        res.status(400).send('No files uploaded.');
         return;
       }
     
@@ -55,7 +49,8 @@ const uploadGcsMiddleware =async (req, res, next) => {
            // Make the file public
         //    await fileObject.makePublic();
 
-        const fileUrl = `https://storage.googleapis.com/${bucketName}/${gcsFileName}`;
+        // const fileUrl = `https://storage.googleapis.com/${bucketName}/${gcsFileName}`;
+        const fileUrl = `${gcsFileName}`;
         // return { originalName: file.originalname, url: fileUrl };
         return  fileUrl 
 
@@ -78,23 +73,13 @@ const uploadGcsMiddleware =async (req, res, next) => {
 
 
         req.body.images=uploadedFiles
-        // uploadedFiles
-        // console.log({uploadedFiles});
-        // const fileUrls = uploadedFiles.map((file) => {
-        // //   const fileName = file.name;
-        // //   const fileUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
-        //   return file;
-        // });
-    
-        next();
-        // res.status(200).json({ urls: fileUrls });
+          next();
+        
       } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred while uploading the files.');
       }
  
 };
-
-// module.exports = uploadMiddleware;
 
 export default uploadGcsMiddleware;
