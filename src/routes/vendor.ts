@@ -31,31 +31,23 @@ export default (app: Router) => {
    *     description: Registering user.
    */
   route.get("/",verifySuperAdmin, Controller.vendor.getAll);
+
   /**
    * @swagger
-   * /get:
+   * /update:
    *   Post:
    *     tags: [User]
    *     summary: Register user
    *     description: Registering user.
    */
-//   route.get("/:id",verifySuperAdmin, Controller.userRole.getById);
-//   /**
-//    * @swagger
-//    * /update:
-//    *   Post:
-//    *     tags: [User]
-//    *     summary: Register user
-//    *     description: Registering user.
-//    */
-//   route.put("/:id",verifySuperAdmin, Controller.userRole.update);
-//   /**
-//    * @swagger
-//    * /login:
-//    *   Post:
-//    *     tags: [User]
-//    *     summary: login user
-//    *     description: For Login user.
-//    */
+  route.put("/:id",verifySuperAdmin, Controller.vendor.update);
+  /**
+   * @swagger
+   * /login:
+   *   Post:
+   *     tags: [User]
+   *     summary: login user
+   *     description: For Login user.
+   */
 //   route.delete("/:id", verifySuperAdmin, Controller.userRole.deleteRole);
 };

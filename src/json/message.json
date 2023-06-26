@@ -23,6 +23,7 @@
 
 
     "VENDOR_EXIST": "Vendor already exist in the system",
+    "VENDOR_EMAIL_EXIST_DIFF_USER": "Email already exist in the system with different User",
     "VENDOR_NOT_EXIST": "Vendor does not exist in the system",
     "VENDOR_CREATED": "Vendor created successfully",
     "VENDOR_FETCHED": "Vendor fetched successfully",

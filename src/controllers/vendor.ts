@@ -86,9 +86,21 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
 };
 export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
+
+
+const {id} =req.query;
+
+    const matchStage:any = {};
+
+
+    if (id) {
+      matchStage._id =  new mongoose.Types.ObjectId(id.toString());
+    }
+
+   
    
         const vendors = await models.vendor.aggregate([
-        { $match: {  } }, // Filter customers with isDelete set to false
+        { $match: matchStage}, // Filter customers with isDelete set to false
         { $sort: { createdAt: -1 } },
         {
           $lookup: {
@@ -141,75 +153,75 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
 }
 };
-// export const getById = async (req: AuthenticatedRequest, res: Response) => {
-//   try {
+
+export const update = async (req: AuthenticatedRequest, res: Response) => {
+  try {
    
 
-//     const {id} = req.params;
-//   //Registering User in the Db
-//     const userRole = await models.UserRole.findById({_id:new mongoose.Types.ObjectId(id.toString())});
+    const {id} = req.params;
 
-
-//     const Response = {
-//     userRole
-//   };
-
-//     //sending Registerd User response
-//     res.json({
-//       message: "Successfully Added User Role",
-//       data: Response,
-//       success: true,
-//     });
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message, success: false });
-//   }
-// };
-// export const update = async (req: AuthenticatedRequest, res: Response) => {
-//   try {
-   
-
-//     const {id} = req.params;
-
-//     const {roleName}= req.body;
+    const {email}= req.body;
 
 
   
-//     const isExist = await models.UserRole.findOne({roleName:roleName});
+    const isExist = await models.vendor.findOne({email:email});
 
 
-//     if(isExist && isExist._id.toString() !== id){
-
-//   return res.status(400).json({ error: "User Role already exist" });
-//     }
-
-//     else {
+    if(isExist && isExist._id.toString() !== id){
 
 
-//        const userRole = await models.UserRole.findOneAndUpdate(
-//   {_id:new mongoose.Types.ObjectId(id.toString())},
-//   {
-//     ...req.body
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.VENDOR_EMAIL_EXIST_DIFF_USER,
+        payload: {},
+        logPayload: false,
+      };
+      
+      return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseError));
+      
 
-// },{
-//   new:true
-// }
-// );
+ 
+    }
 
-
-// const Response = {
-// userRole
-// };
-
-// //sending Registerd User response
-// res.json({
-//   message: " User Role Updated Successfully ",
-//   data: Response,
-//   success: true,
-// });
+    else {
 
 
+       const vendor = await models.vendor.findOneAndUpdate(
+  {_id:new mongoose.Types.ObjectId(id.toString())},
+  {
+    ...req.body
 
-//     }
+},{
+  new:true
+}
+);
+
+
+let payload = {
+  vendor,
+};
+
+
+const data4createResponseObject = {
+  req: req,
+  result: 0,
+  message: messages.VENDOR_UPDATED,
+  payload: payload,
+  logPayload: false,
+
+};
+
+return res
+  .status(enums.HTTP_CODES.OK)
+  .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+
+
+    }
 
 
   
@@ -217,10 +229,10 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
 
  
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message, success: false });
-//   }
-// };
+  } catch (error: any) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+};
 // export const deleteRole = async (req: AuthenticatedRequest, res: Response) => {
 //   try {
    
