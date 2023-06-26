@@ -1,8 +1,7 @@
 const { Storage } = require('@google-cloud/storage');
 import config from "../../config";
-
+  
 const gstorage = new Storage({
-    // keyFilename: "path/to/keyfile.json", // Path to your JSON key file
     keyFilename: "mykey.json", // Path to your JSON key file
     projectId: config.googleProjectId, // Your Google Cloud project ID
   });
