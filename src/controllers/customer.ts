@@ -15,6 +15,9 @@ interface AuthenticatedRequest extends Request {
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
+
+    const {branchName} = req.body
+
     //Registering customoer in the Db
     const Customer = await models.Customer.create({
       ...req.body,
@@ -23,9 +26,22 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
       },
     });
 
+    let Branch ;
+
+    if(branchName){
+
+       Branch = await models.Branch.create({
+
+        "customer._customerId": Customer._id,
+        name: branchName,
+      
+      });
+
+    }
 
     const Response = {
       Customer,
+      Branch
    };
 
     //sending Registerd User response
