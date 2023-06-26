@@ -8,27 +8,27 @@ export default (app: Router) => {
   /**
    * @swagger
    * tags:
-   *   name: User
-   *   description: User management and login
+   *   name: vendor
+   *   description: vendor management
    */
   app.use("/vendor", route);
 
   /**
    * @swagger
-   * /superadmin/register:
+   * /:
    *   Post:
-   *     tags: [User]
-   *     summary: Register user
-   *     description: Registering superadmin user.
+   *     tags: [vendor]
+   *     summary: Register vendor
+   *     description: Registering vendor.
    */
   route.post("/", Validator.vendor.validateVendor, verifySuperAdmin,Controller.vendor.add );
   /**
    * @swagger
-   * /register:
-   *   Post:
-   *     tags: [User]
-   *     summary: Register user
-   *     description: Registering user.
+   * /:
+   *   Get:
+   *     tags: [vendor]
+   *     summary: Getting vendor
+   *     description: Getting All vendor and byId.
    */
   route.get("/",verifySuperAdmin, Controller.vendor.getAll);
 
@@ -49,5 +49,5 @@ export default (app: Router) => {
    *     summary: login user
    *     description: For Login user.
    */
-//   route.delete("/:id", verifySuperAdmin, Controller.userRole.deleteRole);
+  route.delete("/:id", verifySuperAdmin, Controller.vendor.deleteVendor);
 };

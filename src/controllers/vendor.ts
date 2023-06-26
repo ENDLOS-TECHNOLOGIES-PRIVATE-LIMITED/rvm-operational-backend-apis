@@ -121,6 +121,27 @@ const {id} =req.query;
 
 
 
+      
+
+      if(vendors.length==0){
+
+
+
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+        
+        return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+          .json(utility.createResponseObject(responseCatchError));
+
+      
+      }
+
     let payload = {
         vendors,
       };
@@ -237,45 +258,81 @@ return res
 
  
   } catch (error: any) {
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+ return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+   
+  }
+};
+export const deleteVendor = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+   
+
+    const {id} = req.params;
+ 
+     // upading  UserRole in the Db
+ const deletedVendor = await models.vendor.findOneAndUpdate(
+  {_id:new mongoose.Types.ObjectId(id.toString())},
+  {
+    isDeleted:false
+
+},
+{
+  new:true
+}
+);
+
+if(!deletedVendor){
+
+  const responseCatchError = {
+    req: req,
+    result: -1,
+    message: messages.NOT_FOUND,
+    payload: {},
+    logPayload: false,
+  };
+  
+  
+  return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+    .json(utility.createResponseObject(responseCatchError));
+
+
+}
+
+
+const payload = {
+  deletedVendor
+};
+
+
+
+const data4createResponseObject = {
+  req: req,
+  result: 0,
+  message: messages.VENDOR_DELETED,
+  payload: payload,
+  logPayload: false,
+
+};
+
+return  res
+  .status(enums.HTTP_CODES.OK)
+  .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+
+  } catch (error: any) {
     res.status(500).json({ message: error.message, success: false });
   }
 };
-// export const deleteRole = async (req: AuthenticatedRequest, res: Response) => {
-//   try {
-   
-
-//     const {id} = req.params;
-
-   
-
-//  // upading  UserRole in the Db
-//  const userRole = await models.UserRole.findOneAndUpdate(
-//   {_id:new mongoose.Types.ObjectId(id.toString())},
-//   {
-//     isActive:false
-
-// },{
-//   new:true
-// }
-// );
-
-
-// const Response = {
-// userRole
-// };
-
-// //sending Registerd User response
-// res.json({
-//   message: " User Role Deleted Successfully ",
-//   data: Response,
-//   success: true,
-// });
-
-    
- 
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message, success: false });
-//   }
-// };
 
 
