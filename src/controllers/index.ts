@@ -10,6 +10,7 @@ import * as machine from './machine'
 import * as userRole from './userRole'
 import * as problem from './problem'
 import * as solution from './solution'
+import * as vendor from './vendor'
 export default {
   User,
   Auth,
@@ -20,7 +21,8 @@ export default {
   machine,
   userRole,
   problem,
-  solution
+  solution,
+  vendor
 };
 
 

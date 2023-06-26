@@ -4,6 +4,8 @@ import { Schema, model } from "mongoose";
 const customerSchema = new Schema(
   {
     name: { type: String, required: true },
+    vendorId:{ type: mongoose.Schema.Types.ObjectId, refPath: "vendorRef",require:true },
+    
     isDeleted: {
       type: Boolean,
       default: false,
@@ -17,12 +19,7 @@ const customerSchema = new Schema(
         date: { type: Date },
       },
     ],
-    // deletedBy: [
-    //   {
-    //     _user: { type: mongoose.Schema.Types.ObjectId, refPath: "userRef" },
-    //     date: { type: Date },
-    //   },
-    // ],
+   
   },
   {
     timestamps: true,

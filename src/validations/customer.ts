@@ -1,14 +1,12 @@
 const yup = require("yup");
+import utility from '../utility';
+import enums from '../json/enum.json'
 
 // Validation schema using Yup
 const customerSchema = yup.object().shape({
   name: yup.string().required("Name is Required"),
-  // email: yup.string().email().required(),
-  // password: yup.string().required().min(8),
-  // mobile: yup
-  //   .string()
-  //   // .matches(/^[+]\d{1,3}[-.\s]?\d{1,14}$/, "Invalid phone number")
-  //   .min(10, "Mobile number must be at least 10 digit"),
+  vendorId: yup.string().required("VendorId is Required"),
+
  });
 
 // Validation middleware
@@ -18,11 +16,20 @@ export const validateCustomer = (req, res, next) => {
   customerSchema
     .validate(Data)
     .then(() => {
-      // Validation successful, proceed to the next middleware or route handler
       next();
     })
     .catch((error) => {
-      // Validation failed, respond with error details
-      res.status(400).json({ error: error.message });
+     
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: error.message,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseCatchError));
+      
     });
 };

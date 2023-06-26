@@ -9,7 +9,7 @@ import invetryType from "./inventryType";
 import machine from "./machine";
 import userRole from './userRole';
 import problem  from './problem';
-import solution  from './solution';
+import vendor  from './vendor';
 
 const route = Router();
 
@@ -24,7 +24,7 @@ auth(route);
  machine(route);
  userRole(route);
  problem(route);
- solution(route);
+ vendor(route);
 
  
 

@@ -7,6 +7,7 @@ import Machine from "./machine";
 import UserRole from "./userRole";
 import problem from "./problem";
 import solution from "./solution";
+import vendor from "./vendor";
 
 export default {
   Inventory,
@@ -17,6 +18,7 @@ export default {
   Machine,
   UserRole,
   problem,
-  solution
+  solution,
+  vendor
 };
 
