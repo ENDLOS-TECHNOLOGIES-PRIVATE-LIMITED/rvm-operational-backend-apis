@@ -34,8 +34,11 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
          .json(utility.createResponseObject(responseCatchError));
       }
 
-   
-    //Registering UserRole in the Db
+      else{
+
+
+  
+    //Registering vendor in the Db
     const vendor = await models.vendor.create({
       ...req.body,   
     });
@@ -57,11 +60,15 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
     
       };
 
-      res
+    return  res
         .status(enums.HTTP_CODES.OK)
         .json(utility.createResponseObject(data4createResponseObject));
 
     
+
+      }
+
+ 
 
   
   } catch (error: any) {
@@ -128,7 +135,7 @@ const {id} =req.query;
     
       };
 
-      res
+     return res
         .status(enums.HTTP_CODES.OK)
         .json(utility.createResponseObject(data4createResponseObject));
 
