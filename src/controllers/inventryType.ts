@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import models from "../models";
-import helpers from "../helpers";
 import mongoose from "mongoose";
+import utility from '../utility';
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -20,12 +22,22 @@ const InvetryTypeIsExist = await models.InvetryType.find({
   isDeleted: false,
 });
 
-console.log({ InvetryTypeIsExist });
-
 
 if(InvetryTypeIsExist.length>0){
-   return res.status(400).json({ error: "Inventry Type already exist" });
-}
+
+
+  const responseError = {
+    req: req,
+    result: -1,
+    message: messages.INVENTRY_TYPE_EXIST,
+    payload: {},
+    logPayload: false,
+  };
+  
+ return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+     .json(utility.createResponseObject(responseError));
+
+  }
 
 else{
   //Adding inventry type in the Db
@@ -33,21 +45,43 @@ else{
     ...req.body,
   });
 
-  const Response = {
+  const payload = {
     Customer,
   };
 
-  //sending Registerd User response
-  res.json({
-    message: "InventryType Added Successfully ",
-    data: Response,
-    success: true,
-  });
+
+
+  const data4createResponseObject = {
+    req: req,
+    result: 0,
+    message: messages.INVENTRY_TYPE_CREATED,
+    payload: payload,
+    logPayload: false,
+  };
+  
+ return  res.status(enums.HTTP_CODES.OK)
+     .json(utility.createResponseObject(data4createResponseObject));
+
+  
 }
 
     
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+   
   }
 };
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
@@ -63,37 +97,52 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
         const InventryTypes = await models.InvetryType.aggregate([
           { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
           { $sort: { createdAt: -1 } },
+          // {
+          //   $lookup: {
+          //     from: "invetries",
+          //     localField: "_id",
+          //     foreignField: "inventryType",
+          //     as: "invetries",
+          //   },
+          // },
           {
             $lookup: {
-              from: "invetries",
+              from: "invetrybrands",
               localField: "_id",
-              foreignField: "inventryType",
-              as: "invetries",
+              foreignField: "inventryTypeId",
+              as: "invetrybrands",
             },
           },
           {
             $addFields: {
-              Count: { $size: "$invetries" },
+              Count: { $size: "$invetrybrands" },
             },
           },
         ]).exec();
 
 
-        
+      const payload = {
+        InventryTypes,
+      };
+    
+    
+    
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.INVENTRY_TYPE_FETCHED,
+        payload: payload,
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.OK)
+         .json(utility.createResponseObject(data4createResponseObject));
 
-        console.log({InventryTypes});
 
 
-       const Response = {
-         InventryTypes,
-       };
 
-       //sending Registerd User response
-       res.json({
-         message: "InventryTypes fetched Successfully ",
-         data: Response,
-         success: true,
-       });
+
+
       
 
     }
@@ -102,23 +151,45 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
 
          const InventryTypes = await models.InvetryType.find({ isDeleted: false });
 
-         const Response = {
-           InventryTypes,
-         };
 
-         //sending Registerd User response
-         res.json({
-           message: "InventryTypes fetched Successfully ",
-           data: Response,
-           success: true,
-         });
+         const payload = {
+          InventryTypes,
+        };
+      
+      
+      
+        const data4createResponseObject = {
+          req: req,
+          result: 0,
+          message: messages.INVENTRY_TYPE_FETCHED,
+          payload: payload,
+          logPayload: false,
+        };
+        
+       return  res.status(enums.HTTP_CODES.OK)
+           .json(utility.createResponseObject(data4createResponseObject));
+  
+  
+
 
 
     }
 
  
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+   
   }
 };
 
@@ -127,12 +198,26 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
     let {id,type} = req.query;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.NOT_FOUND,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseCatchError));
+
     }
     else if(type=='allInventries'){
+
+      
+
  const InventryTypes = await models.InvetryType.aggregate([
    { $match: { isDeleted: false, _id: new mongoose.Types.ObjectId(id.toString()) } }, // Filter customers with isDelete set to false
    { $sort: { createdAt: -1 } },
@@ -147,21 +232,40 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
  ]).exec();
 
  if(InventryTypes.length>0){
- const Response = {
+ const payload = {
    InventryTypes,
  };
 
- //sending Registerd User response
- res.json({
-   message: "InventryTypes fetched Successfully ",
-   data: Response,
-   success: true,
- });
-      
+
+ const data4createResponseObject = {
+  req: req,
+  result: 0,
+  message: messages.INVENTRY_TYPE_CREATED,
+  payload: payload,
+  logPayload: false,
+};
+
+return  res.status(enums.HTTP_CODES.OK)
+   .json(utility.createResponseObject(data4createResponseObject));
+
+
  }
 
  else{
-   res.status(404).json({ error: "No Result found" });
+
+
+  const responseCatchError = {
+    req: req,
+    result: -1,
+    message: messages.NOT_FOUND,
+    payload: {},
+    logPayload: false,
+  };
+  
+  
+  return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+    .json(utility.createResponseObject(responseCatchError));
+
  }
 
 
@@ -175,17 +279,39 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
         _id: id,
       });
 
-      const Response = {
-        invetryType,
-      };
-    res.json({
-      message: "invetryType fetched Successfully",
-      data: Response,
-      success: true,
-    });
+
+    const payload = {
+      invetryType,
+    };
+   
+    const data4createResponseObject = {
+     req: req,
+     result: 0,
+     message: messages.INVENTRY_TYPE_CREATED,
+     payload: payload,
+     logPayload: false,
+   };
+   
+   return  res.status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+   
+
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+  
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
   }
 };
 export const update = async (req: AuthenticatedRequest, res: Response) => {
@@ -193,10 +319,21 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.BAD_REQUEST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseCatchError));
+
+
     } else {
       //Upading customoer in the Db
       const updatedInventryType = await models.InvetryType.findOneAndUpdate(
@@ -214,19 +351,42 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const Response = {
+      const payload = {
         updatedInventryType,
       };
 
-      //sending updated customer response
-      res.json({
-        message: "InventryType Updated Successfully",
-        data: Response,
-        success: true,
-      });
+
+      const data4createResponseObject = {
+       req: req,
+       result: 0,
+       message: messages.INVENTRY_TYPE_UPDATED,
+       payload: payload,
+       logPayload: false,
+     };
+     
+     return  res.status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
   }
 };
 
@@ -235,10 +395,20 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.BAD_REQUEST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseError));
+     
     } else {
   
 
@@ -258,22 +428,60 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const AllInventries = await models.Inventory.updateMany({ inventryType :id},{isDeleted:true},{new:true});
 
-      console.log({AllInventries});
+      if (!deletedInventryType) {
 
-      const Response = {
+
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.INVENTRY_TYPE_NOT_EXIST,
+          payload: {},
+          logPayload: false,
+        };
+        
+        
+        return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+          .json(utility.createResponseObject(responseError));
+       
+      } 
+
+      // const AllInventries = await models.Inventory.updateMany({ inventryType :id},{isDeleted:true},{new:true});
+      const AllInventriesBrands = await models.inventryBrand.updateMany({ inventryTypeId :id},{isDeleted:true},{new:true});
+
+
+      const payload = {
         deletedInventryType,
-        AllInventries,
+        // AllInventries,
+        AllInventriesBrands
       };
 
-      res.json({
-        message: "InventryType Deleted Successfully",
-        data: Response,
-        success: true,
-      });
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.INVENTRY_TYPE_DELETED,
+        payload: payload,
+        logPayload: false,
+      };
+      
+      return  res.status(enums.HTTP_CODES.OK)
+         .json(utility.createResponseObject(data4createResponseObject));
+ 
+ 
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+    return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+   
   }
 };

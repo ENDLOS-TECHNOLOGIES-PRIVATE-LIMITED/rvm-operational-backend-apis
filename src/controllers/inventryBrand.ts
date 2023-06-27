@@ -90,7 +90,7 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
   
 
 
-    res.status(500).json({ message: error.message, success: false });
+    // res.status(500).json({ message: error.message, success: false });
   }
 };
 export const getAll = async (req: AuthenticatedRequest, res: Response) => {

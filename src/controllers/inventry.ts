@@ -2,7 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import helpers from "../helpers";
 import models from "../models";
 import mongoose from "mongoose";
-// import Invetry from "../models/inventry";
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
+import utility from '../utility';
+
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -18,7 +21,20 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
     // checking the serila number exist or not 
     const isSerialExist = await models.Inventory.find({ serialNumber: req.body.serialNumber });
     if (isSerialExist.length > 0) {
-      return res.status(400).json({ error: "SerialNumber already exist" });
+     
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.INVENTRY_SERIAL_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseError));
+
+
+
     }
 
    
@@ -28,81 +44,51 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
      ...req.body,
      });
 
-   const Response = {
-     addedInventry,
-   };
-  
 
-    // sending Registerd User response
-    res.json({
-      message: "Successfully Added Inventry",
-      data: Response,
-      success: true,
-    });
+
+
+     const payload = {
+      addedInventry,
+    };
+  
+  
+  
+    const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.INVENTORY_CREATED,
+      payload: payload,
+      logPayload: false,
+    };
+    
+   return  res.status(enums.HTTP_CODES.OK)
+       .json(utility.createResponseObject(data4createResponseObject));
+
+
+
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+
+    
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+   return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
+
   }
 };
-// export const assign = async (req: AuthenticatedRequest, res: Response) => {
-//   try {
-
-//     let { inventryId,machineId } = req.body;
 
 
-
-
-//     const assignedInventories = await models.Inventory.aggregate([
-//       {
-//         $match: {
-//           _id: new mongoose.Types.ObjectId(inventryId.toString()),
-//           assignedTo: { $exists: true },
-//         },
-//       },
-//     ]);
-
-//     console.log(assignedInventories);
-
-
-//     if(assignedInventories.length>0){
-
-//        return res.status(400).json({ error: "Inventry already Assigned to a Machine" });
-
-//     }
-
-
-
-
-
-    
-//     const assignedInvertry = await models.Inventory.findByIdAndUpdate(
-//       inventryId,
-//       {
-//         assignedTo: {
-//           _machine: machineId,
-//           date: Date.now(),
-//         },
-//        },
-
-//       { new: true }
-//     );
-
-    
-
-
-//    const Response = {
-//      assignedInvertry,
-//    };
-
-//     // sending Registerd User response
-//     res.json({
-//       message: "Successfully Assigned Inventry",
-//       data: Response,
-//       success: true,
-//     });
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message, success: false });
-//   }
-// };
 export const get = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let { type, inventryTypeId } = req.query;
@@ -182,17 +168,33 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
       //   },
       // ]);
 
-      const Response = {
-        // allInventry,
-        unAssignedInventry,
+      const payload = {
+      unAssignedInventry,
       };
 
-      // sending All Inventry
-      res.json({
-        message: "Successfully get All Inventry",
-        data: Response,
-        success: true,
-      });
+      // // sending All Inventry
+      // res.json({
+      //   message: "Successfully get All Inventry",
+      //   data: Response,
+      //   success: true,
+      // });
+
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.INVENTORY_FETCHED,
+        payload: payload,
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.OK)
+         .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+
+
     }
 
     else if (type == "all") {
@@ -227,17 +229,21 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
         },
       ]);
 
-      const Response = {
+      const payload = {
         allInventry,
      
       };
 
-      // sending All Inventry
-      res.json({
-        message: "Successfully get All Inventry",
-        data: Response,
-        success: true,
-      });
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.INVENTORY_FETCHED,
+        payload: payload,
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.OK)
+         .json(utility.createResponseObject(data4createResponseObject));
     } else if (inventryTypeId) {
       const filterdInventory = await models.Inventory.aggregate([
         { $match: { inventryType: new mongoose.Types.ObjectId(inventryTypeId.toString()), isDeleted: false } },

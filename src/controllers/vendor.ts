@@ -83,12 +83,11 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
       };
       
       
-      res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+  return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
         .json(utility.createResponseObject(responseCatchError));
   
 
 
-    res.status(500).json({ message: error.message, success: false });
   }
 };
 export const getAll = async (req: AuthenticatedRequest, res: Response) => {

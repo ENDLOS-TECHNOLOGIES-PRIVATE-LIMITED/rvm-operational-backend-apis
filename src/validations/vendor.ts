@@ -1,4 +1,6 @@
 const yup = require("yup");
+import utility from '../utility';
+import enums from '../json/enum.json'
 
 // Validation schema using Yup
 const vendorSchema = yup.object().shape({
@@ -18,7 +20,20 @@ export const validateVendor = (req, res, next) => {
       next();
     })
     .catch((error) => {
-      // Validation failed, respond with error details
-      res.status(400).json({ error: error.message });
+
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: error.message,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseCatchError));
+
+      
     });
 };
