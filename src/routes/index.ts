@@ -11,6 +11,7 @@ import userRole from './userRole';
 import problem  from './problem';
 import vendor  from './vendor';
 import solution  from './solution';
+import inventryBrand  from './inventryBrand';
 
 const route = Router();
 
@@ -26,6 +27,8 @@ auth(route);
  userRole(route);
  problem(route);
  solution(route);
+ vendor(route);
+ inventryBrand(route);
 
  
 

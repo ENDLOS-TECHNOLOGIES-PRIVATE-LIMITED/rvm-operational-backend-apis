@@ -5,6 +5,7 @@ const inventryBrandSchema = new Schema(
   {
     inventryTypeId:{ type: mongoose.Schema.Types.ObjectId, refPath: "inventryTypeRef", required: true },
     name: { type: String, required: true },
+    isDeleted:{type:Boolean,default:false}
 }
 ,
   {

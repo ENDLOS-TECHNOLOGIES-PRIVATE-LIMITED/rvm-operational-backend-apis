@@ -11,6 +11,7 @@ import * as userRole from './userRole'
 import * as problem from './problem'
 import * as solution from './solution'
 import * as vendor from './vendor'
+import * as inventryBrand from './inventryBrand'
 export default {
   User,
   Auth,
@@ -22,7 +23,8 @@ export default {
   userRole,
   problem,
   solution,
-  vendor
+  vendor,
+  inventryBrand
 };
 
 

@@ -28,7 +28,16 @@
     "VENDOR_CREATED": "Vendor created successfully",
     "VENDOR_FETCHED": "Vendor fetched successfully",
     "VENDOR_DELETED": "Vendor deleted successfully",
-    "VENDOR_UPDATED": "Vendor updated successfully"
+    "VENDOR_UPDATED": "Vendor updated successfully",
+
+
+
+"BRAND_EXIST": "Brand already exists in the system",
+"BRAND_NOT_EXIST": "Brand does not exist in the system",
+"BRAND_CREATED": "Brand created successfully",
+"BRAND_FETCHED": "Brand fetched successfully",
+"BRAND_DELETED": "Brand deleted successfully",
+"BRAND_UPDATED": "Brand updated successfull"
     
   
   }

@@ -4,7 +4,7 @@ import enums from '../json/enum.json'
 // Validation schema using Yup
 const inventryBrandSchema = yup.object().shape({
   name: yup.string().required("Name is Required"),
-  inventryTypeId: yup.string().required("inventryTypeId is Required"),
+  inventryTypeId: yup.string().required("inventryType is Required"),
 
 });
 

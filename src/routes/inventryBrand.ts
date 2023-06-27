@@ -21,7 +21,11 @@ export default (app: Router) => {
    *     summary: Adding inventrybrand
    *     description: Adding inventrybrand.
    */
-  route.post("/", Validator.inventryBrand.validateInventryBrandSchema, verifySuperAdmin,Controller.vendor.add );
+  route.post("/", Validator.inventryBrand.validateInventryBrandSchema, verifySuperAdmin,Controller.inventryBrand.add );
+
+
+
+
   /**
    * @swagger
    * /:
@@ -30,7 +34,7 @@ export default (app: Router) => {
    *     summary: Getting vendor
    *     description: Getting All vendor and byId.
    */
-  route.get("/",verifySuperAdmin, Controller.vendor.getAll);
+  route.get("/",verifySuperAdmin, Controller.inventryBrand.getAll);
 
   /**
    * @swagger
@@ -40,7 +44,7 @@ export default (app: Router) => {
    *     summary: Register user
    *     description: Registering user.
    */
-  route.put("/:id",verifySuperAdmin, Controller.vendor.update);
+  route.put("/:id",verifySuperAdmin, Controller.inventryBrand.update);
   /**
    * @swagger
    * /login:
@@ -49,5 +53,5 @@ export default (app: Router) => {
    *     summary: login user
    *     description: For Login user.
    */
-  route.delete("/:id", verifySuperAdmin, Controller.vendor.deleteVendor);
+  route.delete("/:id", verifySuperAdmin, Controller.inventryBrand.deleteBrand);
 };

@@ -8,6 +8,7 @@ import UserRole from "./userRole";
 import problem from "./problem";
 import solution from "./solution";
 import vendor from "./vendor";
+import inventryBrand from "./inventryBrand";
 
 export default {
   Inventory,
@@ -19,6 +20,7 @@ export default {
   UserRole,
   problem,
   solution,
-  vendor
+  vendor,
+  inventryBrand
 };
 

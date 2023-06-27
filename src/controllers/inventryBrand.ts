@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import models from '../models'
-import helpers from "../helpers";
 import mongoose, { model } from 'mongoose';
 import utility from '../utility';
 import enums from '../json/enum.json'
@@ -18,14 +17,17 @@ interface AuthenticatedRequest extends Request {
 export const add = async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Destructuring data from request
-    const {  email } = req.body;
+    const {  inventryTypeId ,name} = req.body;
 
-    let isVendorRegisterd = await models.vendor.findOne({ email });
-    if (isVendorRegisterd) {
+    let isBrandRegisterd = await models.inventryBrand.findOne({ name,inventryTypeId });
+
+
+    
+    if (isBrandRegisterd) {
         const responseCatchError = {
         req: req,
         result: -1,
-        message: messages.VENDOR_EXIST,
+        message: messages.BRAND_EXIST,
         payload: {},
         logPayload: false,
       };
@@ -39,7 +41,7 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
 
   
     //Registering vendor in the Db
-    const vendor = await models.vendor.create({
+    const InventryBrand = await models.inventryBrand.create({
       ...req.body,   
     });
 
@@ -47,14 +49,14 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
 
 
     let payload = {
-        vendor,
+        InventryBrand,
       };
     
 
     const data4createResponseObject = {
         req: req,
         result: 0,
-        message: messages.VENDOR_CREATED,
+        message: messages.BRAND_CREATED,
         payload: payload,
         logPayload: false,
     
@@ -106,24 +108,24 @@ const {id} =req.query;
 
    
    
-        const vendors = await models.vendor.aggregate([
+        const brands = await models.inventryBrand.aggregate([
         { $match: matchStage}, // Filter customers with isDelete set to false
         { $sort: { createdAt: -1 } },
-        {
-          $lookup: {
-            from: "customers",
-            localField: "_id",
-            foreignField: "vendorId",
-            as: "customers",
-          },
-        },
+        // {
+        //   $lookup: {
+        //     from: "customers",
+        //     localField: "_id",
+        //     foreignField: "vendorId",
+        //     as: "customers",
+        //   },
+        // },
       ]).exec();
 
 
 
       
 
-      if(vendors.length==0){
+      if(brands.length==0){
 
 
 
@@ -143,14 +145,14 @@ const {id} =req.query;
       }
 
     let payload = {
-        vendors,
+        brands,
       };
     
 
     const data4createResponseObject = {
         req: req,
         result: 0,
-        message: messages.VENDOR_FETCHED,
+        message: messages.BRAND_FETCHED,
         payload: payload,
         logPayload: false,
     
@@ -188,35 +190,7 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
 
     const {id} = req.params;
 
-    const {email}= req.body;
-
-
-  
-    const isExist = await models.vendor.findOne({email:email});
-
-
-    if(isExist && isExist._id.toString() !== id){
-
-
-      const responseError = {
-        req: req,
-        result: -1,
-        message: messages.VENDOR_EMAIL_EXIST_DIFF_USER,
-        payload: {},
-        logPayload: false,
-      };
-      
-      return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
-         .json(utility.createResponseObject(responseError));
-      
-
- 
-    }
-
-    else {
-
-
-       const vendor = await models.vendor.findOneAndUpdate(
+       const brand = await models.inventryBrand.findOneAndUpdate(
   {_id:new mongoose.Types.ObjectId(id.toString())},
   {
     ...req.body
@@ -227,15 +201,33 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
 );
 
 
+
+if (!brand) {
+    const responseError = {
+      req: req,
+      result: -1,
+      message: messages.BRAND_NOT_EXIST,
+      payload: {},
+      logPayload: false,
+    };
+
+    return res
+      .status(enums.HTTP_CODES.NOT_FOUND)
+      .json(utility.createResponseObject(responseError));
+  }
+
+
+
+
 let payload = {
-  vendor,
+    brand,
 };
 
 
 const data4createResponseObject = {
   req: req,
   result: 0,
-  message: messages.VENDOR_UPDATED,
+  message: messages.BRAND_UPDATED,
   payload: payload,
   logPayload: false,
 
@@ -249,7 +241,7 @@ return res
 
 
 
-    }
+    // }
 
 
   
@@ -272,14 +264,14 @@ return res
    
   }
 };
-export const deleteVendor = async (req: AuthenticatedRequest, res: Response) => {
+export const deleteBrand = async (req: AuthenticatedRequest, res: Response) => {
   try {
    
 
     const {id} = req.params;
  
      // upading  UserRole in the Db
- const deletedVendor = await models.vendor.findOneAndUpdate(
+ const deleteBrand = await models.inventryBrand.findOneAndUpdate(
   {_id:new mongoose.Types.ObjectId(id.toString())},
   {
     isDeleted:true
@@ -290,7 +282,7 @@ export const deleteVendor = async (req: AuthenticatedRequest, res: Response) => 
 }
 );
 
-if(!deletedVendor){
+if(!deleteBrand){
 
   const responseCatchError = {
     req: req,
@@ -309,7 +301,7 @@ if(!deletedVendor){
 
 
 const payload = {
-  deletedVendor
+    deleteBrand
 };
 
 
@@ -317,7 +309,7 @@ const payload = {
 const data4createResponseObject = {
   req: req,
   result: 0,
-  message: messages.VENDOR_DELETED,
+  message: messages.BRAND_DELETED,
   payload: payload,
   logPayload: false,
 
