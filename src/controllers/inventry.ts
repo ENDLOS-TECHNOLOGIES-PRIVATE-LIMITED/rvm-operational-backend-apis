@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import helpers from "../helpers";
 import models from "../models";
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 import enums from '../json/enum.json'
 import messages from '../json/message.json'
 import utility from '../utility';
@@ -17,6 +17,8 @@ interface AuthenticatedRequest extends Request {
 
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
+
+    const {brandName,inventryTypeId,brandId,serialNumber} =req.body;
 
     // checking the serila number exist or not 
     const isSerialExist = await models.Inventory.find({ serialNumber: req.body.serialNumber });
@@ -37,32 +39,101 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 
     }
 
+
+
+
+    if(brandName && inventryTypeId){
+
+  const createdBrand = await models.inventryBrand.create({
+  name:brandName,
+  inventryTypeId:inventryTypeId
+    })
+  
+  
+
+
+    const addedInventry = await models.Inventory.create({
+      brandId:createdBrand._id,
+      ...req.body,
+
+      });
+
+      
+ 
+ 
+ 
+ 
+      const payload = {
+       addedInventry,
+     };
    
+   
+   
+     const data4createResponseObject = {
+       req: req,
+       result: 0,
+       message: messages.INVENTORY_CREATED,
+       payload: payload,
+       logPayload: false,
+     };
+     
+    return  res.status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+  
+  
+
+
+     
+
+    }else if(serialNumber&&brandId){
 
     // Adding Inventry in the Db
     const addedInventry = await models.Inventory.create({
-     ...req.body,
-     });
+      ...req.body,
+      });
+ 
+ 
+ 
+ 
+      const payload = {
+       addedInventry,
+     };
+   
+   
+   
+     const data4createResponseObject = {
+       req: req,
+       result: 0,
+       message: messages.INVENTORY_CREATED,
+       payload: payload,
+       logPayload: false,
+     };
+     
+    return  res.status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+ 
+
+    }
+else{
 
 
-
-
-     const payload = {
-      addedInventry,
-    };
+  const responseError = {
+    req: req,
+    result: -1,
+    message: messages.BAD_REQUEST,
+    payload: {},
+    logPayload: false,
+  };
   
   
-  
-    const data4createResponseObject = {
-      req: req,
-      result: 0,
-      message: messages.INVENTORY_CREATED,
-      payload: payload,
-      logPayload: false,
-    };
-    
-   return  res.status(enums.HTTP_CODES.OK)
-       .json(utility.createResponseObject(data4createResponseObject));
+ return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+    .json(utility.createResponseObject(responseError));
+
+}
+   
 
 
 
@@ -207,27 +278,55 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
         },
         {
           $lookup: {
-            from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
-            localField: "inventryType",
+            from: "invetrybrands", // Replace "inventoryTypes" with the actual name of your inventory types collection
+            localField: "brandId",
             foreignField: "_id",
-            as: "inventoryType",
+            as: "invetrybrands",
           },
         },
         {
-          $unwind: "$inventoryType",
+          $unwind: "$invetrybrands" // Unwind the invetrybrands array
         },
+        {
+          $lookup: {
+            from: "invetrytypes",
+            localField: "invetrybrands.inventryTypeId",
+            foreignField: "_id",
+            as: "invetrytypes",
+          },
+        },
+  
         {
           $addFields: {
-            inventryType: "$inventoryType.name",
-            inventryId: "$inventoryType._id",
-          },
+            invetrybrands: "$invetrybrands",
+            invetrytypes: "$invetrytypes"
+          }
         },
         {
           $project: {
-            inventoryType: 0,
-          },
-        },
+            invetrybrands: {
+              _id: 1,
+              inventryTypeId: 1,
+              name: 1
+            },
+            invetrytypes: {
+              _id: 1,
+              name: 1
+            },
+            // Add other fields you want to include in the result
+            _id: 1,
+            brandId: 1,
+            serialNumber: 1,
+            isDeleted: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            __v: 1
+          }
+        }
+
+
       ]);
+ 
 
       const payload = {
         allInventry,
@@ -244,51 +343,70 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
       
      return  res.status(enums.HTTP_CODES.OK)
          .json(utility.createResponseObject(data4createResponseObject));
-    } else if (inventryTypeId) {
-      const filterdInventory = await models.Inventory.aggregate([
-        { $match: { inventryType: new mongoose.Types.ObjectId(inventryTypeId.toString()), isDeleted: false } },
+    } 
+    
+    
+    // else if (inventryTypeId) {
+    //   const filterdInventory = await models.Inventory.aggregate([
+    //     { $match: { inventryType: new mongoose.Types.ObjectId(inventryTypeId.toString()), isDeleted: false } },
 
-        {
-          $lookup: {
-            from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
-            localField: "inventryType",
-            foreignField: "_id",
-            as: "inventoryType",
-          },
-        },
-        {
-          $unwind: "$inventoryType",
-        },
-        {
-          $addFields: {
-            inventryType: "$inventoryType.name",
-          },
-        },
-        {
-          $project: {
-            inventoryType: 0,
-          },
-        },
-      ]);
+    //     {
+    //       $lookup: {
+    //         from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
+    //         localField: "inventryType",
+    //         foreignField: "_id",
+    //         as: "inventoryType",
+    //       },
+    //     },
+    //     {
+    //       $unwind: "$inventoryType",
+    //     },
+    //     {
+    //       $addFields: {
+    //         inventryType: "$inventoryType.name",
+    //       },
+    //     },
+    //     {
+    //       $project: {
+    //         inventoryType: 0,
+    //       },
+    //     },
+    //   ]);
 
-      const Response = {
-        filterdInventory,
-      };
+    //   const Response = {
+    //     filterdInventory,
+    //   };
 
-      // sending All Inventry
-      res.json({
-        message: "Successfully get All Inventry",
-        data: Response,
-        success: true,
-      });
-    } else {
-      res.json({
-        message: "Pls provide correct query",
-        success: true,
-      });
-    }
+    //   // sending All Inventry
+    //   res.json({
+    //     message: "Successfully get All Inventry",
+    //     data: Response,
+    //     success: true,
+    //   });
+    // } else {
+    //   res.json({
+    //     message: "Pls provide correct query",
+    //     success: true,
+    //   });
+    // }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+   return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
+
+    
   }
 };
 

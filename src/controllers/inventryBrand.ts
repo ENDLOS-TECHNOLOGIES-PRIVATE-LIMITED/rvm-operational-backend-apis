@@ -111,6 +111,8 @@ const {id} =req.query;
         const brands = await models.inventryBrand.aggregate([
         { $match: matchStage}, // Filter customers with isDelete set to false
         { $sort: { createdAt: -1 } },
+
+        
         // {
         //   $lookup: {
         //     from: "customers",

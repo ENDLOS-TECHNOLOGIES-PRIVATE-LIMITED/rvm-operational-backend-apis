@@ -4,9 +4,11 @@ import enums from '../json/enum.json'
 
 // Validation schema using Yup
 const inventrySchema = yup.object().shape({
-  inventryType: yup.string().required(),
-  brandName: yup.string().required(),
-  serialNumber: yup.string().required(),        
+  // inventryType: yup.string().required(),
+  // brandName: yup.string().required(),
+  // brandId: yup.string().required("BrandId is Required"),
+  brandId: yup.string(),
+  serialNumber: yup.string().required("Serial Number is Required"),        
   purchaseDate: yup.date(),
 });
 // Validation schema using Yup
