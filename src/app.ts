@@ -25,7 +25,14 @@ async function startServer() {
 
   //for cors error
 
-  app.use(cors())
+
+  const corsOpts = {
+    origin: "*",
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  };
+  app.use(cors(corsOpts));
+
+  // app.use(cors())
 
   // Parse URL-encoded bodies
   app.use(bodyParser.urlencoded({ extended: false }));
