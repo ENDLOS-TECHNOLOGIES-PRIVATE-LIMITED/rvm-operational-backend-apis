@@ -8,6 +8,7 @@
   "scripts": {
     "build": "tsc",
     "start": "nodemon",
+    "deploy":"node ./build/app.js",
     "inspect": "nodemon --inspect src/app.ts",
     "vercel-build": "echo hello"
   },
