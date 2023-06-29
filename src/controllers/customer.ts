@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 // import User from '../models/user';
 import models from "../models";
-import helpers from "../helpers";
-import { date } from "yup";
-
+import utility from '../utility';
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
+import mongoose, { model } from 'mongoose';
 interface AuthenticatedRequest extends Request {
   user?: {
     id: String;
@@ -39,19 +40,38 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 
     }
 
-    const Response = {
+    const payload = {
       Customer,
       Branch
    };
 
-    //sending Registerd User response
-    res.json({
-      message: "Customer Added Successfully ",
-      data: Response,
-      success: true,
-    });
+
+   const data4createResponseObject = {
+    req: req,
+    result: 0,
+    message: messages.CUSTOMER_CREATED,
+    payload: payload,
+    logPayload: false,
+
+  };
+
+return  res
+    .status(enums.HTTP_CODES.OK)
+    .json(utility.createResponseObject(data4createResponseObject));
+  
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+ return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+   
   }
 };
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
@@ -70,59 +90,205 @@ const AllCustomer = await models.Customer.aggregate([
     ]).exec();
      
    
-    const Response = {
+
+
+
+    const payload = {
       // Customer,
       Customer: AllCustomer,
     };
 
-    //sending Registerd User response
-    res.json({
-      message: "Customer fetched Successfully ",
-      data: Response,
-      success: true,
-    });
+
+    
+   const data4createResponseObject = {
+    req: req,
+    result: 0,
+    message: messages.CUSTOMER_FETCHED,
+    payload: payload,
+    logPayload: false,
+
+  };
+
+return  res
+    .status(enums.HTTP_CODES.OK)
+    .json(utility.createResponseObject(data4createResponseObject));
+  
+
+   
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+ return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
   } 
 };
 
 export const Get = async (req: AuthenticatedRequest, res: Response) => {
   try {
    
-    let id = req.query.id;
+    // let id = req.query.id;
+
+    const {id,nestedData} = req.query;
 
    
 
 
 
     if (!id) {
-    res.status(400).json({
-      message: "Bad Request",
-      success: false,
-    });
-    } else{
+
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.CUSTOMER_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+    return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseError));
+   
+    }
+    
+    else if(id&& nestedData){
+
+
+      console.log("onnn");
+      const matchStage:any = {
+        isDeleted:false
+      };
+  
+  
+      if (id) {
+        matchStage._id =  new mongoose.Types.ObjectId(id.toString());
+      }
+  
+     
+      
+
+
+     const  Customer = await models.Customer.aggregate([
+        { $match: matchStage }, // Filter vendors with isDelete set to false
+        { $sort: { createdAt: -1 } },
+        {
+          $lookup: {
+            from: "branches",
+            localField: "customers._id",
+            foreignField: "customer._customerId",
+            as: "branches",
+          },
+        },
+        {
+          $lookup: {
+            from: "machines",
+            localField: "branches._id",
+            foreignField: "branchId",
+            as: "machines",
+          },
+        },
+      ]).exec();
+
+
+      // return res.send('done')
+
+      const payload = {
+        Customer,
+      };
+
+      
+
+  
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.CUSTOMER_FETCHED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+    
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+    }
+    
+    else{
       //Upading customoer in the Db
       const Customer = await models.Customer.findOne(
         {
           _id: id,
+          isDeleted:false
         },
         
       );
 
-      const Response = {
+
+      if (!Customer) {
+
+
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.CUSTOMER_NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.NOT_FOUND)
+           .json(utility.createResponseObject(responseError));
+     
+      } 
+
+
+
+      const payload = {
         Customer,
       };
 
-      //sending updated customer response
-      res.json({
-        message: "Customer Updated Successfully",
-        data: Response,
-        success: true,
-      });
+      
+
+  
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.CUSTOMER_FETCHED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+    
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+
     }
 
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
   }
 };
 export const update = async (req: AuthenticatedRequest, res: Response) => {
@@ -133,10 +299,19 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
 
 
     if (!id) {
-    res.status(400).json({
-      message: "Bad Request",
-      success: false,
-    });
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.CUSTOMER_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+    return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseError));
+
+   
     } else{
       //Upading customoer in the Db
       const updatedCustomer = await models.Customer.findOneAndUpdate(
@@ -154,20 +329,62 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const Response = {
+
+
+
+      
+      if (!updatedCustomer) {
+
+
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.CUSTOMER_NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.NOT_FOUND)
+           .json(utility.createResponseObject(responseError));
+     
+      } 
+
+      const payload = {
         updatedCustomer,
       };
 
-      //sending updated customer response
-      res.json({
-        message: "Customer Updated Successfully",
-        data: Response,
-        success: true,
-      });
+
+        
+   const data4createResponseObject = {
+    req: req,
+    result: 0,
+    message: messages.CUSTOMER_FETCHED,
+    payload: payload,
+    logPayload: false,
+
+  };
+
+return  res
+    .status(enums.HTTP_CODES.OK)
+    .json(utility.createResponseObject(data4createResponseObject));
+
+      
     }
 
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
   }
 };
 
@@ -177,17 +394,20 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.CUSTOMER_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+    return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseError));
+
     } else {
-      //Upading customoer in the Db
-      // const deltedBranch = await models.Branch.findByIdAndDelete(
-      //   {
-      //     _id: id,
-      //   },
-      // );
+    
       const deletedCustomer = await models.Customer.findOneAndUpdate(
         {
           _id: id,
@@ -204,19 +424,59 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const Response = {
+
+      
+      if (!deletedCustomer) {
+
+
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.CUSTOMER_NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.NOT_FOUND)
+           .json(utility.createResponseObject(responseError));
+     
+      } 
+
+
+      const payload = {
         deletedCustomer,
       };
 
-      //sending updated customer response
-      res.json({
-        message: "Customer Deleted Successfully",
-        data: Response,
-        success: true,
-      });
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.CUSTOMER_DELETED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
   }
 };
 

@@ -31,6 +31,17 @@
     "VENDOR_DELETED": "Vendor deleted successfully",
     "VENDOR_UPDATED": "Vendor updated successfully",
 
+"CUSTOMER_EXIST": "Customer already exists in the system",
+"CUSTOMER_ID_REQUIRED": "Customer ID is required",
+"CUSTOMER_NOT_FOUND": "Customer Not Found",
+
+"CUSTOMER_NOT_EXIST": "Customer does not exist in the system",
+"CUSTOMER_CREATED": "Customer created successfully",
+"CUSTOMER_FETCHED": "Customer fetched successfully",
+"CUSTOMER_DELETED": "Customer deleted successfully",
+"CUSTOMER_UPDATED": "Customer updated successfully",
+
+
 
 
 "BRAND_EXIST": "Brand already exists in the system",
