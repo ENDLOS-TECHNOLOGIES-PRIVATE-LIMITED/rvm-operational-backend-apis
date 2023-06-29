@@ -93,10 +93,12 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
 export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
+const {id,nestedData} =req.query;
+let vendors;
 
-const {id} =req.query;
-
-    const matchStage:any = {};
+    const matchStage:any = {
+      isDeleted:false
+    };
 
 
     if (id) {
@@ -104,8 +106,51 @@ const {id} =req.query;
     }
 
    
-   
-        const vendors = await models.vendor.aggregate([
+    
+
+//nested Data is requied when we want to get all data about a vendor 
+
+      if(id && nestedData){
+
+
+         vendors = await models.vendor.aggregate([
+          { $match: matchStage }, // Filter vendors with isDelete set to false
+          { $sort: { createdAt: -1 } },
+          {
+            $lookup: {
+              from: "customers",
+              localField: "_id",
+              foreignField: "vendorId",
+              as: "customers",
+            },
+          },
+          {
+            $lookup: {
+              from: "branches",
+              localField: "customers._id",
+              foreignField: "customer._customerId",
+              as: "branches",
+            },
+          },
+          {
+            $lookup: {
+              from: "machines",
+              localField: "branches._id",
+              foreignField: "branchId",
+              as: "machines",
+            },
+          },
+        ]).exec();
+        
+
+
+      }
+
+
+else{
+
+
+       vendors = await models.vendor.aggregate([
         { $match: matchStage}, // Filter customers with isDelete set to false
         { $sort: { createdAt: -1 } },
         {
@@ -116,11 +161,18 @@ const {id} =req.query;
             as: "customers",
           },
         },
+        {
+          $lookup: {
+            from: "customers",
+            localField: "_id",
+            foreignField: "vendorId",
+            as: "customers",
+          },
+        },
       ]).exec();
+}
 
-
-
-      
+ 
 
       if(vendors.length==0){
 
