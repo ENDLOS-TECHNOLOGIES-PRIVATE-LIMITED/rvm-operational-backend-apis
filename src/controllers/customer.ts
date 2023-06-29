@@ -183,7 +183,7 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
         {
           $lookup: {
             from: "branches",
-            localField: "customers._id",
+            localField: "_id",
             foreignField: "customer._customerId",
             as: "branches",
           },
