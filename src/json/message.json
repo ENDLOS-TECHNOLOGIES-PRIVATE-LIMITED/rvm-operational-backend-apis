@@ -67,7 +67,19 @@
 "INVENTORY_CREATED": "Inventory created successfully",
 "INVENTORY_FETCHED": "Inventory fetched successfully",
 "INVENTORY_DELETED": "Inventory deleted successfully",
-"INVENTORY_UPDATED": "Inventory updated successfully"
+"INVENTORY_UPDATED": "Inventory updated successfully",
+
+
+
+
+"MACHINE_EXIST": "Machine already exists in the system",
+"MACHINE_ID_REQUIRED": "Machine ID is required",
+"MACHINE_ASSIGNED": "Machine Assigned Successfully",
+"MACHINE_NOT_EXIST": "Machine does not exist in the system",
+"MACHINE_CREATED": "Machine created successfully",
+"MACHINE_FETCHED": "Machine fetched successfully",
+"MACHINE_DELETED": "Machine deleted successfully",
+"MACHINE_UPDATED": "Machine updated successfully"
     
   
   }

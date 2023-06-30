@@ -1,15 +1,26 @@
 const yup = require("yup");
+import utility from '../utility';
+import enums from '../json/enum.json'
+import mongoose from 'mongoose';
 
 // Step 2: Define the validation schema using Yup
-const machineSchema = yup.object().shape({
+export const machineSchema = yup.object().shape({
   machineId: yup.string().required().max(16),
-  // customerName: yup.string(),
-//   serialNumber: yup.string().required(),
-  warrentyStartDate: yup.date(),
+  warrentyStartDate: yup.date().typeError('Warranty Start Date must be a valid date'),
+
   inventry: yup.array().of(
     yup.object().shape({
-      _inventry: yup.string().required(),
+      // _inventry: yup.mixed().required(),
+      _inventry: yup.mixed().test('is-mongoose-object', '_inventry Invalid Id', value => {
+        // if (value === null) {
+        //   return true; // Allow null values
+        // }
+        return mongoose.Types.ObjectId.isValid(value);
+      }),
+      warrantyStart: yup.date().typeError('Inventry Warranty Start Date must be a valid date'),
+      warrantyExpire: yup.date().typeError('Inventry Warranty Expire Date must be a valid date'),
     })
+
   ),
 });
 
@@ -26,7 +37,20 @@ export const validateMachine = (req, res, next) => {
       next();
     })
     .catch((error) => {
-      // Validation failed, respond with error details
-      res.status(400).json({ error: error.message });
+
+
+
+      
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: error.message,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseCatchError));
+   
     });
 };

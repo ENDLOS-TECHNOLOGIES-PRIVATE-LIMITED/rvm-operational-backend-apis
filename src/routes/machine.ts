@@ -1,8 +1,14 @@
 import { Router, Request, Response } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
+const yup = require("yup");
+import utility from '../utility';
+import enums from '../json/enum.json'
+import mongoose from 'mongoose';
+
 
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 
 const route = Router();
 
@@ -23,7 +29,9 @@ export default (app: Router) => {
    *     summary: Add a new machine
    *     description: Endpoint to add a new machine.
    */
-  route.post("/add", Validator.machine.validateMachine, verifySuperAdmin, Controller.machine.Add);
+  // route.post("/add", Validator.machine.validateMachine, verifySuperAdmin, Controller.machine.Add);
+
+  route.post("/add", validationMiddleware(Validator.machine.machineSchema), verifySuperAdmin, Controller.machine.Add);
 
   /**
    * @swagger
