@@ -3,6 +3,9 @@ import { Request, Response, NextFunction } from 'express';
 import models from '../models'
 import helpers from "../helpers";
 import mongoose from 'mongoose';
+import utility from '../utility';
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -96,7 +99,7 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
     
     });
 
-    const Response = {
+    const payload = {
       token,
       user: {
         name: RegisterdUser.name,
@@ -105,13 +108,29 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
       },
     };
 
-    //sending Registerd User response
-    res.json({
-      message: "Successfully Registerd",
-      data: Response,
-      success: true,
-    });
+
+
+    const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.VENDOR_CREATED,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+  return  res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
+
+
   } catch (error: any) {
+
+
+
+    
+
     res.status(500).json({ message: error.message, success: false });
   }
 };

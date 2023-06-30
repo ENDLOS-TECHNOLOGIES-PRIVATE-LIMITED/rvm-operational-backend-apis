@@ -23,6 +23,9 @@
     "BAD_REQUEST": "Bad request. Please check your input and try again.",
 
 
+   "REFRESH_TOKEN_GENERATED": "Refresh token generated successfully.",
+
+
     "VENDOR_EXIST": "Vendor already exist in the system",
     "VENDOR_EMAIL_EXIST_DIFF_USER": "Email already exist in the system with different User",
     "VENDOR_NOT_EXIST": "Vendor does not exist in the system",

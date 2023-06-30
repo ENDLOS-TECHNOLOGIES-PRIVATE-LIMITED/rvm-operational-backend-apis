@@ -16,7 +16,7 @@ const token = req.headers.authorization;
     const user: any = helpers.jwtHelper.verifyAccessToken(token);
 
   
-    if (user.role.toLowerCase() !== "superadmin") {
+    if (user.role.toLowerCase() !== "superadmin") {  
       throw new Error("'Unauthorized: Insufficient permissions to perform this operation.'");
     }
       
