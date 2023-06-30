@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import helpers from "../helpers";
 import models from "../models";
-import mongoose, { model } from "mongoose";
 import enums from '../json/enum.json'
 import messages from '../json/message.json'
 import utility from '../utility';
@@ -22,7 +20,26 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 
     // checking the serila number exist or not 
     const isSerialExist = await models.Inventory.find({ serialNumber: req.body.serialNumber });
-    if (isSerialExist.length > 0) {
+    const isInvoiceExist = await models.Inventory.findOne({ invoiceNo: req.body.invoiceNo });
+
+    
+    if (isInvoiceExist) {
+     
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.INVENTRY_INVOICE_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseError));
+
+
+
+    }
+    if (isSerialExist.length > 0 ||isInvoiceExist) {
      
       const responseError = {
         req: req,
@@ -43,6 +60,32 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 
 
     if(brandName && inventryTypeId){
+
+
+
+      const isBrandExist = await models.inventryBrand.findOne({name:brandName,inventryTypeId:inventryTypeId})
+
+      console.log({isBrandExist});
+
+
+
+      if(isBrandExist){
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.BRAND_EXIST,
+          payload: {},
+          logPayload: false,
+        };
+        
+        
+       return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+          .json(utility.createResponseObject(responseError));
+      
+      }
+      
+
+
 
   const createdBrand = await models.inventryBrand.create({
   name:brandName,
@@ -298,24 +341,27 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
   
         {
           $addFields: {
-            invetrybrands: "$invetrybrands",
-            invetrytypes: "$invetrytypes"
+            invetrybrand: "$invetrybrands",
+            invetrytype: "$invetrytypes"
           }
         },
         {
           $project: {
-            invetrybrands: {
+            invetrybrand: {
               _id: 1,
               inventryTypeId: 1,
               name: 1
             },
-            invetrytypes: {
+            invetrytype: {
               _id: 1,
               name: 1
             },
             // Add other fields you want to include in the result
             _id: 1,
             brandId: 1,
+            invoiceNo:1,
+            warrantyExpired:1,
+            purchaseDate:1,
             serialNumber: 1,
             isDeleted: 1,
             createdAt: 1,
@@ -415,10 +461,21 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.BAD_REQUEST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+     return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseError));
+
     } else {
       const deletedInventry = await models.Inventory.findOneAndUpdate(
         {
@@ -436,18 +493,61 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const Response = {
+
+
+
+  
+      if (!deletedInventry) {
+
+
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.INVENTORY_NOT_EXIST,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.NOT_FOUND)
+           .json(utility.createResponseObject(responseError));
+     
+      } 
+
+
+
+      const payload = {
         deletedInventry,
       };
-
-      res.json({
-        message: "Inventry Deleted Successfully",
-        data: Response,
-        success: true,
-      });
+    
+    
+    
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.INVENTORY_DELETED,
+        payload: payload,
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.OK)
+         .json(utility.createResponseObject(data4createResponseObject));
+ 
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+  
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+   return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
   }
 };
 
@@ -457,18 +557,24 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+
+
+      
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.BAD_REQUEST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+     return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseError));
+
     } else {
-      // checking the serila number exist or not
-    //   const isSerialExist = await models.Inventory.findOne({ serialNumber: req.body.serialNumber,_id:id });
-
-    //  if (isSerialExist ) {
-    //       return res.status(400).json({ error: "SerialNumber already exist" });
-    //     }
-
+    
       //Upading Inventory in the Db
       const updatedInventry = await models.Inventory.findOneAndUpdate(
         {
@@ -485,19 +591,68 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const Response = {
+
+
+
+        
+      if (!updatedInventry) {
+
+
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.INVENTORY_NOT_EXIST,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.NOT_FOUND)
+           .json(utility.createResponseObject(responseError));
+     
+      } 
+
+
+
+
+
+
+      const payload = {
         updatedInventry,
       };
+    
+    
+    
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.INVENTORY_UPDATED,
+        payload: payload,
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.OK)
+         .json(utility.createResponseObject(data4createResponseObject));
+  
+ 
 
-      //sending updated Inventory response
-      res.json({
-        message: "Inventory Updated Successfully",
-        data: Response,
-        success: true,
-      });
+
+
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+      
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+   return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
   }
 };
 

@@ -7,9 +7,11 @@ const inventrySchema = yup.object().shape({
   // inventryType: yup.string().required(),
   // brandName: yup.string().required(),
   // brandId: yup.string().required("BrandId is Required"),
-  brandId: yup.string(),
+  
+  invoiceNo: yup.string().required("Invoice Number is Required"),        
   serialNumber: yup.string().required("Serial Number is Required"),        
-  purchaseDate: yup.date(),
+  brandId: yup.string(),
+  purchaseDate: yup.date("PurchaseDate Must be Date Formet"),
 });
 // Validation schema using Yup
 const assignInventrySchema = yup.object().shape({

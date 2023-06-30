@@ -62,6 +62,7 @@
 
 
 "INVENTRY_SERIAL_EXIST": "Serial Number already exists in the system",
+"INVENTRY_INVOICE_EXIST": "Invoice Number already exists in the system",
 "INVENTORY_NOT_EXIST": "Inventory does not exist in the system",
 "INVENTORY_CREATED": "Inventory created successfully",
 "INVENTORY_FETCHED": "Inventory fetched successfully",
