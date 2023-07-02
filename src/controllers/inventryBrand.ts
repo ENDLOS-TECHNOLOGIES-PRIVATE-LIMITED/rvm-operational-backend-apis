@@ -32,7 +32,7 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
         logPayload: false,
       };
       
-      res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+      return res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
          .json(utility.createResponseObject(responseCatchError));
       }
 
@@ -85,7 +85,7 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
       };
       
       
-      res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      return res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
         .json(utility.createResponseObject(responseCatchError));
   
 
@@ -325,7 +325,18 @@ return  res
 
 
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+ return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+  
   }
 };
 

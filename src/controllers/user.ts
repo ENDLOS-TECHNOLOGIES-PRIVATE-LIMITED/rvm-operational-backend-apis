@@ -23,7 +23,19 @@ export const SuperAdminRegister = async (req: Request, res: Response) => {
 
     let isUserRegisterd = await models.User.findOne({ email });
     if (isUserRegisterd) {
-      return res.status(400).json({ error: "Email already exists" });
+
+ const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.USER_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+   return   res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseCatchError));
+
+    
     }
 
     const encriptedPass = await helpers.bcryptHelper.generateHash(password);
@@ -42,7 +54,7 @@ export const SuperAdminRegister = async (req: Request, res: Response) => {
       role:RegisterdUser.role,
     })
 
-    const Response = {
+    const payload = {
       token,
       user: {
 
@@ -53,15 +65,37 @@ export const SuperAdminRegister = async (req: Request, res: Response) => {
       },
     };
 
+
+    const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.REGISTER_SUCCESS,
+        payload: payload,
+        logPayload: false,
+    
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
   
-    //sending Registerd User response
-    res.json({
-      message: " Successfully Registerd",
-      data: Response,
-      success: true,
-    });
+ 
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+     const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.GENERAL_EROOR,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+  return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+        .json(utility.createResponseObject(responseCatchError));
+   
   }
 };
 
@@ -73,7 +107,19 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
 
     let isUserRegisterd = await models.User.findOne({ email });
     if (isUserRegisterd) {
-      return res.status(400).json({ error: "Email already exists" });
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.USER_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+   return   res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseCatchError));
+     
     }
 
     const encriptedPass = await helpers.bcryptHelper.generateHash(password);
@@ -128,10 +174,20 @@ export const Register = async (req: AuthenticatedRequest, res: Response) => {
   } catch (error: any) {
 
 
-
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
     
 
-    res.status(500).json({ message: error.message, success: false });
+   
   }
 };
 
@@ -142,28 +198,43 @@ export const Login = async (req: Request, res: Response) => {
     //Destructuring data from request
     const { email, password } = req.body;
 
-    console.log(req.body);
-
-    
 const loggedinUser: any = await models.User.findOne({ email });
 
-console.log({loggedinUser});
 
     if (!loggedinUser) {
-      return res.status(400).json({
-        error: "Please try to login with correct credentials",
-        success: false,
-      });
-    }
+
+
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.INVALID_CREDENTIALS,
+        payload: {},
+        logPayload: false,
+      };
+      
+      return res.status(enums.HTTP_CODES.UNAUTHORIZED)
+         .json(utility.createResponseObject(responseCatchError));
+
+}
     
 
 
     else if(!loggedinUser.isActive){
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.USER_DISABLED,
+        payload: {},
+        logPayload: false,
+      };
       
-      return res.status(400).json({
-        error: "Your account has been disabled. Please contact the administrator for further assistance.",
-        success: false,
-      });
+      return res.status(enums.HTTP_CODES.FORBIDDEN)
+         .json(utility.createResponseObject(responseCatchError));
+
       
     }
     
@@ -172,10 +243,20 @@ console.log({loggedinUser});
     const passwordCompare = await helpers.bcryptHelper.comparePassword(password, loggedinUser.password);
 
       if (!passwordCompare) {
-        return res.status(400).json({
-          success: false,
-          error: "Please try to login with correct credentials",
-        });
+
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.INVALID_CREDENTIALS,
+        payload: {},
+        logPayload: false,
+      };
+      
+      return res.status(enums.HTTP_CODES.UNAUTHORIZED)
+         .json(utility.createResponseObject(responseCatchError));
+      
       }
 
 
@@ -189,7 +270,7 @@ const Role = await models.UserRole.findOne({_id:new mongoose.Types.ObjectId(logg
 
       const token = helpers.jwtHelper.generateTokens(user);
 
-      const Response = {
+      const payload = {
         token,
         user: {
           name: loggedinUser.name,
@@ -198,17 +279,40 @@ const Role = await models.UserRole.findOne({_id:new mongoose.Types.ObjectId(logg
         },
       };
 
-      res.json({
-        message: " Successfully Logged in ",
-        data: Response,
-        success: true,
-      });
+
+
+    const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.LOGIN_SUCCESS,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+  return  res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
+    
     }
 
   
    
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+  
   }
 };
 
@@ -252,23 +356,46 @@ const allUsers = await models.User.aggregate([
 
 
 
- const Response = {
+ const payload = {
        
         allUsers,
         
       };
 
-      res.json({
-        message: "All User fetched Successfully",
-        data: Response,
-        success: true,
-      });
+
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.USER_FETCHED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+  
     
 
   
    
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+    
   }
 };
 export const deleteUser = async (req: Request, res: Response) => {
@@ -280,24 +407,58 @@ export const deleteUser = async (req: Request, res: Response) => {
     const user = await models.User.findByIdAndUpdate(userId, { isActive: false });
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.USER_NOT_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.NOT_FOUND)
+         .json(utility.createResponseObject(responseCatchError));
+
+
+     
     }
 
     // res.json({ message: 'User disabled successfully' });
 
 
-    const Response = {
+    const payload = {
        user
     };
 
-    res.json({
-      message: "User disabled successfully",
-      data: Response,
-      success: true,
-    });
+
+    const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.USER_DELETED,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+  return  res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
+ 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+  
   }
 
 
@@ -317,7 +478,19 @@ const updates = req.body;
   if (updates.email) {
     const existingUser = await models.User.findOne({ email: updates.email });
     if (existingUser && existingUser._id.toString() !== userId) {
-      return res.status(400).json({ message: 'Email already exists' });
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.INVALID_EMAIL,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseCatchError));
+      
     }
   }
 
@@ -325,24 +498,56 @@ const updates = req.body;
 const user = await models.User.findByIdAndUpdate(userId, updates, { new: true });
 
 if (!user) {
-  return res.status(404).json({ message: 'User not found' });
+
+
+  const responseCatchError = {
+    req: req,
+    result: -1,
+    message: messages.USER_NOT_EXIST,
+    payload: {},
+    logPayload: false,
+  };
+  
+ return res.status(enums.HTTP_CODES.NOT_FOUND)
+     .json(utility.createResponseObject(responseCatchError));
+ 
 }
 
-const Response = {
+const payload = {
  user
 };
 
-      res.json({
-        message: " User Updated Successfully",
-        data: Response,
-        success: true,
-      });
-    
+const data4createResponseObject = {
+  req: req,
+  result: 0,
+  message: messages.USER_UPDATED,
+  payload: payload,
+  logPayload: false,
+
+};
+
+return  res
+  .status(enums.HTTP_CODES.OK)
+  .json(utility.createResponseObject(data4createResponseObject));
+
+  
 
   
    
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+    
   }
 };
 

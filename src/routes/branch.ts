@@ -3,6 +3,7 @@ import Controller from "../controllers";
 import Validator from "../validations";
 
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 
 const route = Router();
 
@@ -23,7 +24,7 @@ export default (app: Router) => {
    *     summary: adding new branch
    *     description: For Adding new branch.
    */
-  route.post("/add", Validator.branch.validateBranch, verifySuperAdmin, Controller.branch.Add);
+  route.post("/add", validationMiddleware(Validator.branch.branchSchema), verifySuperAdmin, Controller.branch.Add);
 
   /**
    * @swagger

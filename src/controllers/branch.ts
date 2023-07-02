@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from "express";
 // import User from '../models/user';
 import models from "../models";
 import helpers from "../helpers";
+import utility from '../utility';
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
 
 
 interface AuthenticatedRequest extends Request {
@@ -16,10 +19,19 @@ export const GetByCustomer = async (req: AuthenticatedRequest, res: Response) =>
     const { id } = req.query;
 
        if (!id) {
-         res.status(400).json({
-           message: "Bad Request",
-           success: false,
-         });
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.CUSTOMER_ID_REQUIRED,
+          payload: {},
+          logPayload: false,
+        };
+        
+        return res.status(enums.HTTP_CODES.BAD_REQUEST)
+           .json(utility.createResponseObject(responseCatchError));
+
+
+
        }
 
        else{
@@ -34,22 +46,41 @@ export const GetByCustomer = async (req: AuthenticatedRequest, res: Response) =>
      
     });
 
-    const Response = {
+    const payload = {
       Customer,
       Branches,
     };
 
-    //sending Registerd User response
-    res.json({
-      message: "All Branches of a Customer",
-      data: Response,
-      success: true,
-    });
+
+  const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.BRANCH_FETCHED,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+  return  res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
 
        }
 
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
   }
 };
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
@@ -61,8 +92,19 @@ const checkBranch = await models.Branch.findOne({
 });
 
 if(checkBranch){
-  // The record already exists
-  return res.status(409).json({ message: "Branch already exists" });
+
+
+  const responseCatchError = {
+    req: req,
+    result: -1,
+    message: messages.BRANCH_EXIST,
+    payload: {},
+    logPayload: false,
+  };
+  
+  return res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+     .json(utility.createResponseObject(responseCatchError));
+  
 }
 
 const Branch = await models.Branch.create({
@@ -76,18 +118,40 @@ const Branch = await models.Branch.create({
       },
     });
 
-    const Response = {
+    const payload = {
       Branch,
     };
 
-    //sending Registerd User response
-    res.json({
-      message: "Branch Added Successfully ",
-      data: Response,
-      success: true,
-    });
+
+  const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.BRAND_CREATED,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+  return  res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
+  
+
+
+   
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
   }
 };
 export const Update = async (req: AuthenticatedRequest, res: Response) => {
@@ -95,10 +159,19 @@ export const Update = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.BRANCH_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseCatchError));
+
+
     } else{
       //Upading customoer in the Db
       const updatedBranch = await models.Branch.findOneAndUpdate(
@@ -116,21 +189,67 @@ export const Update = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const Response = {
+
+
+      if(!updatedBranch){
+
+
+
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+        
+        return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+          .json(utility.createResponseObject(responseCatchError));
+
+      
+      }
+      
+
+
+      const payload = {
         updatedBranch,
       };
 
-      //sending updated customer response
-      res.json({
-        message: "Branch Updated Added",
-        data: Response,
-        success: true,
-      });
+
+    const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.BRANCH_UPDATED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+
     }
 
     
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
   }
 };
 export const Delete = async (req: AuthenticatedRequest, res: Response) => {
@@ -138,10 +257,18 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.BRANCH_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseCatchError));
+
+    
     } else{
       //Upading customoer in the Db
       // const deltedBranch = await models.Branch.findByIdAndDelete(
@@ -166,21 +293,64 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
 
       );
 
-      const Response = {
+
+      if(!deltedBranch){
+
+
+
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+        
+        return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+          .json(utility.createResponseObject(responseCatchError));
+
+      
+      }
+      
+
+
+      const payload = {
         deltedBranch,
       };
 
-      //sending updated customer response
-      res.json({
-        message: "Branch Deleted Successfully",
-        data: Response,
-        success: true,
-      });
-    }
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.BRANCH_DELETED,
+        payload: payload,
+        logPayload: false,
+      
+      };
+      
+      return res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+      
+
+       }
 
     
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+ return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+    
   }
 };
 

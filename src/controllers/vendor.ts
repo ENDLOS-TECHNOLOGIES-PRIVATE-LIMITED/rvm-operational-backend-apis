@@ -30,7 +30,7 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
         logPayload: false,
       };
       
-      res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+     return res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
          .json(utility.createResponseObject(responseCatchError));
       }
 
