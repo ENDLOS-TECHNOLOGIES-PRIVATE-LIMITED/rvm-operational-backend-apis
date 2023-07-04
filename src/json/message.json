@@ -14,6 +14,10 @@
     "USER_PROFILE_UPDATED": "User profile updated successfully",
     "GENERAL_EROOR": "Sorry! Something went wrong with the request. Please try again later.",
     "BAD_REQUEST": "Bad request. Please check your input and try again.",
+
+
+
+    "GOOGLE_BUCKET_FILE_UPLOAD_ERROR":"An Error in File Uploading on Google",
     
     
     "REFRESH_TOKEN_GENERATED": "Refresh token generated successfully.",
@@ -99,7 +103,16 @@
     "MACHINE_CREATED": "Machine created successfully",
     "MACHINE_FETCHED": "Machine fetched successfully",
     "MACHINE_DELETED": "Machine deleted successfully",
-    "MACHINE_UPDATED": "Machine updated successfully"
+    "MACHINE_UPDATED": "Machine updated successfully",
+    
+    
+    
+    
+    "SOLUTION_ID_REQUIRED": "Solution ID is required",
+    "SOLUTION_CREATED": "Solution created successfully",
+    "SOLUTION_FETCHED": "Solution fetched successfully",
+    "SOLUTION_DELETED": "Solution deleted successfully",
+    "SOLUTION_UPDATED": "Solution updated successfully"
     
   
   }

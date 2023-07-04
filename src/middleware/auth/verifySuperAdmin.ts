@@ -13,10 +13,19 @@ const token = req.headers.authorization;
     res.status(401).send({ error: "Please Login" });
   }
   try {
+
+
+
     const user: any = helpers.jwtHelper.verifyAccessToken(token);
 
-  
-    if (user.role.toLowerCase() !== "superadmin") {  
+    if (!user.role ){
+      throw new Error("'Role is not Present in Token Pls Contect to Admin '");
+    }
+
+
+
+
+    if (user?.role?.toLowerCase() !== "superadmin") {  
       throw new Error("'Unauthorized: Insufficient permissions to perform this operation.'");
     }
       

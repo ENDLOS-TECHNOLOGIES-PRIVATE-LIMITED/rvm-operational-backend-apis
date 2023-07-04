@@ -204,7 +204,7 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
       const responseCatchError = {
         req: req,
         result: -1,
-        message: messages.NOT_FOUND,
+        message: messages.BAD_REQUEST,
         payload: {},
         logPayload: false,
       };
