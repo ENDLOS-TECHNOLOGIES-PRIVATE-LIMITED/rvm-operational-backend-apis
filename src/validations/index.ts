@@ -10,6 +10,7 @@ import * as solution from "./solution";
 import * as vendor from "./vendor";
 import * as inventryBrand from "./inventryBrand";
 
+
 export default {
   userValidataion,
   inventry,

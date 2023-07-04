@@ -1,7 +1,7 @@
 const yup = require("yup");
 
 // Validation schema using Yup
-const userRoleSchema = yup.object().shape({
+export const userRoleSchema = yup.object().shape({
   roleName: yup.string().required().min(2).max(50),
   description: yup.string().required().min(2).max(50),
   

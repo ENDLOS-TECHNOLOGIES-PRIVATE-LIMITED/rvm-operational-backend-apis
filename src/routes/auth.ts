@@ -1,7 +1,4 @@
 import { Router } from 'express';
-// import middlewares from '../middlewares';
-// import Validation from '../validations';
-// import Controller from '../controllers';
 import Controller from "../controllers";
 
 const route = Router();

@@ -1,8 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
 
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 
 const route = Router();
 
@@ -27,7 +28,7 @@ export default (app: Router) => {
 
 
   
-  route.post("/", Validator.problem.validateProblem, verifySuperAdmin, Controller.problem.Add);
+  route.post("/", validationMiddleware(Validator.problem.problemSchema), verifySuperAdmin, Controller.problem.Add);
 
 
 

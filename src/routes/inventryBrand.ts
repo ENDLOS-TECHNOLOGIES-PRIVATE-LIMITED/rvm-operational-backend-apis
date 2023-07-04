@@ -1,7 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 const route = Router();
 
 export default (app: Router) => {
@@ -21,7 +22,7 @@ export default (app: Router) => {
    *     summary: Adding inventrybrand
    *     description: Adding inventrybrand.
    */
-  route.post("/", Validator.inventryBrand.validateInventryBrandSchema, verifySuperAdmin,Controller.inventryBrand.add );
+  route.post("/",validationMiddleware(Validator.inventryBrand.inventryBrandSchema) , verifySuperAdmin,Controller.inventryBrand.add );
 
 
 

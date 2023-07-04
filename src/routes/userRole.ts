@@ -1,7 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 const route = Router();
 
 export default (app: Router) => {
@@ -21,7 +22,7 @@ export default (app: Router) => {
    *     summary: Register user
    *     description: Registering superadmin user.
    */
-  route.post("/", Validator.userRole.validateUserRole, verifySuperAdmin,Controller.userRole.add );
+  route.post("/",validationMiddleware( Validator.userRole.userRoleSchema), verifySuperAdmin,Controller.userRole.add );
   /**
    * @swagger
    * /register:

@@ -1,12 +1,6 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
-const yup = require("yup");
-import utility from '../utility';
-import enums from '../json/enum.json'
-import mongoose from 'mongoose';
-
-
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
 import { validationMiddleware } from "../middleware/validator";
 
