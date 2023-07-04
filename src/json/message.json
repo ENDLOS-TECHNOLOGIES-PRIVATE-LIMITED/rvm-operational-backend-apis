@@ -112,7 +112,15 @@
     "SOLUTION_CREATED": "Solution created successfully",
     "SOLUTION_FETCHED": "Solution fetched successfully",
     "SOLUTION_DELETED": "Solution deleted successfully",
-    "SOLUTION_UPDATED": "Solution updated successfully"
+    "SOLUTION_UPDATED": "Solution updated successfully",
+    
+    
+    
+    "PROBLEM_ID_REQUIRED": "Problem ID is required",
+    "PROBLEM_CREATED": "Problem created successfully",
+    "PROBLEM_FETCHED": "Problem fetched successfully",
+    "PROBLEM_DELETED": "Problem deleted successfully",
+    "PROBLEM_UPDATED": "Problem updated successfully"
     
   
   }
