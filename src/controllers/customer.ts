@@ -180,22 +180,27 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
      const  Customer = await models.Customer.aggregate([
         { $match: matchStage }, // Filter vendors with isDelete set to false
         { $sort: { createdAt: -1 } },
-        {
+{
           $lookup: {
             from: "branches",
-            localField: "_id",
-            foreignField: "customer._customerId",
+            let: { customerId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$customer._customerId", "$$customerId"] },
+                      { $eq: ["$isDeleted", false] }
+                    ]
+                  }
+                }
+              }
+            ],
             as: "branches",
           },
         },
-        {
-          $lookup: {
-            from: "machines",
-            localField: "branches._id",
-            foreignField: "branchId",
-            as: "machines",
-          },
-        },
+
+
       ]).exec();
 
 
