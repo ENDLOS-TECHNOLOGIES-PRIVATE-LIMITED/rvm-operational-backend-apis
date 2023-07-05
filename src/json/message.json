@@ -38,6 +38,14 @@
     "INVALID_CREDENTIALS": "Invalid credentials. Please check your username and password.",
 
     
+    "USER_ROLE_EXIST": "User role already exists in the system.",
+    "USER_ROLE_DELETE_ERROR": "User role cannot be deleted as it is associated with one or more users in the system.",
+    "USER_ROLE_NOT_EXIST": "User role does not exist in the system.",
+    "USER_ROLE_CREATED": "User role created successfully.",
+    "USER_ROLE_FETCHED": "User role fetched successfully.",
+    "USER_ROLE_DELETED": "User role deleted successfully.",
+    "USER_ROLE_UPDATED": "User role updated successfully.",
+    
 
     "VENDOR_EXIST": "Vendor already exist in the system",
     "VENDOR_DELETE_ERROR": "Vendor cannot be deleted as it has associated customers in the system.",
