@@ -223,10 +223,10 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
    { $sort: { createdAt: -1 } },
    {
      $lookup: {
-       from: "invetries",
+       from: "invetrybrands",
        localField: "_id",
-       foreignField: "inventryType",
-       as: "invetries",
+       foreignField: "inventryTypeId",
+       as: "invetrybrands",
      },
    },
  ]).exec();
