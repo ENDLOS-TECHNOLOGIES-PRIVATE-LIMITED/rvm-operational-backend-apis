@@ -5,13 +5,13 @@ const problemSchema = new Schema(
   {
 
     problemType: { type: mongoose.Schema.Types.ObjectId, refPath: "inventryTypeRef"},
-    globalProblem: {
+    category: {
       type: String,
-      enum: ["Hardware", "PLC", "Software", "Other"],
+      enum: ["Hardware", "Plc", "Software", "Other"],
       required: true,
     },
 
-    name: { type: String, required: true ,unique:true}, 
+    name: { type: String, required: true}, 
     description: { type: String, required: true },
     
 },
