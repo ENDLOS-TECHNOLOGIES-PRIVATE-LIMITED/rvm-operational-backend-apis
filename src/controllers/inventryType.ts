@@ -195,7 +195,7 @@ return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
 
 export const Get = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    let {id,type} = req.query;
+    let {id,type,allData} = req.query;
 
     if (!id) {
 
@@ -216,19 +216,50 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
     }
     else if(type=='allInventries'){
 
-      
+      const matchStage:any = {
+      };
+    
 
- const InventryTypes = await models.InvetryType.aggregate([
-   { $match: { isDeleted: false, _id: new mongoose.Types.ObjectId(id.toString()) } }, // Filter customers with isDelete set to false
-   { $sort: { createdAt: -1 } },
-   {
-     $lookup: {
-       from: "invetrybrands",
-       localField: "_id",
-       foreignField: "inventryTypeId",
-       as: "invetrybrands",
-     },
-   },
+      if (allData==='false'|| !allData) {
+        matchStage.isDeleted =false;
+      }
+
+      if (id) {
+        matchStage._id =  new mongoose.Types.ObjectId(id.toString());
+      }
+  
+
+
+
+    const InventryTypes = await models.InvetryType.aggregate([
+  //  { $match: { isDeleted: false, _id: new mongoose.Types.ObjectId(id.toString()) } }, // Filter customers with isDelete set to false
+   
+  { $match: matchStage },
+  
+  { $sort: { createdAt: -1 } },
+
+  {
+    $lookup: {
+      from: "invetrybrands",
+      let: { inventryTypeId: "$_id" },
+      pipeline: [
+        {
+      $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$inventryTypeId", "$$inventryTypeId"] },
+
+                allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+        ]
+            }
+          }
+        }
+      ],
+      as: "invetrybrands",
+    },
+  },
+
+
  ]).exec();
 
  if(InventryTypes.length>0){
@@ -240,7 +271,7 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
  const data4createResponseObject = {
   req: req,
   result: 0,
-  message: messages.INVENTRY_TYPE_CREATED,
+  message: messages.INVENTRY_TYPE_FETCHED,
   payload: payload,
   logPayload: false,
 };
@@ -287,7 +318,7 @@ return  res.status(enums.HTTP_CODES.OK)
     const data4createResponseObject = {
      req: req,
      result: 0,
-     message: messages.INVENTRY_TYPE_CREATED,
+     message: messages.INVENTRY_TYPE_FETCHED,
      payload: payload,
      logPayload: false,
    };
@@ -411,6 +442,30 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
      
     } else {
   
+
+
+
+      const isBrandExist = await models.inventryBrand.findOne({inventryTypeId:new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+
+    
+      if(isBrandExist){
+  
+  
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.INVENTRY_TYPE_DELETE_ERROR,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+           .json(utility.createResponseObject(responseError));
+  
+  
+      }
+  
+
 
       const deletedInventryType = await models.InvetryType.findOneAndUpdate(
         {

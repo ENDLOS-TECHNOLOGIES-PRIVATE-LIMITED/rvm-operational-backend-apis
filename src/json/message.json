@@ -77,6 +77,7 @@
 
     "BRAND_EXIST": "Brand already exists in the system",
     "BRAND_NOT_EXIST": "Brand does not exist in the system",
+    "BRAND_DELETE_ERROR": "InventryBrand cannot be deleted as it has associated inventries in the system.",
     "BRAND_CREATED": "Brand created successfully",
     "BRAND_FETCHED": "Brand fetched successfully",
     "BRAND_DELETED": "Brand deleted successfully",
@@ -85,6 +86,7 @@
 
 
     "INVENTRY_TYPE_EXIST": "InventryType already exists in the system",
+    "INVENTRY_TYPE_DELETE_ERROR": "InventryType cannot be deleted as it has associated inventry Brands in the system.",
     "INVENTRY_TYPE_NOT_EXIST": "InventryType does not exist in the system",
     "INVENTRY_TYPE_CREATED": "InventryType created successfully",
     "INVENTRY_TYPE_FETCHED": "InventryType fetched successfully",

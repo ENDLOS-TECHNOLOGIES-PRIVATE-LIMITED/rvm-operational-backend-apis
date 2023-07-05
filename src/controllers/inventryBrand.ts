@@ -271,6 +271,34 @@ export const deleteBrand = async (req: AuthenticatedRequest, res: Response) => {
    
 
     const {id} = req.params;
+
+
+
+
+
+    const isInventryExist = await models.Inventory.findOne({brandId:new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+
+    
+    if(isInventryExist){
+
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.BRAND_DELETE_ERROR,
+        payload: {},
+        logPayload: false,
+      };
+      
+    return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseError));
+
+
+    }
+
+
+
+
  
      // upading  UserRole in the Db
  const deleteBrand = await models.inventryBrand.findOneAndUpdate(
