@@ -24,7 +24,7 @@ auth(route);
  branch(route);
  invetryType(route);
  machine(route);
-//  userRole(route); need to work on permission and new payload response then it will be enabled again for the user 
+ userRole(route); //need to work on permission and new payload response then it will be enabled again for the user 
  problem(route);
  solution(route);
  vendor(route);
