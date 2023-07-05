@@ -152,7 +152,6 @@ return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
       .json(utility.createResponseObject(responseCatchError));
 
 
-    res.status(500).json({ message: error.message, success: false });
   }
 };
 
