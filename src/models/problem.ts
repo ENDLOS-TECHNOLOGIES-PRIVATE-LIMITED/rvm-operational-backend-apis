@@ -4,7 +4,13 @@ import { Schema, model } from "mongoose";
 const problemSchema = new Schema(
   {
 
-    problemType: { type: mongoose.Schema.Types.ObjectId, refPath: "inventryTypeRef",require:true },
+    problemType: { type: mongoose.Schema.Types.ObjectId, refPath: "inventryTypeRef"},
+    globalProblem: {
+      type: String,
+      enum: ["Hardware", "PLC", "Software", "Other"],
+      required: true,
+    },
+
     name: { type: String, required: true ,unique:true}, 
     description: { type: String, required: true },
     
