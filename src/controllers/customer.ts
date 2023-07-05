@@ -76,10 +76,24 @@ return  res
 };
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
+
+
+    
+const {allData} =req.query;
+
+    const matchStage:any = {
+    };
+
+if (allData==='false'|| !allData) {
+    matchStage.isDeleted =false;
+  }
+  
 const AllCustomer = await models.Customer.aggregate([
-      { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+  { $match: matchStage}, // Filter customers with isDelete set to false
+      // { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
       { $sort: { createdAt: -1 } },
- {
+
+      {
         $lookup: {
           from: "branches",
           let: { customerId: "$_id" },
@@ -89,8 +103,9 @@ const AllCustomer = await models.Customer.aggregate([
                 $expr: {
                   $and: [
                     { $eq: ["$customer._customerId", "$$customerId"] },
-                    { $eq: ["$isDeleted", false] }
-                  ]
+
+                    allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+            ]
                 }
               }
             }
@@ -98,6 +113,26 @@ const AllCustomer = await models.Customer.aggregate([
           as: "branches",
         },
       },
+
+//  {
+//         $lookup: {
+//           from: "branches",
+//           let: { customerId: "$_id" },
+//           pipeline: [
+//             {
+//               $match: {
+//                 $expr: {
+//                   $and: [
+//                     { $eq: ["$customer._customerId", "$$customerId"] },
+//                     { $eq: ["$isDeleted", false] }
+//                   ]
+//                 }
+//               }
+//             }
+//           ],
+//           as: "branches",
+//         },
+//       },
 
     ]).exec();
      
@@ -174,8 +209,6 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
     
     else if(id&& nestedData){
 
-
-      console.log("onnn");
       const matchStage:any = {
         isDeleted:false
       };

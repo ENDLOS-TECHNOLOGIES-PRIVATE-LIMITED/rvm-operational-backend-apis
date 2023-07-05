@@ -93,13 +93,17 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
 export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-const {id,nestedData} =req.query;
+const {id,nestedData,allData} =req.query;
+
 let vendors;
 
     const matchStage:any = {
-      isDeleted:false
-    };
+      };
 
+if (allData==='false'|| !allData) {
+      matchStage.isDeleted =false;
+    }
+    
 
     if (id) {
       matchStage._id =  new mongoose.Types.ObjectId(id.toString());
@@ -150,29 +154,38 @@ let vendors;
 else{
 
 
+
+
        vendors = await models.vendor.aggregate([
         { $match: matchStage}, // Filter customers with isDelete set to false
         { $sort: { createdAt: -1 } },
-        {
+      {
           $lookup: {
             from: "customers",
-            localField: "_id",
-            foreignField: "vendorId",
+            let: { vendorId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$vendorId", "$$vendorId"] },
+
+                      allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+              ]
+                  }
+                }
+              }
+            ],
             as: "customers",
           },
         },
-        {
-          $lookup: {
-            from: "customers",
-            localField: "_id",
-            foreignField: "vendorId",
-            as: "customers",
-          },
-        },
+        
+
+
       ]).exec();
 }
 
- 
+
 
       if(vendors.length==0){
 
