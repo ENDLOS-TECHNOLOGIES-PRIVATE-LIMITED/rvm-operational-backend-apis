@@ -22,7 +22,19 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
 
     let isUserRegisterd = await models.UserRole.findOne({ roleName });
     if (isUserRegisterd) {
-      return res.status(400).json({ error: "Role already exists" });
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.USER_ROLE_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+  return    res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+        .json(utility.createResponseObject(responseError));
+
     }
 
    
