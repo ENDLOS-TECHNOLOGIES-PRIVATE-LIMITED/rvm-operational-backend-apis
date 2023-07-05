@@ -17,6 +17,8 @@
 
 
 
+
+
     "GOOGLE_BUCKET_FILE_UPLOAD_ERROR":"An Error in File Uploading on Google",
     
     
@@ -38,6 +40,7 @@
     
 
     "VENDOR_EXIST": "Vendor already exist in the system",
+    "VENDOR_DELETE_ERROR": "Vendor cannot be deleted as it has associated customers in the system.",
     "VENDOR_EMAIL_EXIST_DIFF_USER": "Email already exist in the system with different User",
     "VENDOR_NOT_EXIST": "Vendor does not exist in the system",
     "VENDOR_CREATED": "Vendor created successfully",
@@ -45,9 +48,12 @@
     "VENDOR_DELETED": "Vendor deleted successfully",
     "VENDOR_UPDATED": "Vendor updated successfully",
 
+
     "CUSTOMER_EXIST": "Customer already exists in the system",
     "CUSTOMER_ID_REQUIRED": "Customer ID is required",
     "CUSTOMER_NOT_FOUND": "Customer Not Found",
+    "CUSTOMER_DELETE_ERROR": "Customer cannot be deleted as it has associated branches in the system.",
+
 
     "CUSTOMER_NOT_EXIST": "Customer does not exist in the system",
     "CUSTOMER_CREATED": "Customer created successfully",
@@ -58,6 +64,7 @@
 
 
     "BRANCH_EXIST": "Branch already exists in the system",
+    "BRANCH_DELETE_ERROR": "Branch cannot be deleted as it has associated machines in the system.",
     "BRANCH_ID_REQUIRED": "Branch ID is required",
     "BRANCH_ASSIGNED": "Branch Assigned Successfully",
     "BRANCH_NOT_EXIST": "Branch does not exist in the system",

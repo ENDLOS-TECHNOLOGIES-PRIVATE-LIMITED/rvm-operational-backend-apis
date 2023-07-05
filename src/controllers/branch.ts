@@ -4,6 +4,7 @@ import models from "../models";
 import utility from '../utility';
 import enums from '../json/enum.json'
 import messages from '../json/message.json'
+import mongoose from "mongoose";
 
 
 interface AuthenticatedRequest extends Request {
@@ -269,6 +270,33 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
 
     
     } else{
+
+
+
+      const isMachineExist = await models.Machine.findOne({"branchId":new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+
+
+      
+    
+      if(isMachineExist){
+  
+  
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.BRANCH_DELETE_ERROR,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+           .json(utility.createResponseObject(responseError));
+  
+  
+      }
+
+
+
       //Upading customoer in the Db
       // const deltedBranch = await models.Branch.findByIdAndDelete(
       //   {

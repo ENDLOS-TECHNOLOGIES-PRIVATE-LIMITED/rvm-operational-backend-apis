@@ -457,6 +457,29 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
          .json(utility.createResponseObject(responseError));
 
     } else {
+
+
+      const isBranchExist = await models.Branch.findOne({"customer._customerId":new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+
+
+      
+    
+      if(isBranchExist){
+  
+  
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.CUSTOMER_DELETE_ERROR,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+           .json(utility.createResponseObject(responseError));
+  
+  
+      }
     
       const deletedCustomer = await models.Customer.findOneAndUpdate(
         {

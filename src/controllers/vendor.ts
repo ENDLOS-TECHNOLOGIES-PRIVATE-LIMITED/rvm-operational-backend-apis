@@ -341,8 +341,33 @@ export const deleteVendor = async (req: AuthenticatedRequest, res: Response) => 
    
 
     const {id} = req.params;
- 
-     // upading  UserRole in the Db
+
+
+
+
+    const isAnyCustomerOfVendor = await models.Customer.findOne({vendorId:new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+
+    
+    if(isAnyCustomerOfVendor){
+
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.VENDOR_DELETE_ERROR,
+        payload: {},
+        logPayload: false,
+      };
+      
+    return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseError));
+
+
+    }
+
+
+
+//      // upading  UserRole in the Db
  const deletedVendor = await models.vendor.findOneAndUpdate(
   {_id:new mongoose.Types.ObjectId(id.toString())},
   {
@@ -365,7 +390,7 @@ if(!deletedVendor){
   };
   
   
-  return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+  return  res.status(enums.HTTP_CODES.NOT_FOUND)
     .json(utility.createResponseObject(responseCatchError));
 
 
@@ -373,7 +398,7 @@ if(!deletedVendor){
 
 
 const payload = {
-  deletedVendor
+  deletedVendor,
 };
 
 
