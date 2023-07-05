@@ -88,36 +88,48 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
   
 
-    const {type} = req.query;
+    const {type,allData} = req.query;
 
 
     if(type=='allInventries'){
 
+
+
+      const matchStage:any = {
+      };
+    
+
+      if (allData==='false'|| !allData) {
+        matchStage.isDeleted =false;
+      }
+
+
    
         const InventryTypes = await models.InvetryType.aggregate([
-          { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
-          { $sort: { createdAt: -1 } },
-          // {
-          //   $lookup: {
-          //     from: "invetries",
-          //     localField: "_id",
-          //     foreignField: "inventryType",
-          //     as: "invetries",
-          //   },
-          // },
+          { $match: matchStage },
+        { $sort: { createdAt: -1 } },
+
           {
             $lookup: {
               from: "invetrybrands",
-              localField: "_id",
-              foreignField: "inventryTypeId",
+              let: { inventryTypeId: "$_id" },
+              pipeline: [
+                {
+              $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: ["$inventryTypeId", "$$inventryTypeId"] },
+        
+                        allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+                ]
+                    }
+                  }
+                }
+              ],
               as: "invetrybrands",
             },
           },
-          {
-            $addFields: {
-              Count: { $size: "$invetrybrands" },
-            },
-          },
+        
         ]).exec();
 
 
