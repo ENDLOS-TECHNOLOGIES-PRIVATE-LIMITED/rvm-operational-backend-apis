@@ -62,7 +62,7 @@ export default (app: Router) => {
    *     description: Endpoint to update a machine by ID.
    */
 
-   route.put("/:id", verifySuperAdmin, Controller.problem.update);
+   route.put("/:id", validationMiddleware(Validator.problem.problemSchema),verifySuperAdmin, Controller.problem.update);
 
 
 };

@@ -160,6 +160,7 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let{ id }= req.params;
 
+  
     if (!id) {
 
       const responseCatchError = {
@@ -185,7 +186,10 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
        
         }
       }
-      
+      ,
+      {
+        new:true
+      }
 
       );
 
@@ -269,6 +273,8 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         }
 
       );
+
+      
 
 
       if (!deletedProblem) {
