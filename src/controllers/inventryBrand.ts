@@ -97,7 +97,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
 
-const {id} =req.query;
+const {id,allData} =req.query;
 
     const matchStage:any = {};
 
@@ -106,21 +106,36 @@ const {id} =req.query;
       matchStage._id =  new mongoose.Types.ObjectId(id.toString());
     }
 
+    if (allData==='false'|| !allData) {
+      matchStage.isDeleted =false;
+    }
    
    
         const brands = await models.inventryBrand.aggregate([
         { $match: matchStage}, // Filter customers with isDelete set to false
         { $sort: { createdAt: -1 } },
 
-        
-        // {
-        //   $lookup: {
-        //     from: "customers",
-        //     localField: "_id",
-        //     foreignField: "vendorId",
-        //     as: "customers",
-        //   },
-        // },
+        {
+          $lookup: {
+            from: "invetries",
+            let: { brandId: "$_id" },
+            pipeline: [
+              {
+            $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$brandId", "$$brandId"] },
+      
+                      allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+              ]
+                  }
+                }
+              }
+            ],
+            as: "invetries",
+          },
+        },
+
       ]).exec();
 
 
