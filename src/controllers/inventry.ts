@@ -16,30 +16,68 @@ interface AuthenticatedRequest extends Request {
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-    const {brandName,inventryTypeId,brandId,serialNumber} =req.body;
+    const {brandName,inventryTypeId,brandId,serialNumber,purchaseDate,warrantyExpired,invoiceNo} =req.body;
+
+
+const uniqueSerialNumber = Array.from(new Set(serialNumber));
+
+
+const isSerialExist = await models.Inventory.find({ serialNumber: { $in: uniqueSerialNumber } })
+
+
+
+
 
     // checking the serila number exist or not 
-    const isSerialExist = await models.Inventory.find({ serialNumber: req.body.serialNumber });
-    const isInvoiceExist = await models.Inventory.findOne({ invoiceNo: req.body.invoiceNo });
+    // const isSerialExist = await models.Inventory.find({ serialNumber: req.body.serialNumber });
+    // const isInvoiceExist = await models.Inventory.findOne({ invoiceNo: req.body.invoiceNo });//aakash & yash sir ke bole par dubara change nhi karunga
 
     
-    if (isInvoiceExist) {
+    // if (isInvoiceExist) {
      
-      const responseError = {
-        req: req,
-        result: -1,
-        message: messages.INVENTRY_INVOICE_EXIST,
-        payload: {},
-        logPayload: false,
-      };
+    //   const responseError = {
+    //     req: req,
+    //     result: -1,
+    //     message: messages.INVENTRY_INVOICE_EXIST,
+    //     payload: {},
+    //     logPayload: false,
+    //   };
       
-     return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
-         .json(utility.createResponseObject(responseError));
+    //  return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+    //      .json(utility.createResponseObject(responseError));
 
 
 
-    }
-    if (isSerialExist.length > 0 ||isInvoiceExist) {
+    // }
+    // if (isSerialExist.length > 0 ||isInvoiceExist) {
+     
+    //   const responseError = {
+    //     req: req,
+    //     result: -1,
+    //     message: messages.INVENTRY_SERIAL_EXIST,
+    //     payload: {},
+    //     logPayload: false,
+    //   };
+      
+    //  return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+    //      .json(utility.createResponseObject(responseError));
+
+
+
+    // }
+
+
+
+
+
+
+
+
+
+
+
+
+    if (isSerialExist.length > 0 ) {
      
       const responseError = {
         req: req,
@@ -59,84 +97,35 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
 
 
 
-    if(brandName && inventryTypeId){
+    // let addedInventry ;
+
+    // let addedInventry= uniqueSerialNumber.map(async element=>{
+
+    //    return await models.Inventory.create({
+    //     ...req.body,
+    //     });
+
+    // })
 
 
-
-      const isBrandExist = await models.inventryBrand.findOne({name:brandName,inventryTypeId:inventryTypeId})
-
-      console.log({isBrandExist});
+    
 
 
+    const addedInventry = await  Promise.all(
+      uniqueSerialNumber.map(async (element) => {
+              return await models.Inventory.create({
+              serialNumber: element,
+              purchaseDate,
+              warrantyExpired,
+              invoiceNo,
+              brandId
+              
+         
+            });
 
-      if(isBrandExist){
-        const responseError = {
-          req: req,
-          result: -1,
-          message: messages.BRAND_EXIST,
-          payload: {},
-          logPayload: false,
-        };
-        
-        
-       return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
-          .json(utility.createResponseObject(responseError));
-      
-      }
-      
-
-
-
-  const createdBrand = await models.inventryBrand.create({
-  name:brandName,
-  inventryTypeId:inventryTypeId
-    })
+      })
   
-  
-
-
-    const addedInventry = await models.Inventory.create({
-      brandId:createdBrand._id,
-      ...req.body,
-
-      });
-
-      
- 
- 
- 
- 
-      const payload = {
-       addedInventry,
-     };
-   
-   
-   
-     const data4createResponseObject = {
-       req: req,
-       result: 0,
-       message: messages.INVENTORY_CREATED,
-       payload: payload,
-       logPayload: false,
-     };
-     
-    return  res.status(enums.HTTP_CODES.OK)
-        .json(utility.createResponseObject(data4createResponseObject));
-
-
-
-  
-  
-
-
-     
-
-    }else if(serialNumber&&brandId){
-
-    // Adding Inventry in the Db
-    const addedInventry = await models.Inventory.create({
-      ...req.body,
-      });
+    );
  
  
  
@@ -159,23 +148,127 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
         .json(utility.createResponseObject(data4createResponseObject));
  
 
-    }
-else{
+    
 
 
-  const responseError = {
-    req: req,
-    result: -1,
-    message: messages.BAD_REQUEST,
-    payload: {},
-    logPayload: false,
-  };
+
+//     if(brandName && inventryTypeId){
+
+
+
+//       const isBrandExist = await models.inventryBrand.findOne({name:brandName,inventryTypeId:inventryTypeId})
+
+//       console.log({isBrandExist});
+
+
+
+//       if(isBrandExist){
+//         const responseError = {
+//           req: req,
+//           result: -1,
+//           message: messages.BRAND_EXIST,
+//           payload: {},
+//           logPayload: false,
+//         };
+        
+        
+//        return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+//           .json(utility.createResponseObject(responseError));
+      
+//       }
+      
+
+
+
+//   const createdBrand = await models.inventryBrand.create({
+//   name:brandName,
+//   inventryTypeId:inventryTypeId
+//     })
   
   
- return  res.status(enums.HTTP_CODES.BAD_REQUEST)
-    .json(utility.createResponseObject(responseError));
 
-}
+
+//     const addedInventry = await models.Inventory.create({
+//       brandId:createdBrand._id,
+//       ...req.body,
+
+//       });
+
+      
+ 
+ 
+ 
+ 
+//       const payload = {
+//        addedInventry,
+//      };
+   
+   
+   
+//      const data4createResponseObject = {
+//        req: req,
+//        result: 0,
+//        message: messages.INVENTORY_CREATED,
+//        payload: payload,
+//        logPayload: false,
+//      };
+     
+//     return  res.status(enums.HTTP_CODES.OK)
+//         .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+  
+  
+
+
+     
+
+//     }else if(serialNumber&&brandId){
+
+//     // Adding Inventry in the Db
+//     const addedInventry = await models.Inventory.create({
+//       ...req.body,
+//       });
+ 
+ 
+ 
+ 
+//       const payload = {
+//        addedInventry,
+//      };
+   
+   
+   
+//      const data4createResponseObject = {
+//        req: req,
+//        result: 0,
+//        message: messages.INVENTORY_CREATED,
+//        payload: payload,
+//        logPayload: false,
+//      };
+     
+//     return  res.status(enums.HTTP_CODES.OK)
+//         .json(utility.createResponseObject(data4createResponseObject));
+ 
+
+//     }
+// else{
+
+
+//   const responseError = {
+//     req: req,
+//     result: -1,
+//     message: messages.BAD_REQUEST,
+//     payload: {},
+//     logPayload: false,
+//   };
+  
+  
+//  return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+//     .json(utility.createResponseObject(responseError));
+
+// }
    
 
 
@@ -183,6 +276,8 @@ else{
   } catch (error: any) {
 
 
+
+    console.log(error);
 
     
     const responseCatchError = {
