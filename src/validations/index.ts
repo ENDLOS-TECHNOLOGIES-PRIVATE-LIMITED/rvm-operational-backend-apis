@@ -9,6 +9,7 @@ import * as problem from "./problem";
 import * as solution from "./solution";
 import * as vendor from "./vendor";
 import * as inventryBrand from "./inventryBrand";
+import * as ticket from "./ticket";
 
 
 export default {
@@ -22,5 +23,6 @@ export default {
   problem,
   solution,
   vendor,
-  inventryBrand
+  inventryBrand,
+  ticket
 };

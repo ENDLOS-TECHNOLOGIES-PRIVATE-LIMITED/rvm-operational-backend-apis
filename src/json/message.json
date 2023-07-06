@@ -137,7 +137,13 @@
     "PROBLEM_CREATED": "Problem created successfully",
     "PROBLEM_FETCHED": "Problem fetched successfully",
     "PROBLEM_DELETED": "Problem deleted successfully",
-    "PROBLEM_UPDATED": "Problem updated successfully"
+    "PROBLEM_UPDATED": "Problem updated successfully",
+
+
+    "TICKET_CREATED": "Ticket created successfully",
+    "TICKET_FETCHED": "Ticket fetched successfully",
+    "TICKET_DELETED": "Ticket deleted successfully",
+    "TICKET_UPDATED": "Ticket updated successfully"
     
   
   }
