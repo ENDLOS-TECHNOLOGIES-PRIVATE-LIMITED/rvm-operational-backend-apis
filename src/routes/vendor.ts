@@ -1,7 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 const route = Router();
 
 export default (app: Router) => {
@@ -21,7 +22,7 @@ export default (app: Router) => {
    *     summary: Register vendor
    *     description: Registering vendor.
    */
-  route.post("/", Validator.vendor.validateVendor, verifySuperAdmin,Controller.vendor.add );
+  route.post("/", validationMiddleware(Validator.vendor.vendorSchema), verifySuperAdmin,Controller.vendor.add );
   /**
    * @swagger
    * /:
@@ -50,4 +51,8 @@ export default (app: Router) => {
    *     description: For Login user.
    */
   route.delete("/:id", verifySuperAdmin, Controller.vendor.deleteVendor);
+
+
+  
+
 };

@@ -1,25 +1,11 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
-import Validator from "../validations";
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
 import gcsFileUploader from "../middleware/fileUpload/gcsFileUploader";
-import multeruploader from "../middleware/fileUpload/multerForGcs";
-const multer = require('multer');
+import multerUploader from "../middleware/fileUpload/multerForGcs";
+import Validator from "../validations";
+import { validationMiddleware } from "../middleware/validator";
 const route = Router();
-
-// Create a Multer storage engine
-const storage = multer.memoryStorage();
-
-
-// Configure Multer
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // Set a file size limit (optional)
-  },
-});
-
-
 
 export default (app: Router) => {
   /**
@@ -39,7 +25,9 @@ export default (app: Router) => {
    *     description: Registering superadmin user.
    */
   
-  route.post("/",verifySuperAdmin,multeruploader,gcsFileUploader, Controller.solution.Add );
+  // route.post("/",verifySuperAdmin,validationMiddleware(Validator.solution.solutionSchema),multerUploader,gcsFileUploader, Controller.solution.Add );
+  route.post("/",verifySuperAdmin,multerUploader,gcsFileUploader, Controller.solution.Add );
+
   /**
    * @swagger
    * /solution/:
@@ -69,5 +57,5 @@ export default (app: Router) => {
    *     description:  Updating a Solution.
    */
   
-  route.put("/:id",verifySuperAdmin,multeruploader,gcsFileUploader, Controller.solution.Update );
+  route.put("/:id",verifySuperAdmin,multerUploader,gcsFileUploader, Controller.solution.Update );
 }

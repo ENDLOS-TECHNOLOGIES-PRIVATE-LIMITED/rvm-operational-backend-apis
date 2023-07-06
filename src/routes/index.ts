@@ -12,6 +12,7 @@ import problem  from './problem';
 import vendor  from './vendor';
 import solution  from './solution';
 import inventryBrand  from './inventryBrand';
+import ticket  from './ticket';
 
 const route = Router();
 
@@ -24,11 +25,12 @@ auth(route);
  branch(route);
  invetryType(route);
  machine(route);
- userRole(route);
+ userRole(route); //need to work on permission and new payload response then it will be enabled again for the user 
  problem(route);
  solution(route);
  vendor(route);
  inventryBrand(route);
+ ticket(route);
 
  
 

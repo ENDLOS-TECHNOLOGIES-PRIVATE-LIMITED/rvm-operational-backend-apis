@@ -1,7 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 const route = Router();
 
 export default (app: Router) => {
@@ -13,16 +14,7 @@ export default (app: Router) => {
    */
   app.use("/user", route);
 
-  // /**
-  //  * @swagger
-  //  * /superadmin/register:
-  //  *   Post:
-  //  *     tags: [User]
-  //  *     summary: Register user
-  //  *     description: Registering superadmin user.
-  //  */
-  // route.post("/superadmin/register", Validator.userValidataion.validateRegisterUser, Controller.User.SuperAdminRegister);
-  /**
+    /**
    * @swagger
    * /register:
    *   Post:
@@ -30,7 +22,8 @@ export default (app: Router) => {
    *     summary: Register user
    *     description: Registering user.
    */
-  route.post("/register", Validator.userValidataion.validateRegisterUser, verifySuperAdmin, Controller.User.Register);
+  route.post("/register", validationMiddleware(Validator.userValidataion.registerSchema),verifySuperAdmin, Controller.User.Register);
+  
   /**
    * @swagger
    * /login:
@@ -39,7 +32,7 @@ export default (app: Router) => {
    *     summary: login user
    *     description: For Login user.
    */
-  route.post("/login", Validator.userValidataion.validateLoginUser, Controller.User.Login);
+  route.post("/login",validationMiddleware(Validator.userValidataion.loginSchema), Controller.User.Login);
   /**
    * @swagger
    * /getAll:

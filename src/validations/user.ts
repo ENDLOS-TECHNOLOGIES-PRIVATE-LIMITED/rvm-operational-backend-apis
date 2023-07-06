@@ -1,7 +1,7 @@
 const yup = require("yup");
 
 // Validation schema using Yup
-const userSchema = yup.object().shape({
+export const registerSchema = yup.object().shape({
   name: yup.string().required().min(2).max(50),
   email: yup.string().email().required(),
   // age: yup.number().positive().integer().min(1).max(120),
@@ -15,39 +15,39 @@ const userSchema = yup.object().shape({
 });
 
 
-const loginSchema = yup.object().shape({
+export const loginSchema = yup.object().shape({
   email: yup.string().email().required("Email and password required"),
   password: yup.string().required("Email and password required"),
 });
 
 
-// Validation middleware
-export const  validateRegisterUser =(req, res, next)=> {
-  const userData = req.body; // Assuming the request body contains user data
+// // Validation middleware
+// export const  validateRegisterUser =(req, res, next)=> {
+//   const userData = req.body; // Assuming the request body contains user data
 
-  userSchema
-    .validate(userData)
-    .then(() => {
-      // Validation successful, proceed to the next middleware or route handler
-      next();
-    })
-    .catch((error) => {
-      // Validation failed, respond with error details
-      res.status(400).json({ error: error.message });
-    });
-}
-// Validation middleware
-export const  validateLoginUser =(req, res, next)=> {
-  const userData = req.body; // Assuming the request body contains user data
+//   userSchema
+//     .validate(userData)
+//     .then(() => {
+//       // Validation successful, proceed to the next middleware or route handler
+//       next();
+//     })
+//     .catch((error) => {
+//       // Validation failed, respond with error details
+//       res.status(400).json({ error: error.message });
+//     });
+// }
+// // Validation middleware
+// export const  validateLoginUser =(req, res, next)=> {
+//   const userData = req.body; // Assuming the request body contains user data
 
-  loginSchema
-    .validate(userData)
-    .then(() => {
-      // Validation successful, proceed to the next middleware or route handler
-      next();
-    })
-    .catch((error) => {
-      // Validation failed, respond with error details
-      res.status(400).json({ error: error.message });
-    });
-}
+//   loginSchema
+//     .validate(userData)
+//     .then(() => {
+//       // Validation successful, proceed to the next middleware or route handler
+//       next();
+//     })
+//     .catch((error) => {
+//       // Validation failed, respond with error details
+//       res.status(400).json({ error: error.message });
+//     });
+// }

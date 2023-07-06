@@ -1,8 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
-
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 
 const route = Router();
 
@@ -23,7 +23,9 @@ export default (app: Router) => {
    *     summary: Add a new machine
    *     description: Endpoint to add a new machine.
    */
-  route.post("/add", Validator.machine.validateMachine, verifySuperAdmin, Controller.machine.Add);
+  // route.post("/add", Validator.machine.validateMachine, verifySuperAdmin, Controller.machine.Add);
+
+  route.post("/add", validationMiddleware(Validator.machine.machineSchema), verifySuperAdmin, Controller.machine.Add);
 
   /**
    * @swagger

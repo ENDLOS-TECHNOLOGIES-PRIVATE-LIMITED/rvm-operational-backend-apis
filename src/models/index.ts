@@ -9,8 +9,7 @@ import problem from "./problem";
 import solution from "./solution";
 import vendor from "./vendor";
 import inventryBrand from "./inventryBrand";
-import allModules from "./allModules";
-import permission from "./permission";
+import ticket from "./ticket";
 
 export default {
   Inventory,
@@ -24,7 +23,6 @@ export default {
   solution,
   vendor,
   inventryBrand,
-  allModules,
-  permission
+  ticket,
 };
 

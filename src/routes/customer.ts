@@ -1,8 +1,8 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
-
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 
 const route = Router();
 
@@ -23,7 +23,7 @@ export default (app: Router) => {
    *     summary: adding new Customer
    *     description: For Adding new Customer.
    */
-  route.post("/add", Validator.customer.validateCustomer, verifySuperAdmin, Controller.customer.Add);
+  route.post("/add",validationMiddleware(Validator.customer.customerSchema),  verifySuperAdmin, Controller.customer.Add);
 
   /**
    * @swagger

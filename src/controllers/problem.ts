@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 // import User from '../models/user';
 import models from "../models";
-import helpers from "../helpers";
-import mongoose, { model } from "mongoose";
+import utility from '../utility';
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -23,21 +24,43 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
        
        });
 
-      const Response = {
+      const payload = {
         problem,
       };
 
-      //sending Registerd User response
-      res.json({
-        message: "Problem Added Successfully ",
-        data: Response,
-        success: true,
-      });
+
+    const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.PROBLEM_CREATED,
+        payload: payload,
+        logPayload: false,
     
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
     
 
+
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
+   
   }
 };
 
@@ -90,21 +113,45 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
     ]);
 
     
-  const Response = {
+  const payload = {
       problems
   };    
 
-  //sending Registerd User response
-  res.json({
-    message: "All Problems fetched Successfully ",
-    data: Response,
-    success: true,
-  });
+
+
+
+
+  const data4createResponseObject = {
+    req: req,
+    result: 0,
+    message: messages.PROBLEM_FETCHED,
+    payload: payload,
+    logPayload: false,
+
+  };
+
+return  res
+    .status(enums.HTTP_CODES.OK)
+    .json(utility.createResponseObject(data4createResponseObject));
 
 
  
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+
   }
 };
 
@@ -112,12 +159,21 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let{ id }= req.params;
 
+  
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
-    } else {
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.PROBLEM_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseCatchError));
+
+} else {
       const updatedProblem = await models.problem.findOneAndUpdate(
         {
           _id: id,
@@ -129,30 +185,67 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
        
         }
       }
-      
+      ,
+      {
+        new:true
+      }
 
       );
 
 
       if (!updatedProblem) {
-        res.status(404).json({
-          message: "Record not found",
-          success: false,
-        });
+
+
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+       return res.status(enums.HTTP_CODES.NOT_FOUND)
+           .json(utility.createResponseObject(responseCatchError));
+
+
+
       } 
 
-      const Response = {
+      const payload = {
         updatedProblem,
       };
 
-      res.json({
-        message: " Problem Updated Successfully",
-        data: Response,
-        success: true,
-      });
+
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.PROBLEM_UPDATED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
   }
 };
 export const Delete = async (req: AuthenticatedRequest, res: Response) => {
@@ -160,10 +253,18 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     let{ id }= req.params;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.PROBLEM_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return res.status(enums.HTTP_CODES.BAD_REQUEST)
+         .json(utility.createResponseObject(responseCatchError));
+     
     } else {
       const deletedProblem = await models.problem.findOneAndDelete(
         {
@@ -172,26 +273,59 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
 
       );
 
+      
+
 
       if (!deletedProblem) {
-        res.status(404).json({
-          message: "Record not found",
-          success: false,
-        });
+
+
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+       return res.status(enums.HTTP_CODES.NOT_FOUND)
+           .json(utility.createResponseObject(responseCatchError));
+      
       } 
 
-      const Response = {
+      const payload = {
         deletedProblem,
       };
 
-      res.json({
-        message: " Deleted Successfully",
-        data: Response,
-        success: true,
-      });
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.PROBLEM_DELETED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
   }
 };
 

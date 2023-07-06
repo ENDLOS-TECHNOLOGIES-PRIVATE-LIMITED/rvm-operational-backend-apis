@@ -12,7 +12,7 @@ export default (app: Router) => {
    *   name: User
    *   description: User management and login
    */
-  app.use("/userrole", route);
+  app.use("/ticket", route);
 
   /**
    * @swagger
@@ -22,7 +22,7 @@ export default (app: Router) => {
    *     summary: Register user
    *     description: Registering superadmin user.
    */
-  route.post("/",validationMiddleware( Validator.userRole.userRoleSchema), verifySuperAdmin,Controller.userRole.add );
+  route.post("/",validationMiddleware( Validator.ticket.ticketSchema), verifySuperAdmin,Controller.ticket.add );
   /**
    * @swagger
    * /register:
@@ -31,16 +31,7 @@ export default (app: Router) => {
    *     summary: Register user
    *     description: Registering user.
    */
-  route.get("/",verifySuperAdmin, Controller.userRole.getAll);
-  /**
-   * @swagger
-   * /get:
-   *   Post:
-   *     tags: [User]
-   *     summary: Register user
-   *     description: Registering user.
-   */
-  route.get("/:id",verifySuperAdmin, Controller.userRole.getById);
+  route.get("/",verifySuperAdmin, Controller.ticket.getAll);
   /**
    * @swagger
    * /update:
@@ -49,14 +40,6 @@ export default (app: Router) => {
    *     summary: Register user
    *     description: Registering user.
    */
-  route.put("/:id",verifySuperAdmin, Controller.userRole.update);
-  /**
-   * @swagger
-   * /login:
-   *   Post:
-   *     tags: [User]
-   *     summary: login user
-   *     description: For Login user.
-   */
-  route.delete("/:id", verifySuperAdmin, Controller.userRole.deleteRole);
+  route.put("/:id",verifySuperAdmin, Controller.ticket.update);
+
 };

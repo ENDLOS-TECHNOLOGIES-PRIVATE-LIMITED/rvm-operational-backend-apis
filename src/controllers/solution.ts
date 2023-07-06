@@ -4,6 +4,9 @@ import models from "../models";
 import helpers from "../helpers";
 import mongoose, { model } from "mongoose";
 import deleteGcsFile from "../helpers/deleteGcsFile";
+import utility from '../utility';
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -18,8 +21,6 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
 
-
-
      // Adding Machine in the Db
      const solution = await models.solution.create({
         ...req.body,
@@ -27,21 +28,45 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
        
        });
 
-      const Response = {
+      const payload = {
         solution,
       };
 
-      //sending Registerd User response
-      res.json({
-        message: "Solution Added Successfully ",
-        data: Response,
-        success: true,
-      });
+
+
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.SOLUTION_CREATED,
+        payload: payload,
+        logPayload: false,
     
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+
     
 
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+    
   }
 };
 
@@ -61,8 +86,18 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
        if (paramsCount >1) {
 
 
-         res.status(400).json({ message: 'Bad Request', success: false });
-         return
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.BAD_REQUEST,
+          payload: {},
+          logPayload: false,
+        };
+        
+        
+        return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+          .json(utility.createResponseObject(responseCatchError));
+
 
        }
 
@@ -100,8 +135,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
       {
         $group: {
           _id: '$_id',
-          description: { $first: '$description' },
-          images: { $first: '$images' },
+          solution: { $first: '$solution' },
           problem: {
             $first: { $arrayElemAt: ["$problem", 0] }  
           },
@@ -114,8 +148,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
       {
         $project: {
          _id: '$_id',
-         description: '$description',
-         images: '$images',
+          solutions: '$solution',
           problem: {
             name: "$problem.name",
             _id: "$problem._id"
@@ -127,21 +160,41 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
     ]);
 
     
-  const Response = {
+  const payload = {
     solutions
   };    
 
-  //sending Registerd User response
-  res.json({
-    message: "Solution fetched Successfully ",
-    data: Response,
-    success: true,
-  });
+  const data4createResponseObject = {
+    req: req,
+    result: 0,
+    message: messages.SOLUTION_FETCHED,
+    payload: payload,
+    logPayload: false,
+
+  };
+
+ return res
+    .status(enums.HTTP_CODES.OK)
+    .json(utility.createResponseObject(data4createResponseObject));
+
 
 
  
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+   
   }
 };
 
@@ -149,6 +202,25 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 export const Delete = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let id = req.params.id;
+
+
+    if (!id) {
+
+
+
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.SOLUTION_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseCatchError));
+
+    }
 
     const deletedSolution = await models.solution.findByIdAndDelete(
         {
@@ -160,37 +232,78 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         if(!deletedSolution){
 
 
-          res.status(404).json({
-            message: "Record Not Found",
-            data: {},
-            success: false,
-          });
+          const responseCatchError = {
+            req: req,
+            result: -1,
+            message: messages.NOT_FOUND,
+            payload: {},
+            logPayload: false,
+          };
+          
+          
+          return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+            .json(utility.createResponseObject(responseCatchError));
+  
         
         }
 
 
-      const  gcsDeletedfiles = await deleteGcsFile(deletedSolution.images)
 
 
 
-      const Response = {
+
+        const images = deletedSolution?.solution.filter(element=>element?.image !==undefined ).map(element => element.image)
+
+if(images.length>0){
+  await deleteGcsFile(images)
+}
+
+
+      const payload = {
         deletedSolution,
-        gcsDeletedfiles
+        };
+
+
+
+
+
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.SOLUTION_DELETED,
+        payload: payload,
+        logPayload: false,
+    
       };
 
-      res.json({
-        message: "Machine Deleted Successfully",
-        data: Response,
-        success: true,
-      });
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+  
     
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+  
   }
 };
 export const Update = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let id = req.params.id;
+
+
 
       const Solution = await models.solution.findById(new mongoose.Types.ObjectId(id.toString()));
 
@@ -198,13 +311,34 @@ export const Update = async (req: AuthenticatedRequest, res: Response) => {
 
 if(!Solution){
 
-  res.status(404).json({
-    message: "Record not found",
-    success: false,
-  });
+
+
+  const responseCatchError = {
+    req: req,
+    result: -1,
+    message: messages.NOT_FOUND,
+    payload: {},
+    logPayload: false,
+  };
+  
+  
+  return  res.status(enums.HTTP_CODES.NOT_FOUND)
+    .json(utility.createResponseObject(responseCatchError));
+
+
+
+
 }
 
-    const  gcsDeletedfiles =await deleteGcsFile(Solution.images)
+
+const images = Solution?.solution.filter(element=>element?.image !==undefined ).map(element => element.image)
+
+if(images.length>0){
+  await deleteGcsFile(images)
+}
+
+
+    
 
 
       const updatedSolution = await models.solution.findByIdAndUpdate({
@@ -217,18 +351,45 @@ if(!Solution){
       },{new:true})
 
 
-        const Response = {
+
+
+
+
+        const payload = {
         updatedSolution,
         };
 
-      res.json({
-        message: "Solution Updated Successfully",
-        data: Response,
-        success: true,
-      });
-    
+
+
+
+        const data4createResponseObject = {
+          req: req,
+          result: 0,
+          message: messages.SOLUTION_UPDATED,
+          payload: payload,
+          logPayload: false,
+      
+        };
+  
+      return  res
+          .status(enums.HTTP_CODES.OK)
+          .json(utility.createResponseObject(data4createResponseObject));
+  
+  
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
   }
 };
 

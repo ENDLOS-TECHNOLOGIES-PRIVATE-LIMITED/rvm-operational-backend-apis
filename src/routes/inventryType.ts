@@ -1,8 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import Controller from "../controllers";
 import Validator from "../validations";
 
 import { verifySuperAdmin } from "../middleware/auth/verifySuperAdmin";
+import { validationMiddleware } from "../middleware/validator";
 
 const route = Router();
 
@@ -23,7 +24,7 @@ export default (app: Router) => {
    *     summary: adding new inventryType
    *     description: For Adding new inventryType.
    */
-  route.post("/add", Validator.invetryType.validateInventryType, verifySuperAdmin, Controller.inventryType.Add);
+  route.post("/add", validationMiddleware( Validator.invetryType.inventryTypeSchema), verifySuperAdmin, Controller.inventryType.Add);
 
   /**
    * @swagger

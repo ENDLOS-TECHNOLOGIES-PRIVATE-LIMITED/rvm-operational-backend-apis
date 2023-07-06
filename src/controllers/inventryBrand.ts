@@ -32,7 +32,7 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
         logPayload: false,
       };
       
-      res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+      return res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
          .json(utility.createResponseObject(responseCatchError));
       }
 
@@ -85,7 +85,7 @@ export const add = async (req: AuthenticatedRequest, res: Response) => {
       };
       
       
-      res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      return res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
         .json(utility.createResponseObject(responseCatchError));
   
 
@@ -97,7 +97,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
 
-const {id} =req.query;
+const {id,allData} =req.query;
 
     const matchStage:any = {};
 
@@ -106,21 +106,36 @@ const {id} =req.query;
       matchStage._id =  new mongoose.Types.ObjectId(id.toString());
     }
 
+    if (allData==='false'|| !allData) {
+      matchStage.isDeleted =false;
+    }
    
    
         const brands = await models.inventryBrand.aggregate([
         { $match: matchStage}, // Filter customers with isDelete set to false
         { $sort: { createdAt: -1 } },
 
-        
-        // {
-        //   $lookup: {
-        //     from: "customers",
-        //     localField: "_id",
-        //     foreignField: "vendorId",
-        //     as: "customers",
-        //   },
-        // },
+        {
+          $lookup: {
+            from: "invetries",
+            let: { brandId: "$_id" },
+            pipeline: [
+              {
+            $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$brandId", "$$brandId"] },
+      
+                      allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+              ]
+                  }
+                }
+              }
+            ],
+            as: "invetries",
+          },
+        },
+
       ]).exec();
 
 
@@ -271,6 +286,34 @@ export const deleteBrand = async (req: AuthenticatedRequest, res: Response) => {
    
 
     const {id} = req.params;
+
+
+
+
+
+    const isInventryExist = await models.Inventory.findOne({brandId:new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+
+    
+    if(isInventryExist){
+
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.BRAND_DELETE_ERROR,
+        payload: {},
+        logPayload: false,
+      };
+      
+    return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseError));
+
+
+    }
+
+
+
+
  
      // upading  UserRole in the Db
  const deleteBrand = await models.inventryBrand.findOneAndUpdate(
@@ -325,7 +368,18 @@ return  res
 
 
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+ return  res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+  
   }
 };
 

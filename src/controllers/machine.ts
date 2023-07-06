@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import utility from '../utility';
+import enums from '../json/enum.json'
+import messages from '../json/message.json'
 // import User from '../models/user';
 import models from "../models";
-import helpers from "../helpers";
 import mongoose from "mongoose";
 
 interface AuthenticatedRequest extends Request {
@@ -27,55 +29,6 @@ const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inv
          }).exec();
 
 
-        //  console.log({ inventryAvailability2 });
-
-        //  console.log({inventryIds});
-
-
-
-
-
-
-
-
-
-         //chekding inventry which provided by user are assigned to another machine or not
-        //  const inventryAvailability = await models.Inventory.aggregate([
-        //    {
-        //      $match: {
-        //        //  _id: { $in: inventryIds },
-        //        _id: { $in: inventry },
-        //      },
-        //    },
-        //     {
-        //       $lookup: {
-        //         from: "machines",
-        //         localField: "_id",
-        //         foreignField: "inventry._inventry",
-        //         as: "machines",
-        //       },
-        //     },
-        //     {
-        //       $unwind: "$machines",
-        //     },
-        //     {
-        //       $unwind: "$machines.inventry",
-        //     },
-        //     {
-        //       $project: {
-        //         _inventry: "$machines.inventry._inventry",
-        //         isAvailable: {
-        //           $eq: ["$machines.inventry._inventry", null],
-        //         },
-        //       },
-        //     },
-        //  ]).exec();
-
-
-
-
-         console.log({ inventryAvailability });
-
          if (inventryAvailability.length > 0) {
            return res.status(400).json({
              error: "inventry already assigned to a machine",
@@ -91,10 +44,19 @@ const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inv
     const isExist = await models.Machine.findOne({ machineId: req.body.machineId });
 
     if (isExist) {
-      return res.status(400).json({
-        error: "machineId already exist",
-        
-      });
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.MACHINE_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+         .json(utility.createResponseObject(responseError));
+
+   
     } else {
       // Adding Machine in the Db
       const Machine = await models.Machine.create({
@@ -102,19 +64,42 @@ const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inv
         "branch._branchId":req.body.branchId   
        });
 
-      const Response = {
+      const payload = {
         Machine,
       };
 
-      //sending Registerd User response
-      res.json({
-        message: "Machine Added Successfully ",
-        data: Response,
-        success: true,
-      });
-    }
+
+
+
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.MACHINE_CREATED,
+        payload: payload,
+        logPayload: false,
+    
+      };
+
+    return  res
+        .status(enums.HTTP_CODES.OK)
+        .json(utility.createResponseObject(data4createResponseObject));
+
+}
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+
+  
   }
 };
 
@@ -199,43 +184,98 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
     ]);
 
     
-  const Response = {
+  const payload = {
     // Machines,
     AllMachines
   };    
 
-  //sending Registerd User response
-  res.json({
-    message: "All Machine fetched Successfully ",
-    data: Response,
-    success: true,
-  });
+
+  
+
+  const data4createResponseObject = {
+    req: req,
+    result: 0,
+    message: messages.MACHINE_FETCHED,
+    payload: payload,
+    logPayload: false,
+
+  };
+
+return  res
+    .status(enums.HTTP_CODES.OK)
+    .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+  
+
+
+
 
     }
 
     else if (branchId) {
       const Machines = await models.Machine.find({ isDeleted: false, "branch._branchId": branchId });
-      const Response = {
+      const payload = {
         Machines,
        
       };
 
-      //sending Registerd User response
-      res.json({
-        message: "All Machine fetched Successfully ",
-        data: Response,
-        success: true,
-      });
+
+
+      
+    const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.MACHINE_FETCHED,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+  return  res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
+  
+
+  
     } else {
-      return res.status(400).json({
-        error: "Pls Provide a Valid Query",
-      });
+
+
+
+      
+      const responseCatchError = {
+        req: req,
+        result: -1,
+        message: messages.BAD_REQUEST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseCatchError));
+
+
+    
     }
  
 
  
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+   
   }
 };
 
@@ -244,10 +284,21 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+
+      
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.MACHINE_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseError));
+
     } else {
       const deletedInventry = await models.Machine.findOneAndUpdate(
         {
@@ -265,18 +316,70 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
         }
       );
 
-      const Response = {
+
+
+      if(!deletedInventry){
+
+
+        const responseCatchError = {
+          req: req,
+          result: -1,
+          message: messages.NOT_FOUND,
+          payload: {},
+          logPayload: false,
+        };
+        
+        
+        return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+          .json(utility.createResponseObject(responseCatchError));
+
+      }
+
+      const payload = {
         deletedInventry,
       };
 
-      res.json({
-        message: "Machine Deleted Successfully",
-        data: Response,
-        success: true,
-      });
+
+
+
+      
+    const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.MACHINE_DELETED,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+   return res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
+
+
+
+
+
+
+
+
+
+
     }
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+    
   }
 };
 
@@ -288,10 +391,23 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
     let {machineId}=req.query;
 
     if ((!machineId || !branchId)) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+      
+
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.BAD_REQUEST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseError));
+
+
+
     }
 
     else{
@@ -313,66 +429,41 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
         );
 
 
-        const Response = {
+        const payload = {
           assignedMachine,
         };
 
-        //sending updated Inventory response
-        res.json({
-          message: "Machine Assigned Successfully",
-          data: Response,
-          success: true,
-        });
-      
 
+        const data4createResponseObject = {
+          req: req,
+          result: 0,
+          message: messages.MACHINE_ASSIGNED,
+          payload: payload,
+          logPayload: false,
+      
+        };
+  
+       return res
+          .status(enums.HTTP_CODES.OK)
+          .json(utility.createResponseObject(data4createResponseObject));
+  
 
     }
     
-    // else {
-      
-    //   const MachineAlreadyAssigned = await models.Machine.findOne({_id: machineId });
-
-    //   if(MachineAlreadyAssigned?.branchId){
-    //      res.status(400).json({
-    //        message: "Machine Already Assigned",
-    //        success: false,
-    //      });
-
-    //   }else{
-    //     // Assigning Machine 
-    //     const assignedMachine = await models.Machine.findOneAndUpdate(
-    //       {
-    //         _id: new mongoose.Types.ObjectId(machineId.toString()),
-            
-    //       },
-    //       {
-    //         $set: {
-    //           branchId: req.body.branchId,
-    //         },
-    //       },
-
-    //       {
-    //         new: true,
-    //       }
-    //     );
-
-    //     const Response = {
-    //       assignedMachine,
-    //     };
-
-    //     //sending updated Inventory response
-    //     res.json({
-    //       message: "Machine Assigned Successfully",
-    //       data: Response,
-    //       success: true,
-    //     });
-    //   }
-
- 
-    
-    // }
+       
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+   
   }
 };
 export const update = async (req: AuthenticatedRequest, res: Response) => {
@@ -380,28 +471,42 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
     let id = req.query.id;
 
     if (!id) {
-      res.status(400).json({
-        message: "Bad Request",
-        success: false,
-      });
+
+       
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.MACHINE_ID_REQUIRED,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+        .json(utility.createResponseObject(responseError));
+     
     } else {
       // checking the serila number exist or not
         const isMachineIdExist = await models.Machine.findOne({ machineId: req.body.machineId });
 
-        // // res.send(isSerialExist)
-
-        console.log({ isMachineIdExist });
-
-        console.log(isMachineIdExist?._id);
-        // console.log(id);
-
+      
         if (isMachineIdExist&& isMachineIdExist?._id.toString() !== id) {
-          res.status(409).send({
-            message: "Machine ID is already reserved for another machine",
-          });
+
+          
+      const responseError = {
+        req: req,
+        result: -1,
+        message: messages.MACHINE_EXIST,
+        payload: {},
+        logPayload: false,
+      };
+      
+      
+      return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+        .json(utility.createResponseObject(responseError));
+
         } else {
-          console.log({ id });
-          // Upading Machine in the Db
+        
           const updatedMachine = await models.Machine.findOneAndUpdate(
             {
               // _id: new mongoose.Types.ObjectId(id.toString()),
@@ -422,52 +527,62 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
             }
           );
 
-          const Response = {
+
+          if(!updatedMachine){
+
+
+            const responseCatchError = {
+              req: req,
+              result: -1,
+              message: messages.NOT_FOUND,
+              payload: {},
+              logPayload: false,
+            };
+            
+            
+            return  res.status(enums.HTTP_CODES.BAD_REQUEST)
+              .json(utility.createResponseObject(responseCatchError));
+    
+          }
+    
+
+
+
+          const payload = {
             updatedMachine,
           };
 
-          //sending updated Inventory response
-          res.json({
-            message: "Machine Updated Successfully",
-            data: Response,
-            success: true,
-          });
+          
+    const data4createResponseObject = {
+      req: req,
+      result: 0,
+      message: messages.MACHINE_UPDATED,
+      payload: payload,
+      logPayload: false,
+  
+    };
+
+   return res
+      .status(enums.HTTP_CODES.OK)
+      .json(utility.createResponseObject(data4createResponseObject));
+
+
         }
 
-      //  if (isSerialExist ) {
-      //       return res.status(400).json({ error: "SerialNumber already exist" });
-      //     }
-
-
-
-      //Upading Machine in the Db
-      // const updatedMachine = await models.Machine.findOneAndUpdate(
-      //   {
-      //     _id: id,
-      //   },
-      //   {
-      //     $set: {
-      //       ...req.body,
-      //     },
-      //   },
-
-      //   {
-      //     new: true,
-      //   }
-      // );
-
-      // const Response = {
-      //   updatedMachine,
-      // };
-
-      // //sending updated Inventory response
-      // res.json({
-      //   message: "Machine Updated Successfully",
-      //   data: "Response",
-      //   success: true,
-      // });
-    }
+}
   } catch (error: any) {
-    res.status(500).json({ message: error.message, success: false });
+    const responseCatchError = {
+      req: req,
+      result: -1,
+      message: messages.GENERAL_EROOR,
+      payload: {},
+      logPayload: false,
+    };
+    
+    
+return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
+      .json(utility.createResponseObject(responseCatchError));
+    
   }
 };
+

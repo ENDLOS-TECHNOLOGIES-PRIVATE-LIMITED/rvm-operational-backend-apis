@@ -76,17 +76,64 @@ return  res
 };
 export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
+
+
+    
+const {allData} =req.query;
+
+    const matchStage:any = {
+    };
+
+if (allData==='false'|| !allData) {
+    matchStage.isDeleted =false;
+  }
+  
 const AllCustomer = await models.Customer.aggregate([
-      { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
+  { $match: matchStage}, // Filter customers with isDelete set to false
+      // { $match: { isDeleted: false } }, // Filter customers with isDelete set to false
       { $sort: { createdAt: -1 } },
+
       {
         $lookup: {
           from: "branches",
-          localField: "_id",
-          foreignField: "customer._customerId",
+          let: { customerId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$customer._customerId", "$$customerId"] },
+
+                    allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+            ]
+                }
+              }
+            }
+          ],
           as: "branches",
         },
       },
+
+//  {
+//         $lookup: {
+//           from: "branches",
+//           let: { customerId: "$_id" },
+//           pipeline: [
+//             {
+//               $match: {
+//                 $expr: {
+//                   $and: [
+//                     { $eq: ["$customer._customerId", "$$customerId"] },
+//                     { $eq: ["$isDeleted", false] }
+//                   ]
+//                 }
+//               }
+//             }
+//           ],
+//           as: "branches",
+//         },
+//       },
+
     ]).exec();
      
    
@@ -162,8 +209,6 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
     
     else if(id&& nestedData){
 
-
-      console.log("onnn");
       const matchStage:any = {
         isDeleted:false
       };
@@ -180,22 +225,27 @@ export const Get = async (req: AuthenticatedRequest, res: Response) => {
      const  Customer = await models.Customer.aggregate([
         { $match: matchStage }, // Filter vendors with isDelete set to false
         { $sort: { createdAt: -1 } },
-        {
+{
           $lookup: {
             from: "branches",
-            localField: "_id",
-            foreignField: "customer._customerId",
+            let: { customerId: "$_id" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$customer._customerId", "$$customerId"] },
+                      { $eq: ["$isDeleted", false] }
+                    ]
+                  }
+                }
+              }
+            ],
             as: "branches",
           },
         },
-        {
-          $lookup: {
-            from: "machines",
-            localField: "branches._id",
-            foreignField: "branchId",
-            as: "machines",
-          },
-        },
+
+
       ]).exec();
 
 
@@ -407,6 +457,29 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
          .json(utility.createResponseObject(responseError));
 
     } else {
+
+
+      const isBranchExist = await models.Branch.findOne({"customer._customerId":new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+
+
+      
+    
+      if(isBranchExist){
+  
+  
+        const responseError = {
+          req: req,
+          result: -1,
+          message: messages.CUSTOMER_DELETE_ERROR,
+          payload: {},
+          logPayload: false,
+        };
+        
+      return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+           .json(utility.createResponseObject(responseError));
+  
+  
+      }
     
       const deletedCustomer = await models.Customer.findOneAndUpdate(
         {
