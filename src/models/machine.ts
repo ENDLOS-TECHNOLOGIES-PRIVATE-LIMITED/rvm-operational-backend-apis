@@ -4,7 +4,8 @@ import { Schema, model } from "mongoose";
 const machineSchema = new Schema(
   {
     machineId: { type: String, required: true, unique: true },
-    warrentyStartDate: { type: Date },
+    warrentyStart: { type: Date },
+    warrentyExpire:{type:Date},
     isDeleted: { type: Boolean, default: false },
     branchId: {type: mongoose.Schema.Types.ObjectId},
     inventry: [
@@ -12,8 +13,14 @@ const machineSchema = new Schema(
         _inventry: { type: mongoose.Schema.Types.ObjectId,},
         warrantyStart: {  type: Date, },
         warrantyExpire: {  type: Date  },
+        isDisabled:{type:Boolean},
+        replacement:{type: mongoose.Schema.Types.ObjectId}
       },
     ],
+    Frezed:{
+      isFrezed:{type:Boolean,default:false},
+      date:{type:Date,default:Date.now}
+    }
   },
   {
     timestamps: true,

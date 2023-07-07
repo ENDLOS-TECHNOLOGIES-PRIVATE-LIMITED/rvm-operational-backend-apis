@@ -571,7 +571,37 @@ export const Delete = async (req: AuthenticatedRequest, res: Response) => {
      return  res.status(enums.HTTP_CODES.BAD_REQUEST)
         .json(utility.createResponseObject(responseError));
 
-    } else {
+    } 
+    
+
+
+   
+    
+    else {
+
+
+
+      const isAdded = await models.Machine.findOne({"inventry._inventry":id})
+
+      if(isAdded){
+
+
+
+  
+  const responseError = {
+    req: req,
+    result: -1,
+    message: messages.INVENTRY_DELETE_ERROR,
+    payload: {},
+    logPayload: false,
+  };
+  
+return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+     .json(utility.createResponseObject(responseError));
+
+
+}
+
       const deletedInventry = await models.Inventory.findOneAndUpdate(
         {
           _id: id,

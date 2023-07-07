@@ -107,15 +107,29 @@ return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
 export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-    const { type, branchId } = req.query;
+    const { type, branchId,allData ,id} = req.query;
 
-   
+            
+    const matchStage:any = {
+    };
+    if (allData==='false'|| !allData) {
+      matchStage.isDeleted =false;
+    }
+
+    if (id) {
+      matchStage._id =  new mongoose.Types.ObjectId(id.toString());
+    }
+
     if(type=="all"){
     
-    const AllMachines = await models.Machine.aggregate([
-      
-      { $match: { isDeleted: false } }, // Filter machines with isDeleted set to false
-      // { $unwind: '$inventry' }, // Unwind the inventory array
+      const AllMachines = await models.Machine.aggregate([
+  
+  
+        { $match: matchStage}, 
+
+
+
+
       {
         $lookup: {
           from: 'invetries',
@@ -123,8 +137,88 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           foreignField: '_id',
           as: 'inventoryDetails'
         }
-      },
+      },      
+
       {
+        $lookup: {
+          from: 'invetries',
+          let: { inventryId: '$inventry._inventry', warrantyExpire: '$inventry.warrantyExpire' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ['$_id', '$$inventryId']
+                }
+              }
+            },
+
+            {
+              $lookup: {
+                from: 'invetrybrands',
+                localField: 'brandId',
+                foreignField: '_id',
+                as: 'brandDetails'
+              }
+            },
+            {
+              $lookup: {
+                from: 'invetrytypes',
+                localField: 'brandDetails.inventryTypeId',
+                foreignField: '_id',
+                as: 'invetrytypes'
+              }
+            },
+
+            {
+              $addFields: {
+                "resellerwarrantyExpire": {
+                  $arrayElemAt: ['$$warrantyExpire', {
+                    $indexOfArray: ['$$inventryId', '$_id']
+                  }]
+                },
+                brandName: { $arrayElemAt: ['$brandDetails.name', 0] },
+                inventryType: { $arrayElemAt: ['$invetrytypes.name', 0] }
+                
+              }
+            },
+
+
+            {
+              $group: {
+                _id: '$_id',
+
+
+                invoiceNo: { $first: '$invoiceNo' },
+                serialNumber: { $first: '$serialNumber' },
+                manufacturerwarrantyExpire: { $first: '$warrantyExpired' },
+                resellerwarrantyExpire: { $first: '$resellerwarrantyExpire' },
+                brandName: { $first: '$brandName' },
+                inventryType: { $first: '$inventryType' },
+                
+             
+              },
+              
+      
+      
+            },
+
+            {
+              $project: {
+                brandDetails: 0,
+                invetrytypes: 0
+              }
+            }
+          ],
+          as: 'inventoryDetails'
+        }
+      },
+
+  
+     
+      { $unwind: '$inventoryDetails' }, // Unwind the inventory array
+
+
+{
         $lookup: {
           from: 'branches',
           localField: 'branchId',
@@ -142,19 +236,30 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
       },
 
       {
-        $unwind: "$inventoryDetails"
+        $lookup: {
+          from: 'vendors',
+          localField: 'customer.vendorId',
+          foreignField: '_id',
+          as: 'vendor'
+        }
       },
-    
 
-      {
+
+
+
+   {
         $group: {
           _id: '$_id',
           machineId: { $first: '$machineId' },
+          inventry: { $first: '$inventry' },
           branch: {
             $first: { $arrayElemAt: ["$branch", 0] }
           },
           customer: {
             $first: { $arrayElemAt: ["$customer", 0] }  
+          },
+          vendor: {
+            $first: { $arrayElemAt: ["$vendor", 0] }  
           },
           warrentyStartDate: { $first: '$warrentyStartDate' },
           
@@ -164,10 +269,20 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
         },
         
+
+
       },
+
+
+
+        
+
       {
+
+
         $project: {
           machineId:"$machineId",
+              
           warrentyStartDate:"$warrentyStartDate",
           branch: {
             name: "$branch.name",
@@ -177,16 +292,27 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
             name: "$customer.name",
             _id: "$customer._id"
           },
+          reseller: {
+            name: "$vendor.name",
+            _id: "$vendor._id"
+          },
           inventoryDetails:"$inventoryDetails"
         }
+      
+
       }
-     
-    ]);
+
+
+  
+  
+      ]);
+
+
+    
 
     
   const payload = {
-    // Machines,
-    AllMachines
+      AllMachines
   };    
 
 
