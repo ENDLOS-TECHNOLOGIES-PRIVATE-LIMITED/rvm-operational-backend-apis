@@ -124,12 +124,34 @@ export const GetAll = async (req: AuthenticatedRequest, res: Response) => {
                 ]
                     }
                   }
+                },
+
+                {
+                $lookup: {
+                  from: 'invetries',
+                  let: { brandId: '$_id' },
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $and: [
+                            { $eq: ['$brandId', '$$brandId'] },
+                            // { $eq: ['$isDeleted', false] }
+
+                            allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  as: 'invetries'
                 }
+              }
               ],
               as: "invetrybrands",
             },
           },
-        
+       
         ]).exec();
 
 
