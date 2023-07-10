@@ -217,7 +217,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
   
      
-      { $unwind: '$inventoryDetails' }, // Unwind the inventory array
+      // { $unwind: '$inventoryDetails' }, // Unwind the inventory array
 
 
 {
@@ -312,6 +312,14 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
   
   
       ]);
+
+
+
+
+
+
+
+ 
 
 
     
