@@ -261,7 +261,8 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           vendor: {
             $first: { $arrayElemAt: ["$vendor", 0] }  
           },
-          warrentyStartDate: { $first: '$warrentyStartDate' },
+          warrentyStart: { $first: '$warrentyStart' },
+          warrentyExpire: { $first: '$warrentyExpire' },
           
             inventoryDetails: {
             $push: "$inventoryDetails"
@@ -283,7 +284,8 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
         $project: {
           machineId:"$machineId",
               
-          warrentyStartDate:"$warrentyStartDate",
+          warrentyStart:"$warrentyStart",
+          warrentyExpire:"$warrentyExpire",
           branch: {
             name: "$branch.name",
             _id: "$branch._id"
