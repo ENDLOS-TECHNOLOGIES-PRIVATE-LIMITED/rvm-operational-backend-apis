@@ -47,14 +47,23 @@
     "USER_ROLE_UPDATED": "User role updated successfully.",
     
 
-    "VENDOR_EXIST": "Vendor already exist in the system",
-    "VENDOR_DELETE_ERROR": "Vendor cannot be deleted as it has associated customers in the system.",
+    "VENDOR_EXIST": "Reseller already exist in the system",
+    "VENDOR_DELETE_ERROR": "Reseller cannot be deleted as it has associated customers in the system.",
     "VENDOR_EMAIL_EXIST_DIFF_USER": "Email already exist in the system with different User",
-    "VENDOR_NOT_EXIST": "Vendor does not exist in the system",
-    "VENDOR_CREATED": "Vendor created successfully",
-    "VENDOR_FETCHED": "Vendor fetched successfully",
-    "VENDOR_DELETED": "Vendor deleted successfully",
-    "VENDOR_UPDATED": "Vendor updated successfully",
+    "VENDOR_NOT_EXIST": "Reseller does not exist in the system",
+    "VENDOR_CREATED": "Reseller created successfully",
+    "VENDOR_FETCHED": "Reseller fetched successfully",
+    "VENDOR_DELETED": "Reseller deleted successfully",
+    "VENDOR_UPDATED": "Reseller updated successfully",
+    
+    "LOCAL_VENDOR_EXIST": "Vendor already exist in the system",
+    "lOCAL_VENDOR_EMAIL_EXIST_DIFF_USER": "Email already exist in the system with different Vendor",
+    "LOCAL_VENDOR_DELETE_ERROR": "Vendor cannot be deleted as it has associated Inventries in the system.",
+    "LOCAL_VENDOR_NOT_EXIST": "Vendor does not exist in the system",
+    "LOCAL_VENDOR_CREATED": "Vendor created successfully",
+    "LOCAL_VENDOR_FETCHED": "Vendor fetched successfully",
+    "LOCAL_VENDOR_DELETED": "Vendor deleted successfully",
+    "LOCAL_VENDOR_UPDATED": "Vendor updated successfully",
 
 
     "CUSTOMER_EXIST": "Customer already exists in the system",

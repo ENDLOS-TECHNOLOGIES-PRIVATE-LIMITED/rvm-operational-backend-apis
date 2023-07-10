@@ -10,6 +10,7 @@ import * as solution from "./solution";
 import * as vendor from "./vendor";
 import * as inventryBrand from "./inventryBrand";
 import * as ticket from "./ticket";
+import * as localVendor from "./localVendor";
 
 
 export default {
@@ -24,5 +25,6 @@ export default {
   solution,
   vendor,
   inventryBrand,
-  ticket
+  ticket,
+  localVendor
 };

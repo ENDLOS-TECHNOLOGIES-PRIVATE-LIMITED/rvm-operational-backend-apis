@@ -10,6 +10,7 @@ import solution from "./solution";
 import vendor from "./vendor";
 import inventryBrand from "./inventryBrand";
 import ticket from "./ticket";
+import localVendor from "./localVendor";
 
 export default {
   Inventory,
@@ -24,5 +25,6 @@ export default {
   vendor,
   inventryBrand,
   ticket,
+  localVendor
 };
 

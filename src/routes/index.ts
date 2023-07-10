@@ -13,6 +13,7 @@ import vendor  from './vendor';
 import solution  from './solution';
 import inventryBrand  from './inventryBrand';
 import ticket  from './ticket';
+import localVendor  from './localVendor';
 
 const route = Router();
 
@@ -31,6 +32,7 @@ auth(route);
  vendor(route);
  inventryBrand(route);
  ticket(route);
+ localVendor(route);
 
  
 
