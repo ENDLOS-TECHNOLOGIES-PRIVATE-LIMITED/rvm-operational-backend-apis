@@ -4,7 +4,7 @@ import models from "../models";
 import utility from '../utility';
 import enums from '../json/enum.json'
 import messages from '../json/message.json'
-
+import mongoose, { model } from 'mongoose';
 interface AuthenticatedRequest extends Request {
   user?: {
     id: String;
@@ -71,10 +71,48 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
    
 
 
+    const {id,nestedData,allData} =req.query;
+
+
+    
+        const matchStage:any = {
+          };
+    
+    // if (allData==='false'|| !allData) {
+    //       matchStage.isDeleted =false;
+    //     }
+        
+    
+        if (id) {
+          matchStage._id =  new mongoose.Types.ObjectId(id.toString());
+        }
+    
+       
+        
+    
+
+
+
+
+
+
+
     
     const problems = await models.problem.aggregate([
       
-   
+        { $match: matchStage },
+
+        { $sort: { createdAt: -1 } },
+
+
+      {
+        $lookup: {
+          from: 'solutions',
+          localField: '_id',
+          foreignField: 'problemId',
+          as: 'solutions'
+        }
+      },
       {
         $lookup: {
           from: 'invetrytypes',
@@ -88,6 +126,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           _id: '$_id',
           name: { $first: '$name' },
           description: { $first: '$description' },
+          solutions: { $first: '$solutions' },
           problemType: {
             $first: { $arrayElemAt: ["$problemType", 0] }  
           },
@@ -96,12 +135,15 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
         },
         
       },
+
+    
      
       {
         $project: {
          _id: '$_id',
          name: '$name',
          description: '$description',
+         solutions: '$solutions',
           problemType: {
             name: "$problemType.name",
             _id: "$problemType._id"
