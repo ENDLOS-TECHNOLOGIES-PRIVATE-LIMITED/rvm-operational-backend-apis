@@ -11,8 +11,8 @@ const machineSchema = new Schema(
     inventry: [
       {
         _inventry: { type: mongoose.Schema.Types.ObjectId,},
-        warrantyStart: {  type: Date, },
-        warrantyExpire: {  type: Date  },
+        resellerWarrantyStart: {  type: Date, },
+        resellerWarrantyExpire: {  type: Date  },
         isDisabled:{type:Boolean},
         replacement:{type: mongoose.Schema.Types.ObjectId}
       },

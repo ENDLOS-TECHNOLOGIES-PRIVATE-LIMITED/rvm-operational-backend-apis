@@ -142,7 +142,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
       {
         $lookup: {
           from: 'invetries',
-          let: { inventryId: '$inventry._inventry', warrantyExpire: '$inventry.warrantyExpire' },
+          let: { inventryId: '$inventry._inventry', warrantyExpire: '$inventry.resellerWarrantyExpire' },
           pipeline: [
             {
               $match: {
@@ -189,6 +189,8 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
 
                 invoiceNo: { $first: '$invoiceNo' },
+                // resellerWarrantyStart: { $first: '$resellerWarrantyStart' },
+                // rsellerWarrantyExpire: { $first: '$rsellerWarrantyExpire' },
                 serialNumber: { $first: '$serialNumber' },
                 manufacturerwarrantyExpire: { $first: '$warrantyExpired' },
                 resellerwarrantyExpire: { $first: '$resellerwarrantyExpire' },
@@ -251,6 +253,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
         $group: {
           _id: '$_id',
           machineId: { $first: '$machineId' },
+          // machineId: { $first: '$machineId' },
           inventry: { $first: '$inventry' },
           branch: {
             $first: { $arrayElemAt: ["$branch", 0] }
@@ -286,6 +289,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
               
           warrentyStart:"$warrentyStart",
           warrentyExpire:"$warrentyExpire",
+          inventry:"$inventry",
           branch: {
             name: "$branch.name",
             _id: "$branch._id"

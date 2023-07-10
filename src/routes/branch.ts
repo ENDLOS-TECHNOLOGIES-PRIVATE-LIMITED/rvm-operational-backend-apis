@@ -35,6 +35,15 @@ export default (app: Router) => {
    *     description: For All Branches of a Customer .
    */
   route.get("/getbycustomer", verifySuperAdmin, Controller.branch.GetByCustomer);
+  /**
+   * @swagger
+   * /getbycustomer :
+   *   Post:
+   *     tags: [Branch]
+   *     summary: Getting All Branches of a Customer
+   *     description: For All Branches of a Customer .
+   */
+  route.get("/", verifySuperAdmin, Controller.branch.getAll);
 
 
   
