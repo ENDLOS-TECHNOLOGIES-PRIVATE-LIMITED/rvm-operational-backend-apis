@@ -26,5 +26,7 @@ export default {
   inventryBrand,
   ticket,
   localVendor
+
+
 };
 

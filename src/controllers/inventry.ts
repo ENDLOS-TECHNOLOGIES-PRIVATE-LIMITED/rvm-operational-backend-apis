@@ -16,7 +16,7 @@ interface AuthenticatedRequest extends Request {
 export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
 
-    const {brandName,inventryTypeId,brandId,serialNumber,purchaseDate,warrantyExpired,invoiceNo} =req.body;
+    const {brandName,inventryTypeId,brandId,serialNumber,purchaseDate,warrantyExpired,invoiceNo,localVendorId} =req.body;
 
 
 const uniqueSerialNumber = Array.from(new Set(serialNumber));
@@ -66,6 +66,9 @@ const isSerialExist = await models.Inventory.find({ serialNumber: { $in: uniqueS
 
     // }
 
+
+
+    
 
 
 
@@ -118,7 +121,8 @@ const isSerialExist = await models.Inventory.find({ serialNumber: { $in: uniqueS
               purchaseDate,
               warrantyExpired,
               invoiceNo,
-              brandId
+              brandId,
+              localVendorId
               
          
             });

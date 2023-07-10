@@ -1,3 +1,5 @@
+//Vendor is Reseller not Vendor because at early stage of devlopment team doesn't decided to create a resller and vendor so we created it 
+
 import { Schema, model } from "mongoose";
 const vendorSchema = new Schema(
   {

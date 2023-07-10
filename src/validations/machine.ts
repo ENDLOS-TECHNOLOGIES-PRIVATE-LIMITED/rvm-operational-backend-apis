@@ -11,10 +11,13 @@ export const machineSchema = yup.object().shape({
   inventry: yup.array().of(
     yup.object().shape({
       // _inventry: yup.mixed().required(),
+      
       _inventry: yup.mixed().test('is-mongoose-object', '_inventry Invalid Id', value => {
+
         // if (value === null) {
         //   return true; // Allow null values
         // }
+
         return mongoose.Types.ObjectId.isValid(value);
       }),
       warrantyStart: yup.date().typeError('Inventry Warranty Start Date must be a valid date'),
