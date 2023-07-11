@@ -266,10 +266,11 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           },
           warrentyStart: { $first: '$warrentyStart' },
           warrentyExpire: { $first: '$warrentyExpire' },
+          inventoryDetails: { $first: '$inventoryDetails' },
           
-            inventoryDetails: {
-            $push: "$inventoryDetails"
-          }
+          //   inventoryDetails: {
+          //   $push: "$inventoryDetails"
+          // }
 
         },
         
