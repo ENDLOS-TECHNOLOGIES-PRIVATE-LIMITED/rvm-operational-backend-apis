@@ -302,6 +302,13 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
             name: "$vendor.name",
             _id: "$vendor._id"
           },
+          machineStatus: {
+            $cond: {
+              if: { $lt: ["$warrentyExpire", new Date()] },
+              then: "Out Of Warranty",
+              else: "In Warranty"
+            }
+          },
           inventoryDetails:"$inventoryDetails"
         }
       
