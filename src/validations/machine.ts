@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 
 // Step 2: Define the validation schema using Yup
 export const machineSchema = yup.object().shape({
-  machineId: yup.string().required().max(16),
+  machineId: yup.string().required().min(16).max(16),
   warrentyStartDate: yup.date().typeError('Warranty Start Date must be a valid date'),
 
   inventry: yup.array().of(
