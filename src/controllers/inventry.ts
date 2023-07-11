@@ -304,7 +304,24 @@ const isSerialExist = await models.Inventory.find({ serialNumber: { $in: uniqueS
 
 export const get = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    let { type, inventryTypeId } = req.query;
+    let { type, id } = req.query;
+
+if(Object.keys(req.query).length==0 || Array.isArray(type)){
+
+  const responseCatchError = {
+    req: req,
+    result: -1,
+    message: messages.BAD_REQUEST,
+    payload: {},
+    logPayload: false,
+  };
+  
+  return res.status(enums.HTTP_CODES.BAD_REQUEST)
+     .json(utility.createResponseObject(responseCatchError));
+
+}
+
+
     if(type=='unassigned'){
       //chekding inventry which provided by user are assigned to another machine or not
       const unAssignedInventry = await models.Inventory.aggregate([
@@ -489,51 +506,29 @@ export const get = async (req: AuthenticatedRequest, res: Response) => {
      return  res.status(enums.HTTP_CODES.OK)
          .json(utility.createResponseObject(data4createResponseObject));
     } 
+    else if (id){
+      const Inventry = await models.Inventory.findById(id)
+ 
+
+      const payload = {
+        Inventry,
+     
+      };
+
+      const data4createResponseObject = {
+        req: req,
+        result: 0,
+        message: messages.INVENTORY_FETCHED,
+        payload: payload,
+        logPayload: false,
+      };
+      
+     return  res.status(enums.HTTP_CODES.OK)
+         .json(utility.createResponseObject(data4createResponseObject));
+
+
+    }
     
-    
-    // else if (inventryTypeId) {
-    //   const filterdInventory = await models.Inventory.aggregate([
-    //     { $match: { inventryType: new mongoose.Types.ObjectId(inventryTypeId.toString()), isDeleted: false } },
-
-    //     {
-    //       $lookup: {
-    //         from: "invetrytypes", // Replace "inventoryTypes" with the actual name of your inventory types collection
-    //         localField: "inventryType",
-    //         foreignField: "_id",
-    //         as: "inventoryType",
-    //       },
-    //     },
-    //     {
-    //       $unwind: "$inventoryType",
-    //     },
-    //     {
-    //       $addFields: {
-    //         inventryType: "$inventoryType.name",
-    //       },
-    //     },
-    //     {
-    //       $project: {
-    //         inventoryType: 0,
-    //       },
-    //     },
-    //   ]);
-
-    //   const Response = {
-    //     filterdInventory,
-    //   };
-
-    //   // sending All Inventry
-    //   res.json({
-    //     message: "Successfully get All Inventry",
-    //     data: Response,
-    //     success: true,
-    //   });
-    // } else {
-    //   res.json({
-    //     message: "Pls provide correct query",
-    //     success: true,
-    //   });
-    // }
   } catch (error: any) {
 
     

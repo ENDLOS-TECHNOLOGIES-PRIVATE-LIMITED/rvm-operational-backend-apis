@@ -126,6 +126,7 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           _id: '$_id',
           name: { $first: '$name' },
           description: { $first: '$description' },
+          category: { $first: '$category' },
           solutions: { $first: '$solutions' },
           problemType: {
             $first: { $arrayElemAt: ["$problemType", 0] }  
@@ -143,11 +144,29 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
          _id: '$_id',
          name: '$name',
          description: '$description',
+         category: '$category',
          solutions: '$solutions',
-          problemType: {
-            name: "$problemType.name",
-            _id: "$problemType._id"
-          },
+        
+         problemType: {
+          $cond: {
+            if: { $eq: ["$problemType", null] },
+            then: {
+              name: "-",
+              _id: "-"
+            },
+            else: {
+              name: "$problemType.name",
+              _id: "$problemType._id"
+            }
+          }
+        }
+
+
+
+          // problemType: {
+          //   name: "$problemType.name",
+          //   _id: "$problemType._id"
+          // },
           
         }
       }
