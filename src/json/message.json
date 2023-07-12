@@ -110,6 +110,9 @@
     "INVENTRY_TYPE_DELETED": "InventryType deleted successfully",
     "INVENTRY_TYPE_UPDATED": "InventryType updated successfully",
 
+    "INVOICE_EXIST": "Invoice already exist in the system",
+
+
 
     "INVENTRY_SERIAL_EXIST": "Serial Number already exists in the system",
     "INVENTRY_DELETE_ERROR": "Inventory cannot be deleted as it has associated with Machine in the system.",
@@ -153,7 +156,11 @@
     "TICKET_CREATED": "Ticket created successfully",
     "TICKET_FETCHED": "Ticket fetched successfully",
     "TICKET_DELETED": "Ticket deleted successfully",
-    "TICKET_UPDATED": "Ticket updated successfully"
+    "TICKET_UPDATED": "Ticket updated successfully",
+
+ 
+    "STOCK_FETCHED": "Stock fetched successfully"
+
     
   
   }

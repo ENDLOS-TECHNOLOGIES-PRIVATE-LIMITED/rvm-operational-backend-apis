@@ -14,6 +14,7 @@ import solution  from './solution';
 import inventryBrand  from './inventryBrand';
 import ticket  from './ticket';
 import localVendor  from './localVendor';
+import stock  from './stock';
 
 const route = Router();
 
@@ -33,6 +34,7 @@ auth(route);
  inventryBrand(route);
  ticket(route);
  localVendor(route);
+ stock(route);
 
  
 

@@ -11,6 +11,7 @@ import * as vendor from "./vendor";
 import * as inventryBrand from "./inventryBrand";
 import * as ticket from "./ticket";
 import * as localVendor from "./localVendor";
+import * as stock from "./stock";
 
 
 export default {
@@ -26,5 +27,6 @@ export default {
   vendor,
   inventryBrand,
   ticket,
-  localVendor
+  localVendor,
+  stock
 };
