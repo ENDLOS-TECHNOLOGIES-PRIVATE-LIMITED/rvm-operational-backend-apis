@@ -97,7 +97,8 @@ const inventryAvailability = await models.Inventory.find({
         machineId:machineId,
         branchId:branchId,
         resellerId:req.body.resellerId,
-        customerId:req.body.customerId
+        warrentyStart:req.body.warrentyStart,
+        warrentyExpire:req.body.warrentyExpire
       
       })
 
