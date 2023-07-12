@@ -122,6 +122,7 @@
     "INVENTORY_FETCHED": "Inventory fetched successfully",
     "INVENTORY_DELETED": "Inventory deleted successfully",
     "INVENTORY_UPDATED": "Inventory updated successfully",
+    "INVENTRY_ALREDY_ADDED_MACHINE": "Inventry already exists to machine in the system",
 
 
 

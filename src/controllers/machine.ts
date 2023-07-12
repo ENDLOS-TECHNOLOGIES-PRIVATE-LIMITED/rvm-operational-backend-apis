@@ -17,28 +17,62 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
     
 
-    const { inventry } = req.body;
+    const { inventoryDetails ,machineId,branchId} = req.body;
 
 
-    if(inventry){        
-const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inventry.toString()));
+    // const isMachineExist = await models.Machine.findOne({ machineId: req.body.machineId });
 
+    // if (isMachineExist) {
 
-         const inventryAvailability = await models.Machine.find({
-           "inventry._inventry": { $in: inventryIds },
-         }).exec();
-
-
-         if (inventryAvailability.length > 0) {
-           return res.status(400).json({
-             error: "inventry already assigned to a machine",
-           });
-         }
-
-    }
+    //   const responseError = {
+    //     req: req,
+    //     result: -1,
+    //     message: messages.MACHINE_EXIST,
+    //     payload: {},
+    //     logPayload: false,
+    //   };
+      
+    //  return  res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+    //      .json(utility.createResponseObject(responseError));
 
    
+    // } 
 
+
+    
+    let  inventryIds;
+  if(inventoryDetails){        
+ inventryIds = inventoryDetails.map((item) => new mongoose.Types.ObjectId(item._id.toString()));
+
+const inventryAvailability = await models.Inventory.find({
+           "_id": { $in: inventryIds },
+         }).exec();
+         if (inventryAvailability.length > 0) {
+
+          const isError = inventryAvailability.filter(element=>element.machineId)
+
+         
+// console.log({isError});
+          if(isError.length>0){
+
+            
+                const responseCatchError = {
+                req: req,
+                result: -1,
+                message: messages.INVENTRY_ALREDY_ADDED_MACHINE,
+                payload: {},
+                logPayload: false,
+              };
+              
+             return res.status(enums.HTTP_CODES.DUPLICATE_VALUE)
+                 .json(utility.createResponseObject(responseCatchError));
+          }
+         }
+
+        }
+        
+        
+        
 
 
     const isExist = await models.Machine.findOne({ machineId: req.body.machineId });
@@ -58,11 +92,24 @@ const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inv
 
    
     } else {
-      // Adding Machine in the Db
+
       const Machine = await models.Machine.create({
-        ...req.body,
-        "branch._branchId":req.body.branchId   
-       });
+        machineId:machineId,
+        branchId:branchId,
+        resellerId:req.body.resellerId,
+        customerId:req.body.customerId
+      
+      })
+
+const InventryAddedToMachine  = await models.Inventory.updateMany(
+{ _id: { $in: inventryIds } },
+{ $set: { machineId: Machine._id } }
+);
+
+
+
+
+   
 
       const payload = {
         Machine,
@@ -87,6 +134,8 @@ const inventryIds = inventry.map((item) => new mongoose.Types.ObjectId(item._inv
 
 }
   } catch (error: any) {
+
+    console.log(error);
     const responseCatchError = {
       req: req,
       result: -1,
@@ -129,38 +178,35 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
 
 
 
-
+{
+  $lookup: {
+    from: "invetries",
+    let: { machineId: "$_id" },
+    pipeline: [
       {
-        $lookup: {
-          from: 'invetries',
-          localField: 'inventry._inventry',
-          foreignField: '_id',
-          as: 'inventoryDetails'
+    $match: {
+          $expr: {
+            $and: [
+              { $eq: ["$machineId", "$$machineId"] },
+
+              // allData === 'false'|| allData ?{}: { $eq: ['$isDeleted', false] }
+      ]
+          }
         }
-      },      
+      },
 
       {
-        $lookup: {
-          from: 'invetries',
-          let: { inventryId: '$inventry._inventry', warrantyExpire: '$inventry.resellerWarrantyExpire' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $in: ['$_id', '$$inventryId']
+                $lookup: {
+                  from: 'invetrybrands',
+                  localField: 'brandId',
+                  foreignField: '_id',
+                  as: 'brandDetails'
                 }
-              }
-            },
+              },
 
-            {
-              $lookup: {
-                from: 'invetrybrands',
-                localField: 'brandId',
-                foreignField: '_id',
-                as: 'brandDetails'
-              }
-            },
-            {
+
+ 
+                      {
               $lookup: {
                 from: 'invetrytypes',
                 localField: 'brandDetails.inventryTypeId',
@@ -170,57 +216,93 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
             },
 
             {
-              $addFields: {
-                "resellerwarrantyExpire": {
-                  $arrayElemAt: ['$$warrantyExpire', {
-                    $indexOfArray: ['$$inventryId', '$_id']
-                  }]
-                },
-                brandName: { $arrayElemAt: ['$brandDetails.name', 0] },
-                inventryType: { $arrayElemAt: ['$invetrytypes.name', 0] }
-                
-              }
-            },
+                      $group: {
+                        _id: '$_id',
+                    // invoiceNo: { $first: '$invoiceNo' },
+                    // invoiceDate: { $first: '$invoiceDate' },
+                    purchaseRate: { $first: '$purchaseRate' },
+                    serialNumber: { $first: '$serialNumber' },
+                    purchaseDate: { $first: '$purchaseDate' },
+                    warrantyExpire: { $first: '$warrantyExpire' },
+                    resellerWarrantyStart: { $first: '$resellerWarrantyStart' },
+                    resellerWarrantyExpire: { $first: '$resellerWarrantyExpire' },
+                    isDisabled: { $first: '$isDisabled' },
 
-
-            {
-              $group: {
-                _id: '$_id',
-
-
-                invoiceNo: { $first: '$invoiceNo' },
-                // resellerWarrantyStart: { $first: '$resellerWarrantyStart' },
-                // rsellerWarrantyExpire: { $first: '$rsellerWarrantyExpire' },
-                serialNumber: { $first: '$serialNumber' },
-                manufacturerwarrantyExpire: { $first: '$warrantyExpired' },
-                resellerwarrantyExpire: { $first: '$resellerwarrantyExpire' },
-                brandName: { $first: '$brandName' },
-                inventryType: { $first: '$inventryType' },
-                
              
-              },
-              
-      
-      
-            },
+                 brand: {
+                    $first: { $arrayElemAt: ["$brandDetails", 0] }
+                  },
+             
+                  invetrytypes: {
+                    $first: { $arrayElemAt: ["$invetrytypes", 0] }
+                  },
 
-            {
-              $project: {
-                brandDetails: 0,
-                invetrytypes: 0
-              }
-            }
-          ],
-          as: 'inventoryDetails'
+
+            
+                     
+                      },
+                      
+              
+              
+                    },
+        
+                    {
+                      $project: {
+
+                        _id:"$_id",
+                        serialNumber:"$serialNumber",
+                        purchaseDate:"$purchaseDate",
+                        warrantyExpire:"$warrantyExpire",
+                        resellerWarrantyStart:"$resellerWarrantyStart",
+                        resellerWarrantyExpire:"$resellerWarrantyExpire",
+                        // isDisabled:"$isDisabled",
+                        status:"Active", // need to work on status part 
+                        brand:{
+                          _id:"$brand._id",
+                          name:"$brand.name"
+                        },
+                        invetrytypes:{
+                          _id:"$invetrytypes._id",
+                          name:"$invetrytypes.name"
+                        }
+                  ,
+
+                      }
+                    }
+    ],
+    as: "inventoryDetails",
+  },
+},
+
+
+
+
+
+
+
+
+
+
+      
+  
+
+      {
+        $lookup: {
+          from: 'vendors',
+          localField: 'resellerId',
+          foreignField: '_id',
+          as: 'reseller'
         }
       },
-
-  
-     
-      // { $unwind: '$inventoryDetails' }, // Unwind the inventory array
-
-
-{
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customerId',
+          foreignField: '_id',
+          as: 'customer'
+        }
+      },
+      {
         $lookup: {
           from: 'branches',
           localField: 'branchId',
@@ -228,93 +310,258 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
           as: 'branch'
         }
       },
-      {
-        $lookup: {
-          from: 'customers',
-          localField: 'branch.customer._customerId',
-          foreignField: '_id',
-          as: 'customer'
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'vendors',
-          localField: 'customer.vendorId',
-          foreignField: '_id',
-          as: 'vendor'
-        }
-      },
+
+  
 
 
 
 
-   {
-        $group: {
-          _id: '$_id',
-          machineId: { $first: '$machineId' },
-          // machineId: { $first: '$machineId' },
-          inventry: { $first: '$inventry' },
-          branch: {
-            $first: { $arrayElemAt: ["$branch", 0] }
-          },
-          customer: {
-            $first: { $arrayElemAt: ["$customer", 0] }  
-          },
-          vendor: {
-            $first: { $arrayElemAt: ["$vendor", 0] }  
-          },
-          warrentyStart: { $first: '$warrentyStart' },
-          warrentyExpire: { $first: '$warrentyExpire' },
-          inventoryDetails: { $first: '$inventoryDetails' },
-          
-          //   inventoryDetails: {
-          //   $push: "$inventoryDetails"
-          // }
-
-        },
-        
-
-
-      },
-
-
-
-        
-
-      {
-
-
-        $project: {
-          machineId:"$machineId",
+        {
+                $group: {
+                  _id: '$_id',
+                  machineId: { $first: '$machineId' },
               
-          warrentyStart:"$warrentyStart",
-          warrentyExpire:"$warrentyExpire",
-          inventry:"$inventry",
-          branch: {
-            name: "$branch.name",
-            _id: "$branch._id"
-          },
-          customer: {
-            name: "$customer.name",
-            _id: "$customer._id"
-          },
-          reseller: {
-            name: "$vendor.name",
-            _id: "$vendor._id"
-          },
-          machineStatus: {
-            $cond: {
-              if: { $lt: ["$warrentyExpire", new Date()] },
-              then: "Out Of Warranty",
-              else: "In Warranty"
-            }
-          },
-          inventoryDetails:"$inventoryDetails"
-        }
+                  branch: {
+                    $first: { $arrayElemAt: ["$branch", 0] }
+                  },
+                  customer: {
+                    $first: { $arrayElemAt: ["$customer", 0] }  
+                  },
+                  reseller: {
+                    $first: { $arrayElemAt: ["$reseller", 0] }  
+                  },
+                  warrentyStart: { $first: '$warrentyStart' },
+                  warrentyExpire: { $first: '$warrentyExpire' },
+                  inventoryDetails: { $first: '$inventoryDetails' },
+                  
+                
+        
+                },
+                
+        
+        
+              },
+        
+        
+        
+                
+        
+              {
+        
+        
+                $project: {
+                  machineId:"$machineId",
+                      
+                  warrentyStart:"$warrentyStart",
+                  warrentyExpire:"$warrentyExpire",
+                  branch: {
+                    name: "$branch.name",
+                    _id: "$branch._id"
+                  },
+                  customer: {
+                    name: "$customer.name",
+                    _id: "$customer._id"
+                  },
+                  reseller: {
+                    name: "$reseller.name",
+                    _id: "$reseller._id"
+                  },
+                  machineStatus: {
+                    $cond: {
+                      if: { $lt: ["$warrentyExpire", new Date()] },
+                      then: "Out Of Warranty",
+                      else: "In Warranty"
+                    }
+                  },
+                  inventoryDetails:"$inventoryDetails"
+                }
+              
+        
+              }
+
+
+
+
+
+              
+
+      // {
+      //   $lookup: {
+      //     from: 'invetries',
+      //     let: { inventryId: '$inventry._inventry', warrantyExpire: '$inventry.resellerWarrantyExpire' },
+      //     pipeline: [
+      //       {
+      //         $match: {
+      //           $expr: {
+      //             $in: ['$_id', '$$inventryId']
+      //           }
+      //         }
+      //       },
+
+      //       {
+      //         $lookup: {
+      //           from: 'invetrybrands',
+      //           localField: 'brandId',
+      //           foreignField: '_id',
+      //           as: 'brandDetails'
+      //         }
+      //       },
+      //       {
+      //         $lookup: {
+      //           from: 'invetrytypes',
+      //           localField: 'brandDetails.inventryTypeId',
+      //           foreignField: '_id',
+      //           as: 'invetrytypes'
+      //         }
+      //       },
+
+      //       {
+      //         $addFields: {
+      //           "resellerwarrantyExpire": {
+      //             $arrayElemAt: ['$$warrantyExpire', {
+      //               $indexOfArray: ['$$inventryId', '$_id']
+      //             }]
+      //           },
+      //           brandName: { $arrayElemAt: ['$brandDetails.name', 0] },
+      //           inventryType: { $arrayElemAt: ['$invetrytypes.name', 0] }
+                
+      //         }
+      //       },
+
+
+      //       {
+      //         $group: {
+      //           _id: '$_id',
+
+
+      //           invoiceNo: { $first: '$invoiceNo' },
+      //           // resellerWarrantyStart: { $first: '$resellerWarrantyStart' },
+      //           // rsellerWarrantyExpire: { $first: '$rsellerWarrantyExpire' },
+      //           serialNumber: { $first: '$serialNumber' },
+      //           manufacturerwarrantyExpire: { $first: '$warrantyExpired' },
+      //           resellerwarrantyExpire: { $first: '$resellerwarrantyExpire' },
+      //           brandName: { $first: '$brandName' },
+      //           inventryType: { $first: '$inventryType' },
+                
+             
+      //         },
+              
+      
+      
+      //       },
+
+      //       {
+      //         $project: {
+      //           brandDetails: 0,
+      //           invetrytypes: 0
+      //         }
+      //       }
+      //     ],
+      //     as: 'inventoryDetails'
+      //   }
+      // },
+
+  
+     
+      // { $unwind: '$inventoryDetails' }, // Unwind the inventory array
+
+
+// {
+//         $lookup: {
+//           from: 'branches',
+//           localField: 'branchId',
+//           foreignField: '_id',
+//           as: 'branch'
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: 'customers',
+//           localField: 'branch.customer._customerId',
+//           foreignField: '_id',
+//           as: 'customer'
+//         }
+//       },
+
+//       {
+//         $lookup: {
+//           from: 'vendors',
+//           localField: 'customer.vendorId',
+//           foreignField: '_id',
+//           as: 'vendor'
+//         }
+//       },
+
+
+
+
+//    {
+//         $group: {
+//           _id: '$_id',
+//           machineId: { $first: '$machineId' },
+//           // machineId: { $first: '$machineId' },
+//           inventry: { $first: '$inventry' },
+//           branch: {
+//             $first: { $arrayElemAt: ["$branch", 0] }
+//           },
+//           customer: {
+//             $first: { $arrayElemAt: ["$customer", 0] }  
+//           },
+//           vendor: {
+//             $first: { $arrayElemAt: ["$vendor", 0] }  
+//           },
+//           warrentyStart: { $first: '$warrentyStart' },
+//           warrentyExpire: { $first: '$warrentyExpire' },
+//           inventoryDetails: { $first: '$inventoryDetails' },
+          
+//           //   inventoryDetails: {
+//           //   $push: "$inventoryDetails"
+//           // }
+
+//         },
+        
+
+
+//       },
+
+
+
+        
+
+//       {
+
+
+//         $project: {
+//           machineId:"$machineId",
+              
+//           warrentyStart:"$warrentyStart",
+//           warrentyExpire:"$warrentyExpire",
+//           inventry:"$inventry",
+//           branch: {
+//             name: "$branch.name",
+//             _id: "$branch._id"
+//           },
+//           customer: {
+//             name: "$customer.name",
+//             _id: "$customer._id"
+//           },
+//           reseller: {
+//             name: "$vendor.name",
+//             _id: "$vendor._id"
+//           },
+//           machineStatus: {
+//             $cond: {
+//               if: { $lt: ["$warrentyExpire", new Date()] },
+//               then: "Out Of Warranty",
+//               else: "In Warranty"
+//             }
+//           },
+//           inventoryDetails:"$inventoryDetails"
+//         }
       
 
-      }
+//       }
 
 
   
@@ -412,6 +659,9 @@ return  res
 
  
   } catch (error: any) {
+
+
+    console.log({error});
     const responseCatchError = {
       req: req,
       result: -1,

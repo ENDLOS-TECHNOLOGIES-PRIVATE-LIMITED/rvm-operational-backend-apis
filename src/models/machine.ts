@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+              import mongoose from "mongoose";
 
 import { Schema, model } from "mongoose";
 const machineSchema = new Schema(
@@ -8,19 +8,21 @@ const machineSchema = new Schema(
     warrentyExpire:{type:Date},
     isDeleted: { type: Boolean, default: false },
     branchId: {type: mongoose.Schema.Types.ObjectId},
-    inventry: [
-      {
-        _inventry: { type: mongoose.Schema.Types.ObjectId,},
-        resellerWarrantyStart: {  type: Date, },
-        resellerWarrantyExpire: {  type: Date  },
-        isDisabled:{type:Boolean},
-        replacement:{type: mongoose.Schema.Types.ObjectId}
-      },
-    ],
-    Frezed:{
-      isFrezed:{type:Boolean,default:false},
-      date:{type:Date,}
-    }
+    resellerId: {type: mongoose.Schema.Types.ObjectId,required:true},
+    customerId: {type: mongoose.Schema.Types.ObjectId},
+    // inventry: [
+    //   {
+    //     _inventry: { type: mongoose.Schema.Types.ObjectId,},
+    //     resellerWarrantyStart: {  type: Date, },
+    //     resellerWarrantyExpire: {  type: Date  },
+    //     isDisabled:{type:Boolean},
+    //     replacement:{type: mongoose.Schema.Types.ObjectId}
+    //   },
+    // ],
+    // Frezed:{
+    //   isFrezed:{type:Boolean,default:false},
+    //   date:{type:Date,}
+    // }
   },
   {
     timestamps: true,

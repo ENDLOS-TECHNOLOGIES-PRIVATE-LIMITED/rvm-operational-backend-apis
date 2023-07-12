@@ -6,18 +6,51 @@ import mongoose from 'mongoose';
 // Step 2: Define the validation schema using Yup
 export const machineSchema = yup.object().shape({
   machineId: yup.string().required().min(16).max(16),
-  warrentyStartDate: yup.date().typeError('Warranty Start Date must be a valid date'),
+  // resellerId: yup
+  //   .string()
+  //   .when('$resellerIdAvailable', {
+  //     is: true,
+  //     then: yup
+  //       .string()
+  //       .test('is-mongoose-object', 'Invalid resellerId', value => {
+  //         return mongoose.Types.ObjectId.isValid(value);
+  //       }),
+  //   }),
+  customerId: yup
+    .string()
+    .when('$customerIdAvailable', {
+      is: true,
+      then: yup
+        .string()
+        .test('is-mongoose-object', 'Invalid customerId', value => {
+          return mongoose.Types.ObjectId.isValid(value);
+        }),
+    }),
+  branchId: yup
+    .string()
+    .when('$branchIdAvailable', {
+      is: true,
+      then: yup
+        .string()
+        .test('is-mongoose-object', 'Invalid branchId', value => {
+          return mongoose.Types.ObjectId.isValid(value);
+        }),
+    }),
+    resellerId: yup.string().required("ResellerId is required"),
 
-  inventry: yup.array().of(
+  // resellerId: yup.string().test('is-mongoose-object', 'Invalid resellerId', value => {
+  //     return mongoose.Types.ObjectId.isValid(value);
+  // }),
+  // customerId: yup.string().test('is-mongoose-object', 'Invalid customerId', value => {
+  //     return mongoose.Types.ObjectId.isValid(value);
+  // }),
+  // branchId: yup.string().test('is-mongoose-object', 'Invalid branchId', value => {
+  //     return mongoose.Types.ObjectId.isValid(value);
+  // }),
+   inventry: yup.array().of(
     yup.object().shape({
-      // _inventry: yup.mixed().required(),
-      
+    
       _inventry: yup.mixed().test('is-mongoose-object', '_inventry Invalid Id', value => {
-
-        // if (value === null) {
-        //   return true; // Allow null values
-        // }
-
         return mongoose.Types.ObjectId.isValid(value);
       }),
       warrantyStart: yup.date().typeError('Inventry Warranty Start Date must be a valid date'),

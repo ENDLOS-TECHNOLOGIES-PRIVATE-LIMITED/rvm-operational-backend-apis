@@ -760,7 +760,10 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
 
     }
   } catch (error: any) {
-      
+
+
+    console.log({error});
+
     const responseCatchError = {
       req: req,
       result: -1,
