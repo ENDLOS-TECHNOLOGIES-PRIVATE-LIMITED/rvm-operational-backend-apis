@@ -64,4 +64,5 @@ export default (app: Router) => {
    *     description: For updating Inventry .
    */
   route.put("/update", verifySuperAdmin, Controller.inventry.update);
+  
 };
