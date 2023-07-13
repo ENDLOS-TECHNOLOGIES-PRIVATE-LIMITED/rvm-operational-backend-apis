@@ -47,6 +47,8 @@ export const machineSchema = yup.object().shape({
   // branchId: yup.string().test('is-mongoose-object', 'Invalid branchId', value => {
   //     return mongoose.Types.ObjectId.isValid(value);
   // }),
+
+  
    inventry: yup.array().of(
     yup.object().shape({
     

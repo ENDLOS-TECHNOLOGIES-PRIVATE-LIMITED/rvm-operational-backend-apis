@@ -96,18 +96,55 @@ const inventryAvailability = await models.Inventory.find({
       const Machine = await models.Machine.create({
         machineId:machineId,
         branchId:branchId,
+        customerId:req.body.customerId,
         resellerId:req.body.resellerId,
         warrentyStart:req.body.warrentyStart,
         warrentyExpire:req.body.warrentyExpire
       
       })
 
-const InventryAddedToMachine  = await models.Inventory.updateMany(
-{ _id: { $in: inventryIds } },
-{ $set: { machineId: Machine._id } }
-);
+// const InventryAddedToMachine  = await models.Inventory.updateMany(
+// { _id: { $in: inventryIds } },
+// { $set: { machineId: Machine._id ,resellerWarrantyStart:req.body.resellerWarrantyStart,resellerWarrantyExpire:req.body.resellerWarrantyExpire} }
+// );
 
 
+
+if (inventoryDetails) {
+  const inventoryIds = await Promise.all(
+    inventoryDetails.map(async (item) => {
+      const updatedInventory = await models.Inventory.findByIdAndUpdate(
+        item._id,
+        {
+          machineId: Machine._id,
+          status:"Machine",
+          ...item
+        },
+        {
+          new: true
+        }
+      );
+      return updatedInventory._id;
+    })
+  );
+
+  // Access the inventoryIds array here after all promises have resolved
+}
+
+// const inventryAvailability = await models.Inventory.find({
+//            "_id": { $in: inventryIds },
+//          }).exec();
+//          if (inventryAvailability.length > 0) {
+
+//           const isError = inventryAvailability.filter(element=>element.machineId)
+
+         
+
+
+//         }
+
+
+      // }
 
 
    
@@ -228,7 +265,8 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
                     resellerWarrantyStart: { $first: '$resellerWarrantyStart' },
                     resellerWarrantyExpire: { $first: '$resellerWarrantyExpire' },
                     isDisabled: { $first: '$isDisabled' },
-
+                    status: { $first: '$status' },
+                    
              
                  brand: {
                     $first: { $arrayElemAt: ["$brandDetails", 0] }
@@ -256,8 +294,9 @@ export const getAll = async (req: AuthenticatedRequest, res: Response) => {
                         warrantyExpire:"$warrantyExpire",
                         resellerWarrantyStart:"$resellerWarrantyStart",
                         resellerWarrantyExpire:"$resellerWarrantyExpire",
+                        status:"$status",
                         // isDisabled:"$isDisabled",
-                        status:"Active", // need to work on status part 
+                        // status:"Active", // need to work on status part 
                         brand:{
                           _id:"$brand._id",
                           name:"$brand.name"
@@ -905,7 +944,12 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
         .json(utility.createResponseObject(responseError));
 
         } else {
-        
+
+
+          console.log("Printing the machind information");
+
+          const inventryAssocited = await models.Inventory.updateMany({machineId:id},{ $unset: { machineId: 1 } })
+
           const updatedMachine = await models.Machine.findOneAndUpdate(
             {
               // _id: new mongoose.Types.ObjectId(id.toString()),
@@ -914,10 +958,7 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
             {
               $set: {
                 ...req.body,
-                branch: {
-                  _branchId: { type: mongoose.Schema.Types.ObjectId },
-                  date: Date.now(),
-                },
+              
               },
             },
 
