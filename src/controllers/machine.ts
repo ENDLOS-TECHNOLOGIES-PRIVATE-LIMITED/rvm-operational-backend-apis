@@ -908,6 +908,8 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
   try {
     let id = req.query.id;
 
+    const {inventoryDetails} = req.body;
+
     if (!id) {
 
        
@@ -948,7 +950,28 @@ export const update = async (req: AuthenticatedRequest, res: Response) => {
 
           console.log("Printing the machind information");
 
-          const inventryAssocited = await models.Inventory.updateMany({machineId:id},{ $unset: { machineId: 1 } })
+          const inventryAssocited = await models.Inventory.updateMany({machineId:id},{ $unset: { machineId: 1 },status:"InHouse" })
+
+          if (inventoryDetails) {
+            const inventoryIds = await Promise.all(
+              inventoryDetails.map(async (item) => {
+                const updatedInventory = await models.Inventory.findByIdAndUpdate(
+                  item._id,
+                  {
+                    machineId: id,
+                    status:"Machine",
+                    ...item
+                  },
+                  {
+                    new: true
+                  }
+                );
+                return updatedInventory._id;
+              })
+            );
+          
+            // Access the inventoryIds array here after all promises have resolved
+          }
 
           const updatedMachine = await models.Machine.findOneAndUpdate(
             {
