@@ -229,9 +229,11 @@ export const stock = async (req: AuthenticatedRequest, res: Response) => {
     const stock = await models.Inventory.aggregate([
       {
         $match: {
-          // isDeleted: false,
+          isDeleted: false,
         },
       },
+
+      { $sort: { createdAt: -1 } },
       // {
       //   $lookup: {
       //     from: "machines",
@@ -257,32 +259,113 @@ export const stock = async (req: AuthenticatedRequest, res: Response) => {
         },
       },
 
-      // {
-      //   $lookup: {
-      //     from: "machines",
-      //     localField: "_id",
-      //     foreignField: "inventry._inventry",
-      //     as: "assignedMachines",
-      //   },
-      // },
-      // {
-      //   $match: {
-      //     assignedMachines: { $size: 0 },
-      //   },
-      // },
+      {
+        $lookup: {
+          from: "localvendors",
+          localField: "localVendorId",
+          foreignField: "_id",
+          as: "localvendors",
+        },
+      },
+      {
+        $lookup: {
+          from: "vendors",
+          localField: "resellerId",
+          foreignField: "_id",
+          as: "reseller",
+        },
+      },
+      {
+        $lookup: {
+          from: "machines",
+          localField: "machineId",
+          foreignField: "_id",
+          as: "machines",
+        },
+      },
+
+   
+      {
+        $group: {
+          _id: '$_id',
+      invoiceNo: { $first: '$invoiceNo' },
+      invoiceDate: { $first: '$invoiceDate' },
+      purchaseRate: { $first: '$purchaseRate' },
+      serialNumber: { $first: '$serialNumber' },
+      purchaseDate: { $first: '$purchaseDate' },
+      warrantyExpire: { $first: '$warrantyExpire' },
+      resellerWarrantyStart: { $first: '$resellerWarrantyStart' },
+      resellerWarrantyExpire: { $first: '$resellerWarrantyExpire' },
+      // isDisabled: { $first: '$isDisabled' },
+      status: { $first: '$status' },
       
-      // {
-      //   $project: {
-      //     _id: 1,
-      //     inventryType: 1,
-      //     brandName: 1,
-      //     serialNumber: 1,
-      //     isDeleted: 1,
-      //     createdAt: 1,
-      //     updatedAt: 1,
-      //     __v: 1,
-      //   },
-      // },
+
+      vendor: {
+      $first: { $arrayElemAt: ["$localvendors", 0] }
+    },
+      brandDetails: {
+      $first: { $arrayElemAt: ["$invetrybrands", 0] }
+    },
+
+    invetrytypes: {
+      $first: { $arrayElemAt: ["$invetrytypes", 0] }
+    },
+    reseller: {
+      $first: { $arrayElemAt: ["$reseller", 0] }
+    },
+
+
+
+       
+        },
+        
+
+
+      },
+
+      {
+        $project: {
+
+          _id:"$_id",
+          invoiceNo:"$invoiceNo",
+          invoiceDate:"$invoiceDate",
+          productSerialNumber:"$serialNumber",
+          purchaseRate:"$purchaseRate",
+          endlosWarrantyExpire:"$warrantyExpire",
+          resellerWarrantyStart:"$resellerWarrantyStart",
+          resellerWarrantyExpire:"$resellerWarrantyExpire",
+          status:"$status",
+          endlosPurchaseDate:"$purchaseDate",
+          vendor:{
+            _id:"$vendor._id",
+            name:"$vendor.name"
+          },
+          productCategory:{
+            _id:"$invetrytypes._id",
+            name:"$invetrytypes.name"
+          },
+          productBrand:{
+            _id:"$brandDetails._id",
+            name:"$brandDetails.name"
+          },
+          reseller:{
+            _id:"$reseller._id",
+            name:"$reseller.name"
+          },
+          // isDisabled:"$isDisabled",
+          // status:"Active", // need to work on status part 
+          // brand:{
+          //   _id:"$brand._id",
+          //   name:"$brand.name"
+          // },
+          // invetrytypes:{
+          //   _id:"$invetrytypes._id",
+          //   name:"$invetrytypes.name"
+          // }
+    
+
+        }
+      }
     ]);
 
 
