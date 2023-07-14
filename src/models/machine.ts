@@ -1,4 +1,4 @@
-              import mongoose from "mongoose";
+ import mongoose from "mongoose";
 
 import { Schema, model } from "mongoose";
 const machineSchema = new Schema(
@@ -9,7 +9,7 @@ const machineSchema = new Schema(
     isDeleted: { type: Boolean, default: false },
     branchId: {type: mongoose.Schema.Types.ObjectId},
     resellerId: {type: mongoose.Schema.Types.ObjectId,required:true},
-    customerId: {type: mongoose.Schema.Types.ObjectId},
+    customerId: {type: mongoose.Schema.Types.ObjectId},     
     // inventry: [
     //   {
     //     _inventry: { type: mongoose.Schema.Types.ObjectId,},

@@ -17,6 +17,7 @@ export const Add = async (req: AuthenticatedRequest, res: Response) => {
   try {
     
 
+ 
     const { inventoryDetails ,machineId,branchId} = req.body;
 
 
@@ -824,11 +825,14 @@ return    res.status(enums.HTTP_CODES.INTERNAL_SERVER_ERROR)
 
 export const Assign = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    let {branchId} = req.body;
+
 
     let {machineId}=req.query;
+    let {branchId,resellerId,customerId}=req.body;
 
-    if ((!machineId || !branchId)) {
+
+
+    if ((!machineId || !branchId || !customerId ||!resellerId)) {
 
       
 
@@ -857,7 +861,9 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
           },
           {
             $set: {
-              branchId: req.body.branchId,
+
+              ...req.body
+        
             },
           },
 
@@ -865,6 +871,21 @@ export const Assign = async (req: AuthenticatedRequest, res: Response) => {
             new: true,
           }
         );
+
+
+if(!assignedMachine){
+  const responseError = {
+    req: req,
+    result: -1,
+    message: messages.NOT_FOUND,
+    payload: {},
+    logPayload: false,
+  };
+  
+  
+  return  res.status(enums.HTTP_CODES.NOT_FOUND)
+    .json(utility.createResponseObject(responseError));
+}
 
 
         const payload = {

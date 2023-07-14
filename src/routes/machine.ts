@@ -66,5 +66,5 @@ export default (app: Router) => {
    *     description: Endpoint to assign a machine by ID.
    */
 
-   route.put("/assign", verifySuperAdmin, Controller.machine.Assign);
+   route.put("/assign", verifySuperAdmin, validationMiddleware(Validator.machine.assignMachineSchema), Controller.machine.Assign);
 };

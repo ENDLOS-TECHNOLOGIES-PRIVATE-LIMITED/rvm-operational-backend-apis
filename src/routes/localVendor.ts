@@ -41,7 +41,7 @@ export default (app: Router) => {
    *     summary: Register user
    *     description: Registering user.
    */
-  route.put("/:id",verifySuperAdmin, Controller.localVendor.update);
+  route.put("/:id", validationMiddleware(Validator.localVendor.localVendorValidationSchema),verifySuperAdmin, Controller.localVendor.update);
   /**
    * @swagger
    * /login:

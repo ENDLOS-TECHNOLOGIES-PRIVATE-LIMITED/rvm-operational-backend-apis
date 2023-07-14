@@ -281,7 +281,7 @@ export const deleteVendor = async (req: AuthenticatedRequest, res: Response) => 
 
 
 
-    const isAnyInventriesOfVendor = await models.Inventory.findOne({localVendor:new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
+    const isAnyInventriesOfVendor = await models.Inventory.findOne({localVendorId:new mongoose.Types.ObjectId(id.toString()),isDeleted:false})
 
     
     if(isAnyInventriesOfVendor){
